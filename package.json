@@ -1,0 +1,53 @@
+{
+  "name": "dossiat",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hono/node-server": "^2.0.3",
+    "@vueuse/core": "^12.5.0",
+    "@vueuse/head": "^2.0.0",
+    "axios": "^1.16.1",
+    "bcryptjs": "^3.0.3",
+    "bootstrap": "^5.3.8",
+    "bootstrap-icons": "^1.13.1",
+    "domaineat": "link:",
+    "dossiat": "link:",
+    "dotenv": "^17.4.2",
+    "hono": "^4.12.21",
+    "jose": "^6.2.3",
+    "jsonwebtoken": "^9.0.3",
+    "nprogress": "^0.2.0",
+    "pg": "^8.21.0",
+    "pg-hstore": "^2.3.4",
+    "pinia": "^3.0.4",
+    "sequelize": "6",
+    "vue": "^3.5.34",
+    "vue-i18n": "^11.1.5",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^25.1.0",
+    "@vitejs/plugin-vue": "^6.0.5",
+    "@vitest/coverage-v8": "^2.1.8",
+    "@vue/test-utils": "^2.4.10",
+    "@vue/tsconfig": "^0.8.1",
+    "jsdom": "^29.1.1",
+    "sequelize-cli": "6",
+    "typescript": "~5.9.3",
+    "vite": "^5.4.21",
+    "vitest": "^2.1.9",
+    "vue-tsc": "^3.2.5"
+  },
+  "keywords": [],
+  "author": "Ibrahim.H",
+  "license": "MIT"
+}
