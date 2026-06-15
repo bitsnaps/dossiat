@@ -73,13 +73,13 @@
 - [x] Generate initial migration from models for all tables above
 - [x] Add appropriate indexes on frequently queried columns (userId, missionId, status, etc.)
 - [x] Add foreign key constraints with ON DELETE CASCADE or SET NULL as appropriate
-- [ ] Add CHECK constraints for enums and business rules (e.g. platform fee minimum $1)
+- [x] Add CHECK constraints for enums and business rules (e.g. platform fee minimum $1)
 
 ### 2j. Seeders
 
 - [x] Create seeder for `SubscriptionPlan` with the 3 tiers: Small Business ($29), Professional ($99), Enterprise ($499)
-- [ ] Create seeder for demo agent and client users with sample missions
-- [ ] Create seeder for supported currencies list
+- [x] Create seeder for demo agent and client users with sample missions
+- [x] Create seeder for supported currencies list
 
 ---
 

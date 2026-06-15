@@ -8,29 +8,71 @@ import {
   Mission,
   Conversation,
   Message,
+  MessageAttachment,
+  Payment,
+  RefreshToken,
+  EmailVerificationToken,
+  PasswordResetToken,
+  Notification,
+  PlatformCredit,
+  Invoice,
 } from '@/server/database/models'
 
 function generateSlug(): string {
   return crypto.randomBytes(8).toString('hex')
 }
 
+const DEMO_EMAILS = ['agent-demo@dossiat.com', 'client-demo@dossiat.com']
+
+async function cleanupDemoUser(email: string): Promise<void> {
+  const user = await User.findOne({ where: { email } })
+  if (!user) return
+
+  // Find missions this user participated in
+  const missions = await Mission.findAll({
+    where: { [Op.or]: [{ agentId: user.id }, { clientId: user.id }] },
+    attributes: ['id'],
+  })
+  const missionIds = missions.map(m => m.id)
+
+  if (missionIds.length > 0) {
+    // Find conversations for those missions
+    const conversations = await Conversation.findAll({
+      where: { missionId: { [Op.in]: missionIds } },
+      attributes: ['id'],
+    })
+    const conversationIds = conversations.map(c => c.id)
+
+    if (conversationIds.length > 0) {
+      // Find messages to delete their attachments first
+      const msgs = await Message.findAll({ where: { conversationId: { [Op.in]: conversationIds } }, attributes: ['id'] })
+      const msgIds = msgs.map(m => m.id)
+      if (msgIds.length > 0) {
+        await MessageAttachment.destroy({ where: { messageId: { [Op.in]: msgIds } } })
+      }
+      await Message.destroy({ where: { conversationId: { [Op.in]: conversationIds } } })
+    }
+    await Conversation.destroy({ where: { missionId: { [Op.in]: missionIds } } })
+
+    // Delete payments for those missions
+    await Payment.destroy({ where: { missionId: { [Op.in]: missionIds } } })
+  }
+  await Mission.destroy({ where: { [Op.or]: [{ agentId: user.id }, { clientId: user.id }] } })
+  await AgentProfile.destroy({ where: { userId: user.id } })
+  await ClientProfile.destroy({ where: { userId: user.id } })
+  await RefreshToken.destroy({ where: { userId: user.id } })
+  await EmailVerificationToken.destroy({ where: { userId: user.id } })
+  await PasswordResetToken.destroy({ where: { userId: user.id } })
+  await Notification.destroy({ where: { userId: user.id } })
+  await PlatformCredit.destroy({ where: { agentId: user.id } })
+  await Invoice.destroy({ where: { agentId: user.id } })
+  await user.destroy()
+}
+
 export async function createDemoUsers(): Promise<{ agentId: number; clientId: number }> {
   // Clean up any previous demo data
-  const existingAgent = await User.findOne({ where: { email: 'agent-demo@dossiat.com' } })
-  if (existingAgent) {
-    const missionIds = (await Mission.findAll({ where: { agentId: existingAgent.id }, attributes: ['id'] })).map((m) => m.id)
-    if (missionIds.length > 0) {
-      await Message.destroy({ where: { conversationId: { [Op.in]: (await Conversation.findAll({ where: { missionId: { [Op.in]: missionIds } }, attributes: ['id'] })).map((c) => c.id) } } })
-      await Conversation.destroy({ where: { missionId: { [Op.in]: missionIds } } })
-    }
-    await Mission.destroy({ where: { agentId: existingAgent.id } })
-    await AgentProfile.destroy({ where: { userId: existingAgent.id } })
-    await existingAgent.destroy()
-  }
-  const existingClient = await User.findOne({ where: { email: 'client-demo@dossiat.com' } })
-  if (existingClient) {
-    await ClientProfile.destroy({ where: { userId: existingClient.id } })
-    await existingClient.destroy()
+  for (const email of DEMO_EMAILS) {
+    await cleanupDemoUser(email)
   }
 
   // Create agent user

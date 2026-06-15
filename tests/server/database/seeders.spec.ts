@@ -6,15 +6,34 @@ import {
   ClientProfile,
   Mission,
   Conversation,
+  Message,
 } from '@/server/database/models'
-import { Message } from '@/server/database/models'
 import sequelize from '@/server/database/config/database'
 import { createDemoUsers } from '@/server/database/seeders/helpers/demo-users'
 import { SUPPORTED_CURRENCIES } from '@/server/database/seeders/helpers/currencies'
 
+const DEMO_EMAILS = ['agent-demo@dossiat.com', 'client-demo@dossiat.com']
+
 describe('Demo Users Seeder (2j)', () => {
   beforeAll(async () => {
     await sequelize.authenticate()
+    // Aggressively clean up any leftover demo data before seeding
+    await sequelize.query(`PRAGMA foreign_keys = OFF`)
+    await sequelize.query(`DELETE FROM messages WHERE conversation_id IN (SELECT c.id FROM conversations c JOIN missions m ON c.mission_id = m.id WHERE m.agent_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM message_attachments WHERE message_id IN (SELECT id FROM messages WHERE sender_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM conversations WHERE mission_id IN (SELECT id FROM missions WHERE agent_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})) OR client_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})))`, { replacements: [...DEMO_EMAILS, ...DEMO_EMAILS] })
+    await sequelize.query(`DELETE FROM payments WHERE payer_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})) OR payee_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: [...DEMO_EMAILS, ...DEMO_EMAILS] })
+    await sequelize.query(`DELETE FROM missions WHERE agent_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})) OR client_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: [...DEMO_EMAILS, ...DEMO_EMAILS] })
+    await sequelize.query(`DELETE FROM agent_profiles WHERE user_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM client_profiles WHERE user_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM refresh_tokens WHERE user_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM email_verification_tokens WHERE user_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM password_reset_tokens WHERE user_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM notifications WHERE user_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM platform_credits WHERE agent_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM invoices WHERE agent_id IN (SELECT id FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')}))`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`DELETE FROM users WHERE email IN (${DEMO_EMAILS.map(() => '?').join(',')})`, { replacements: DEMO_EMAILS })
+    await sequelize.query(`PRAGMA foreign_keys = ON`)
     await createDemoUsers()
   })
 
