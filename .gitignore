@@ -37,6 +37,13 @@ coverage/
 # demos
 demos/
 
+# TypeScript build info
+*.tsbuildinfo
+
+# Vite build declarations
+*.d.mts
+*.d.mts.map
+
 # Database
 dev.sqlite
 sequelize-meta.json

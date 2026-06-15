@@ -1,0 +1,8 @@
+export { default as BButton } from './BButton.vue'
+export { default as BCard } from './BCard.vue'
+export { default as BBadge } from './BBadge.vue'
+export { default as BAlert } from './BAlert.vue'
+export { default as BInput } from './BInput.vue'
+export { default as BAvatar } from './BAvatar.vue'
+export { default as BModal } from './BModal.vue'
+export { default as BDropdown } from './BDropdown.vue'
