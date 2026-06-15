@@ -537,18 +537,47 @@ Payment.init(
     missionId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'missions', key: 'id' }, onDelete: 'CASCADE' },
     payerId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
     payeeId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
-    amount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+    amount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      validate: { min: { args: [0.01], msg: 'Amount must be greater than 0' } },
+    },
     currency: { type: DataTypes.STRING(3), allowNull: false, defaultValue: 'USD' },
     method: { type: DataTypes.ENUM('cash', 'stripe', 'paypal', 'bank_transfer'), allowNull: false },
-    platformFee: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
-    gatewayFee: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
-    netAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
+    platformFee: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+      validate: { min: { args: [0], msg: 'Platform fee cannot be negative' } },
+    },
+    gatewayFee: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0,
+      validate: { min: { args: [0], msg: 'Gateway fee cannot be negative' } },
+    },
+    netAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      validate: { min: { args: [0.01], msg: 'Net amount must be greater than 0' } },
+    },
     status: { type: DataTypes.ENUM('pending', 'confirmed', 'failed', 'refunded'), allowNull: false, defaultValue: 'pending' },
     confirmedByPayer: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     confirmedByPayee: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     confirmedAt: { type: DataTypes.DATE, allowNull: true },
   },
-  { sequelize, tableName: 'payments', modelName: 'Payment' }
+  {
+    sequelize,
+    tableName: 'payments',
+    modelName: 'Payment',
+    validate: {
+      netAmountNotGreaterThanAmount() {
+        if (this.netAmount != null && this.amount != null && Number(this.netAmount) > Number(this.amount)) {
+          throw new Error('Net amount cannot be greater than payment amount')
+        }
+      },
+    },
+  }
 )
 
 // ============================================================
