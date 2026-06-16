@@ -566,3 +566,161 @@ footer a:hover { color: var(--ds-text); }
   transition: background 0.15s;
 }
 .ds-dropdown-item:hover { background: var(--ds-surface-2); }
+
+/* ============================================================
+   BTable
+   ============================================================ */
+.ds-table {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.ds-table--sticky thead th { position: sticky; top: 0; background: var(--ds-surface); z-index: 2; }
+
+/* Toolbar */
+.ds-table-toolbar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+  justify-content: space-between; padding: 12px 16px;
+  border-bottom: 1px solid var(--ds-border);
+}
+.ds-table-toolbar__info {
+  font-size: 0.8125rem; color: var(--ds-text-muted);
+}
+.ds-table-search {
+  display: flex; align-items: center; gap: 0;
+  border: 1px solid var(--ds-border); border-radius: 8px;
+  overflow: hidden; max-width: 260px;
+}
+.ds-table-search__icon {
+  padding: 0 10px; color: var(--ds-text-muted); font-size: 0.85rem;
+}
+.ds-table-search__input {
+  background: none; border: none; color: var(--ds-text);
+  font-size: 0.8125rem; padding: 6px 0; outline: none; width: 100%;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.ds-table-search__input::placeholder { color: var(--ds-text-muted); }
+.ds-table-search__clear {
+  background: none; border: none; border-left: 1px solid var(--ds-border);
+  color: var(--ds-text-muted); cursor: pointer; padding: 6px 10px;
+  transition: color 0.15s;
+}
+.ds-table-search__clear:hover { color: var(--ds-text); }
+
+/* Table wrapper */
+.ds-table-wrap { position: relative; }
+.ds-table-responsive { overflow-x: auto; }
+.ds-table-overlay {
+  position: absolute; inset: 0; background: rgba(19, 26, 46, 0.7);
+  display: flex; align-items: center; justify-content: center; z-index: 3;
+}
+.ds-table-spinner {
+  width: 24px; height: 24px; border: 2px solid var(--ds-border-strong);
+  border-top-color: var(--ds-accent); border-radius: 50%;
+  animation: ds-spin 0.6s linear infinite;
+}
+
+/* Table element */
+.ds-table__table {
+  width: 100%; border-collapse: collapse; font-size: 0.875rem;
+}
+.ds-table__table th {
+  background: var(--ds-surface-2);
+  border-bottom: 1px solid var(--ds-border);
+  white-space: nowrap; vertical-align: middle;
+  font-weight: 600; font-size: 0.8125rem; color: var(--ds-text-muted);
+  padding: 10px 16px; text-align: left;
+}
+.ds-table__table td {
+  border-bottom: 1px solid var(--ds-border);
+  vertical-align: middle; padding: 10px 16px; color: var(--ds-text);
+}
+.ds-table__table--striped tbody tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+.ds-table__table--hover tbody tr:hover td { background: rgba(255,255,255,0.04); }
+.ds-table__table--bordered td { border: 1px solid var(--ds-border); }
+.ds-table__table--compact th,
+.ds-table__table--compact td { padding: 6px 12px; font-size: 0.8125rem; }
+
+/* Sortable headers */
+.ds-table__th--sortable { cursor: pointer; user-select: none; }
+.ds-table__th--sortable:hover { background: rgba(255,255,255,0.05); }
+.ds-table__th-content { display: flex; align-items: center; }
+.ds-table__sort-indicator { opacity: 0.25; margin-left: 6px; font-size: 0.75rem; }
+.ds-table__th--sort-asc .ds-table__sort-indicator,
+.ds-table__th--sort-desc .ds-table__sort-indicator { opacity: 1; color: var(--ds-accent); }
+
+.ds-table__th--expand, .ds-table__td--expand { width: 40px; padding: 0 8px; }
+.ds-table__th--select, .ds-table__td--select { width: 40px; text-align: center; }
+
+.ds-table__td--expand-content { padding: 0 !important; }
+
+.ds-table__row--selected td { background: rgba(200, 255, 0, 0.05) !important; }
+.ds-table__row--expanded > td { background: var(--ds-bg-2); }
+
+.ds-table-expand-btn {
+  background: none; border: none; color: var(--ds-text-muted); cursor: pointer;
+  padding: 2px 4px; font-size: 0.85rem; transition: color 0.15s;
+}
+.ds-table-expand-btn:hover { color: var(--ds-text); }
+
+/* Checkbox */
+.ds-table-checkbox {
+  width: 16px; height: 16px; accent-color: var(--ds-accent); cursor: pointer;
+}
+
+/* Filter inputs */
+.ds-table-filter {
+  width: 100%; min-width: 100px; padding: 4px 8px;
+  background: var(--ds-bg); border: 1px solid var(--ds-border);
+  border-radius: 6px; color: var(--ds-text); font-size: 0.75rem;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.ds-table-filter:focus { outline: none; border-color: var(--ds-accent); }
+.ds-table-filter option { background: var(--ds-surface); color: var(--ds-text); }
+
+/* Empty state */
+.ds-table__empty { padding: 2rem 1rem; text-align: center; }
+.ds-table-empty {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  color: var(--ds-text-muted);
+}
+.ds-table-empty i { font-size: 1.75rem; opacity: 0.5; }
+
+/* Footer */
+.ds-table-footer {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+  justify-content: space-between; padding: 12px 16px;
+  border-top: 1px solid var(--ds-border); font-size: 0.8125rem;
+}
+.ds-table-footer__info { color: var(--ds-text-muted); }
+.ds-table-footer__info strong { color: var(--ds-text); }
+.ds-table-footer__pagination { display: flex; align-items: center; gap: 8px; }
+
+.ds-table-pagesize {
+  padding: 4px 8px; border-radius: 6px;
+  background: var(--ds-bg); border: 1px solid var(--ds-border);
+  color: var(--ds-text); font-size: 0.75rem;
+  font-family: 'Inter', system-ui, sans-serif; cursor: pointer;
+}
+.ds-table-pagesize option { background: var(--ds-surface); color: var(--ds-text); }
+
+.ds-table-pager {
+  display: flex; list-style: none; padding: 0; margin: 0; gap: 2px;
+}
+.ds-table-pager__item { list-style: none; }
+.ds-table-pager__link {
+  display: flex; align-items: center; justify-content: center;
+  min-width: 30px; height: 30px; padding: 0 6px;
+  border-radius: 6px; border: 1px solid var(--ds-border);
+  background: none; color: var(--ds-text-muted);
+  font-size: 0.75rem; cursor: pointer; transition: all 0.15s;
+}
+.ds-table-pager__link:hover { background: var(--ds-surface-2); color: var(--ds-text); }
+.ds-table-pager__item--active .ds-table-pager__link {
+  background: var(--ds-accent); color: #0a0e1a; border-color: var(--ds-accent);
+  font-weight: 600;
+}
+.ds-table-pager__item--disabled .ds-table-pager__link {
+  opacity: 0.35; cursor: not-allowed; pointer-events: none;
+}
