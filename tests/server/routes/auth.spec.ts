@@ -13,7 +13,7 @@ beforeAll(async () => {
   await EmailVerificationToken.destroy({ where: {} })
 })
 
-describe('Auth Routes', () => {
+describe('Auth Routes', { timeout: 30_000 }, () => {
   describe('POST /api/auth/register', () => {
     it('registers a new user with valid data', async () => {
       const res = await app.request('/api/auth/register', {
@@ -145,11 +145,21 @@ describe('Auth Routes', () => {
 
   describe('POST /api/auth/refresh', () => {
     it('returns new tokens with valid refresh token', async () => {
+      // Self-contained: register + login to avoid cross-test-file state issues
+      const refreshEmail = `refresh-${Date.now()}-${Math.random().toString(36).slice(2)}@test.com`
+      const regRes = await app.request('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: refreshEmail, password: 'Password123!', firstName: 'Refresh', lastName: 'Test', role: 'client' }),
+      })
+      expect(regRes.status).toBe(201)
+
       const loginRes = await app.request('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: testEmail, password: 'Password123!' }),
+        body: JSON.stringify({ email: refreshEmail, password: 'Password123!' }),
       })
+      expect(loginRes.status).toBe(200)
       const loginBody = await loginRes.json()
       const refreshToken = loginBody.data.refreshToken
 

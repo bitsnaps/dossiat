@@ -10,8 +10,15 @@ export default defineConfig({
     },
   },
   test: {
-    environment: 'jsdom',
     globals: true,
     include: ['tests/**/*.spec.ts'],
+    environmentMatchGlobs: [
+      ['tests/server/**', 'node'],
+      ['tests/components/**', 'jsdom'],
+      ['tests/App.spec.ts', 'jsdom'],
+    ],
+    environment: 'jsdom',
+    // Server tests share a SQLite database — run them sequentially to avoid race conditions
+    fileParallelism: false,
   },
 })
