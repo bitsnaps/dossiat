@@ -43,7 +43,7 @@ Follow these guidelines when working on this project.
 
 ## Documentation References
 
-**The [`./docs`](./docs/) directory contains comprehensive documentation. Search with `grep` command to find relevant files efficiently instead of reading the entire directory.**
+**The [`./docs`](./docs/) directory contains comprehensive documentation including the UI design guide and components library. Search with `grep` command to find relevant files efficiently instead of reading the entire directory.**
 
 - **[`docs/TODO.md`](docs/TODO.md)** — Exhaustive project task list with checkboxes grouped by category. Use this as the single source of truth for project progress. Before starting a new task, check the TODO file to see what's pending, pick a task, and check it off when done.
 
