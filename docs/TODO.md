@@ -234,12 +234,12 @@
 
 ### 4c. Composables
 
-- [ ] Create `src/composables/useAuth.ts` — Auth helpers (isAuthenticated, currentUser, hasRole)
-- [ ] Create `src/composables/useToast.ts` — Toast notification composable
-- [ ] Create `src/composables/useConfirmDialog.ts` — Confirmation dialog composable
-- [ ] Create `src/composables/usePagination.ts` — Pagination state and helpers
-- [ ] Create `src/composables/useDebounce.ts` — Debounced search/filter input
-- [ ] Create `src/composables/useCopyToClipboard.ts` — Copy-to-clipboard utility (for invite links)
+- [x] Create `src/composables/useAuth.ts` — Auth helpers (isAuthenticated, currentUser, hasRole)
+- [x] Create `src/composables/useToast.ts` — Toast notification composable
+- [x] Create `src/composables/useConfirmDialog.ts` — Confirmation dialog composable
+- [x] Create `src/composables/usePagination.ts` — Pagination state and helpers
+- [x] Create `src/composables/useDebounce.ts` — Debounced search/filter input
+- [x] Create `src/composables/useCopyToClipboard.ts` — Copy-to-clipboard utility (for invite links)
 
 ### 4d. Internationalization (i18n)
 
@@ -392,7 +392,7 @@
 ### 8a. Unit Tests
 
 - [x] Write unit tests for all Pinia stores (auth, missions, messages, etc.)
-- [ ] Write unit tests for all composables
+- [x] Write unit tests for all composables
 - [x] Write unit tests for API service functions (mock axios)
 - [ ] Write unit tests for utility functions (fee calculation, currency formatting, date helpers)
 

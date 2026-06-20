@@ -15,6 +15,7 @@ export default defineConfig({
     environmentMatchGlobs: [
       ['tests/server/**', 'node'],
       ['tests/components/**', 'jsdom'],
+      ['tests/composables/**', 'jsdom'],
       ['tests/App.spec.ts', 'jsdom'],
     ],
     environment: 'jsdom',
