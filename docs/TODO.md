@@ -111,7 +111,7 @@
 - [x] Create `GET /api/users/me` — Get current user profile
 - [x] Create `PUT /api/users/me` — Update current user profile
 - [x] Create `PUT /api/users/me/password` — Change password
-- [ ] Create `POST /api/users/me/avatar` — Upload profile photo
+- [x] Create `POST /api/users/me/avatar` — Upload profile photo
 - [x] Create `GET /api/agents/:slug` — Get agent public profile by unique invite slug (progressive visibility: limited for unauthenticated, full for registered)
 - [x] Create `PUT /api/agents/me` — Update agent profile (specialties, accepted client types, bio, currency)
 - [x] Create `POST /api/agents/me/invite-link` — Generate/regenerate unique invite link
@@ -158,10 +158,10 @@
 
 ### 3h. Stripe / PayPal Integration
 
-- [ ] Create Stripe account setup endpoint — connect agent's Stripe account (OAuth flow)
-- [ ] Create `POST /api/payments/stripe/create-checkout-session` — Create Stripe checkout session for a mission
-- [ ] Create Stripe webhook handler — handle `checkout.session.completed`, `payment_intent.succeeded`, etc.
-- [ ] Create PayPal integration endpoints (parallel to Stripe)
+- [x] Create Stripe account setup endpoint — connect agent's Stripe account (OAuth flow)
+- [x] Create `POST /api/payments/stripe/create-checkout-session` — Create Stripe checkout session for a mission
+- [x] Create Stripe webhook handler — handle `checkout.session.completed`, `payment_intent.succeeded`, etc.
+- [x] Create PayPal integration endpoints (parallel to Stripe)
 - [x] Implement smart fee calculation: platform fee = 1% of agent labor fee (minimum $1), calculated on net amount after gateway fees
 - [x] Implement fee deduction from platform credits for cash/off-platform missions
 - [x] Create payment provider abstraction layer (`src/server/services/payment/`) with pluggable providers for Stripe, PayPal, and cash
@@ -175,7 +175,7 @@
 - [x] Create `GET /api/subscriptions/me` — Get current subscription details
 - [x] Create `PUT /api/subscriptions/me` — Upgrade/downgrade subscription
 - [x] Create `DELETE /api/subscriptions/me` — Cancel subscription
-- [ ] Create Stripe billing portal integration for subscription management
+- [x] Create Stripe billing portal integration for subscription management
 
 ### 3j. Dispute Routes
 
@@ -190,7 +190,7 @@
 - [x] Create `GET /api/notifications` — List user notifications with pagination
 - [x] Create `PUT /api/notifications/:id/read` — Mark notification as read
 - [x] Create `PUT /api/notifications/read-all` — Mark all notifications as read
-- [ ] Implement server-side notification creation on key events (new mission, message, payment confirmation, etc.)
+- [x] Implement server-side notification creation on key events (new mission, message, payment confirmation, etc.)
 
 ### 3l. Admin Routes (Internal / Future)
 
@@ -203,9 +203,9 @@
 
 - [x] Create `netlify/functions/scheduler.ts` — Netlify scheduled function running every 10 minutes
 - [x] Implement recurrent mission generation logic in scheduler
-- [ ] Implement stale mission cleanup / status transitions in scheduler
-- [ ] Implement invoice generation for agents on billing cycle end
-- [ ] Implement notification dispatch for upcoming recurrent missions
+- [x] Implement stale mission cleanup / status transitions in scheduler
+- [x] Implement invoice generation for agents on billing cycle end
+- [x] Implement notification dispatch for upcoming recurrent missions
 
 ---
 

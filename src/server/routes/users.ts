@@ -1,12 +1,18 @@
 import { Hono } from 'hono'
 import bcrypt from 'bcryptjs'
 import crypto from 'node:crypto'
+import fs from 'node:fs'
+import path from 'node:path'
 import { User, AgentProfile, ClientProfile } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = parseInt(process.env.MAX_AVATAR_SIZE || String(5 * 1024 * 1024)) // 5MB default
+const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads/avatars'
 
 const users = new Hono()
 
@@ -198,5 +204,73 @@ users.put('/clients/me',
     return successResponse(c, profile, 'Client profile updated')
   }
 )
+
+// POST /api/users/me/avatar — Upload profile photo
+users.post('/me/avatar', authenticate(), async (c) => {
+  const auth = c.get('auth')
+
+  // Get the profile based on role
+  let profile: any = null
+  if (auth.role === 'agent') {
+    profile = await AgentProfile.findOne({ where: { userId: auth.userId } })
+  } else if (auth.role === 'client') {
+    profile = await ClientProfile.findOne({ where: { userId: auth.userId } })
+  }
+
+  if (!profile) throw new AppError('Profile not found', 404)
+
+  let formData: FormData
+  try {
+    formData = await c.req.formData()
+  } catch {
+    throw new AppError('No file provided', 400)
+  }
+
+  const file = formData.get('avatar') as File | null
+
+  if (!file || !(file instanceof File)) {
+    throw new AppError('No file provided', 400)
+  }
+
+  // Validate MIME type
+  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    throw new AppError(`Invalid file type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}`, 400)
+  }
+
+  // Validate file size
+  if (file.size > MAX_FILE_SIZE) {
+    throw new AppError(`File too large. Maximum size: ${MAX_FILE_SIZE / (1024 * 1024)}MB`, 400)
+  }
+
+  // Ensure upload directory exists
+  if (!fs.existsSync(UPLOAD_DIR)) {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true })
+  }
+
+  // Delete old avatar if exists
+  if (profile.profilePhotoUrl) {
+    const oldPath = path.join(UPLOAD_DIR, path.basename(profile.profilePhotoUrl))
+    if (fs.existsSync(oldPath)) {
+      fs.unlinkSync(oldPath)
+    }
+  }
+
+  // Generate unique filename
+  const ext = file.type === 'image/jpeg' ? '.jpg' : file.type === 'image/png' ? '.png' : '.webp'
+  const filename = `${auth.userId}-${Date.now()}${ext}`
+  const filepath = path.join(UPLOAD_DIR, filename)
+
+  // Write file to disk
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer.from(arrayBuffer)
+  fs.writeFileSync(filepath, buffer)
+
+  const profilePhotoUrl = `/uploads/avatars/${filename}`
+
+  // Update profile
+  await profile.update({ profilePhotoUrl })
+
+  return successResponse(c, { profilePhotoUrl }, 'Avatar uploaded successfully')
+})
 
 export default users

@@ -6,6 +6,7 @@ import { validateRequest, validators } from '@/server/middleware/validateRequest
 import { AppError } from '@/server/middleware/errorHandler'
 import { calculateAllFees, isGatewayMethod } from '@/server/services/payment'
 import type { PaymentMethod } from '@/server/services/payment'
+import { createNotification } from '@/server/services/notification'
 
 const payments = new Hono()
 
@@ -57,6 +58,9 @@ payments.post('/missions/:id/payments',
       status: 'pending',
     })
 
+    // Notify the payee (agent) about the new payment
+    createNotification(mission.agentId, 'payment.recorded', 'Payment Recorded', `A payment of ${payment.amount} ${payment.currency} has been recorded for mission "${mission.title}"`, { missionId: mission.id, paymentId: payment.id })
+
     return successResponse(c, payment, 'Payment recorded', 201)
   }
 )
@@ -91,6 +95,10 @@ payments.post('/payments/:id/confirm-payee', authenticate(), async (c) => {
 
   if (!wasBothConfirmed && payment.confirmedByPayer && payment.confirmedByPayee) {
     await payment.update({ status: 'confirmed', confirmedAt: new Date() })
+
+    // Notify both parties about confirmed payment
+    createNotification(payment.payerId, 'payment.confirmed', 'Payment Confirmed', `Your payment of ${payment.amount} ${payment.currency} has been confirmed`, { paymentId: payment.id, missionId: payment.missionId })
+    createNotification(payment.payeeId, 'payment.confirmed', 'Payment Confirmed', `A payment of ${payment.amount} ${payment.currency} has been confirmed`, { paymentId: payment.id, missionId: payment.missionId })
 
     // Deduct platform fee from agent credits for off-platform payments
     const method = payment.method as PaymentMethod

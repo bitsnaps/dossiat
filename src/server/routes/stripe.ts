@@ -1,66 +1,210 @@
 import { Hono } from 'hono'
+import Stripe from 'stripe'
 import { authenticate } from '@/server/middleware/auth'
+import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { successResponse } from '@/server/utils/apiResponse'
 import { AppError } from '@/server/middleware/errorHandler'
+import { AgentProfile, User, Payment, Mission } from '@/server/database/models'
+import { createNotification } from '@/server/services/notification'
+
+function getStripeClient(): Stripe {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new AppError('Stripe is not configured on this platform', 501)
+  }
+  return new Stripe(process.env.STRIPE_SECRET_KEY)
+}
+
+function isStripeConfigured(): boolean {
+  return !!process.env.STRIPE_SECRET_KEY
+}
 
 const stripe = new Hono()
 
 // POST /api/payments/stripe/connect — Agent OAuth connect flow
 stripe.post('/connect', authenticate(), async (c) => {
-  if (!process.env.STRIPE_SECRET_KEY) {
+  if (!isStripeConfigured()) {
     throw new AppError('Stripe is not configured on this platform', 501)
   }
 
-  // TODO: Implement Stripe Connect OAuth flow
-  // 1. Generate Stripe account link for the agent
-  // 2. Redirect agent to complete onboarding
-  // 3. Store stripe account ID on agent profile
+  const stripeClient = getStripeClient()
+  const auth = c.get('auth')
+  const profile = await AgentProfile.findOne({ where: { userId: auth.userId } })
+  if (!profile) throw new AppError('Agent profile not found', 404)
 
-  return successResponse(c, {
-    message: 'Stripe Connect not yet implemented',
-    redirectUrl: null,
-  })
-})
+  let accountId = (profile as any).stripeAccountId
 
-// POST /api/payments/stripe/create-checkout-session — Create Stripe checkout session for a mission
-stripe.post('/create-checkout-session', authenticate(), async (c) => {
-  if (!process.env.STRIPE_SECRET_KEY) {
-    throw new AppError('Stripe is not configured on this platform', 501)
+  if (!accountId) {
+    const user = await User.findByPk(auth.userId)
+    const account = await stripeClient.accounts.create({
+      type: 'express',
+      email: user?.email,
+      metadata: { userId: auth.userId, agentProfileId: profile.id },
+    })
+    accountId = account.id
+    await profile.update({ stripeAccountId: accountId } as any)
   }
 
-  // TODO: Implement Stripe checkout session creation
-  // 1. Validate mission exists and user is authorized
-  // 2. Create Stripe checkout session with mission details
-  // 3. Return session URL for client redirect
+  const appUrl = process.env.APP_URL || 'http://localhost:5173'
+  const accountLink = await stripeClient.accountLinks.create({
+    account: accountId,
+    refresh_url: `${appUrl}/settings/billing`,
+    return_url: `${appUrl}/settings/billing`,
+    type: 'account_onboarding',
+  })
 
   return successResponse(c, {
-    sessionId: null,
-    url: null,
-    message: 'Stripe checkout session not yet implemented',
-  })
+    accountId,
+    url: accountLink.url,
+  }, 'Stripe Connect account link generated')
 })
+
+// POST /api/payments/stripe/create-checkout-session
+stripe.post('/create-checkout-session',
+  authenticate(),
+  validateRequest({
+    body: {
+      missionId: validators.required(),
+      amount: validators.required(),
+    },
+  }),
+  async (c) => {
+    if (!isStripeConfigured()) {
+      throw new AppError('Stripe is not configured on this platform', 501)
+    }
+
+    const stripeClient = getStripeClient()
+    const auth = c.get('auth')
+    const { missionId, amount, currency } = await c.req.json()
+
+    const mission = await Mission.findByPk(missionId)
+    if (!mission) throw new AppError('Mission not found', 404)
+    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+      throw new AppError('Access denied', 403)
+    }
+
+    const agentProfile = await AgentProfile.findOne({ where: { userId: mission.agentId } })
+    const stripeAccountId = agentProfile ? (agentProfile as any).stripeAccountId : null
+
+    const platformFee = Math.max(1, Number(amount) * 0.01)
+
+    const sessionParams = {
+      mode: 'payment' as const,
+      payment_method_types: ['card'],
+      line_items: [
+        {
+          price_data: {
+            currency: currency || mission.currency || 'USD',
+            product_data: {
+              name: mission.title,
+              description: mission.description || `Payment for mission #${mission.id}`,
+            },
+            unit_amount: Math.round(Number(amount) * 100),
+          },
+          quantity: 1,
+        },
+      ],
+      metadata: {
+        missionId: String(mission.id),
+        payerId: String(auth.userId),
+        payeeId: String(mission.agentId),
+      },
+      success_url: `${process.env.APP_URL || 'http://localhost:5173'}/missions/${mission.id}?payment=success`,
+      cancel_url: `${process.env.APP_URL || 'http://localhost:5173'}/missions/${mission.id}?payment=cancelled`,
+      application_fee_amount: Math.round(platformFee * 100),
+      ...(stripeAccountId ? { transfer_data: { destination: stripeAccountId } } : {}),
+    } as Stripe.Checkout.SessionCreateParams
+
+    const session = await stripeClient.checkout.sessions.create(sessionParams)
+
+    return successResponse(c, {
+      sessionId: session.id,
+      url: session.url,
+    }, 'Checkout session created')
+  },
+)
 
 // POST /api/payments/stripe/webhook — Handle Stripe webhook events
 stripe.post('/webhook', async (c) => {
-  if (!process.env.STRIPE_SECRET_KEY) {
+  if (!isStripeConfigured()) {
     throw new AppError('Stripe is not configured on this platform', 501)
   }
 
-  // TODO: Implement Stripe webhook handler
-  // 1. Verify webhook signature with STRIPE_WEBHOOK_SECRET
-  // 2. Parse event type (checkout.session.completed, payment_intent.succeeded, etc.)
-  // 3. Update payment status in database
-  // 4. Trigger notifications
+  const stripeClient = getStripeClient()
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  if (!webhookSecret) {
+    throw new AppError('Stripe webhook secret not configured', 501)
+  }
 
-  return successResponse(c, {
-    received: true,
-    message: 'Stripe webhook not yet implemented',
-  })
+  const body = await c.req.text()
+  const sig = c.req.header('stripe-signature')
+  if (!sig) throw new AppError('Missing stripe-signature header', 400)
+
+  let event: Stripe.Event
+  try {
+    event = stripeClient.webhooks.constructEvent(body, sig, webhookSecret)
+  } catch {
+    throw new AppError('Invalid webhook signature', 400)
+  }
+
+  switch (event.type) {
+    case 'checkout.session.completed': {
+      const session = event.data.object as Stripe.Checkout.Session
+      const { missionId, payerId, payeeId } = session.metadata || {}
+
+      if (missionId && payerId && payeeId) {
+        const amount = (session.amount_total || 0) / 100
+
+        const existing = await Payment.findOne({ where: { missionId: Number(missionId), method: 'stripe' } })
+        if (!existing) {
+          const gatewayFee = amount * 0.029 + 0.30
+          const platformFee = Math.max(1, amount * 0.01)
+
+          await Payment.create({
+            missionId: Number(missionId),
+            payerId: Number(payerId),
+            payeeId: Number(payeeId),
+            amount,
+            currency: (session.currency || 'usd').toUpperCase(),
+            method: 'stripe',
+            platformFee,
+            gatewayFee,
+            netAmount: amount - gatewayFee - platformFee,
+            status: 'confirmed',
+            confirmedAt: new Date(),
+            confirmedByPayer: true,
+            confirmedByPayee: true,
+          })
+
+          createNotification(Number(payeeId), 'payment.confirmed', 'Payment Confirmed', `A Stripe payment of ${amount} has been confirmed`, { missionId: Number(missionId) })
+        }
+      }
+      break
+    }
+
+    case 'payment_intent.payment_failed': {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent
+      const { missionId } = paymentIntent.metadata || {}
+
+      if (missionId) {
+        const payment = await Payment.findOne({
+          where: { missionId: Number(missionId), method: 'stripe', status: 'pending' },
+        })
+        if (payment) {
+          await payment.update({ status: 'failed' })
+        }
+      }
+      break
+    }
+  }
+
+  return successResponse(c, { received: true })
 })
 
-// GET /api/payments/stripe/status — Check Stripe connection status for current agent
+// GET /api/payments/stripe/status — Check Stripe connection status
 stripe.get('/status', authenticate(), async (c) => {
-  if (!process.env.STRIPE_SECRET_KEY) {
+  const auth = c.get('auth')
+
+  if (!isStripeConfigured()) {
     return successResponse(c, {
       configured: false,
       connected: false,
@@ -68,12 +212,28 @@ stripe.get('/status', authenticate(), async (c) => {
     })
   }
 
-  // TODO: Check agent's Stripe connection status from their profile
+  const profile = await AgentProfile.findOne({ where: { userId: auth.userId } })
+  const stripeAccountId = profile ? (profile as any).stripeAccountId : null
+
+  let connected = false
+  let detailsSubmitted = false
+
+  if (stripeAccountId) {
+    try {
+      const stripeClient = getStripeClient()
+      const account = await stripeClient.accounts.retrieve(stripeAccountId)
+      connected = account.charges_enabled && account.payouts_enabled
+      detailsSubmitted = account.details_submitted
+    } catch {
+      connected = false
+    }
+  }
 
   return successResponse(c, {
     configured: true,
-    connected: false,
-    message: 'Stripe status check not yet implemented',
+    connected,
+    detailsSubmitted,
+    accountId: stripeAccountId,
   })
 })
 

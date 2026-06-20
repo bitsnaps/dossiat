@@ -5,6 +5,7 @@ import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
 import { Op } from 'sequelize'
+import { createNotification } from '@/server/services/notification'
 
 const messages = new Hono()
 
@@ -59,6 +60,10 @@ messages.post('/missions/:id/messages',
       senderId: auth.userId,
       content,
     })
+
+    // Notify the other party in the mission conversation
+    const recipientId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
+    createNotification(recipientId, 'message.received', 'New Message', `You have a new message on mission "${mission.title}"`, { missionId: mission.id, messageId: message.id })
 
     return successResponse(c, message, 'Message sent', 201)
   }

@@ -1,10 +1,12 @@
 import { Hono } from 'hono'
+import Stripe from 'stripe'
 import { SubscriptionPlan, Subscription, SubscriptionInvoice, ClientProfile } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
+import { createNotification } from '@/server/services/notification'
 
 const subscriptions = new Hono()
 
@@ -50,6 +52,8 @@ subscriptions.post('/',
       currentPeriodEnd: periodEnd,
     })
 
+    createNotification(auth.userId, 'subscription.activated', 'Subscription Activated', `You are now subscribed to the ${plan.name} plan`, { subscriptionId: subscription.id, planId })
+
     return successResponse(c, subscription, 'Subscription created', 201)
   }
 )
@@ -90,6 +94,8 @@ subscriptions.put('/me',
 
     await subscription.update({ planId })
 
+    createNotification(auth.userId, 'subscription.plan_changed', 'Subscription Updated', `Your subscription has been changed to the ${plan.name} plan`, { subscriptionId: subscription.id, planId })
+
     return successResponse(c, subscription, 'Subscription updated')
   }
 )
@@ -107,7 +113,37 @@ subscriptions.delete('/me', authenticate(), roleGuard('client'), async (c) => {
 
   await subscription.update({ status: 'cancelled' })
 
+  createNotification(auth.userId, 'subscription.cancelled', 'Subscription Cancelled', 'Your subscription has been cancelled', { subscriptionId: subscription.id })
+
   return successResponse(c, { message: 'Subscription cancelled' })
+})
+
+// POST /api/subscriptions/me/portal — Create Stripe billing portal session
+subscriptions.post('/me/portal', authenticate(), roleGuard('client'), async (c) => {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    throw new AppError('Stripe is not configured on this platform', 501)
+  }
+
+  const auth = c.get('auth')
+  const clientProfile = await ClientProfile.findOne({ where: { userId: auth.userId } })
+  if (!clientProfile) throw new AppError('Client profile not found', 404)
+
+  const subscription = await Subscription.findOne({
+    where: { clientId: clientProfile.id, status: 'active' },
+  })
+  if (!subscription) throw new AppError('No active subscription', 404)
+
+  if (!subscription.stripeSubscriptionId) {
+    throw new AppError('No Stripe billing portal available for this subscription', 400)
+  }
+
+  const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY)
+  const portalSession = await stripeClient.billingPortal.sessions.create({
+    customer: subscription.stripeSubscriptionId,
+    return_url: `${process.env.APP_URL || 'http://localhost:5173'}/settings/billing`,
+  })
+
+  return successResponse(c, { url: portalSession.url }, 'Billing portal session created')
 })
 
 export default subscriptions

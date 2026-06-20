@@ -5,6 +5,7 @@ import { successResponse, paginatedResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
+import { createNotification } from '@/server/services/notification'
 
 const missions = new Hono()
 
@@ -87,6 +88,9 @@ missions.post('/',
     // Create conversation for the mission
     await Conversation.create({ missionId: mission.id })
 
+    // Notify the client about the new mission
+    createNotification(body.clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
+
     return successResponse(c, mission, 'Mission created', 201)
   }
 )
@@ -161,6 +165,10 @@ missions.delete('/:id', authenticate(), async (c) => {
 
   await mission.update({ status: 'cancelled' })
 
+  // Notify the other party
+  const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
+  createNotification(otherUserId, 'mission.cancelled', 'Mission Cancelled', `Mission "${mission.title}" has been cancelled`, { missionId: mission.id })
+
   return successResponse(c, { message: 'Mission cancelled' })
 })
 
@@ -178,6 +186,10 @@ missions.post('/:id/agree', authenticate(), async (c) => {
 
   // Both parties must agree — for now, simplified to just update status
   await mission.update({ status: 'agreed' })
+
+  // Notify both parties
+  const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
+  createNotification(otherUserId, 'mission.agreed', 'Mission Agreed', `Mission "${mission.title}" has been agreed upon`, { missionId: mission.id })
 
   return successResponse(c, mission, 'Mission agreed')
 })
@@ -218,6 +230,18 @@ missions.put('/:id/status',
     if (status === 'completed') updates.completedAt = new Date()
 
     await mission.update(updates)
+
+    // Notify the other party about status change
+    const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
+    const statusLabels: Record<string, string> = {
+      pending_agreement: 'sent for agreement',
+      agreed: 'agreed upon',
+      in_progress: 'started',
+      completed: 'completed',
+      disputed: 'disputed',
+      cancelled: 'cancelled',
+    }
+    createNotification(otherUserId, 'mission.status_changed', 'Mission Status Updated', `Mission "${mission.title}" has been ${statusLabels[status] || status}`, { missionId: mission.id, status })
 
     return successResponse(c, mission, 'Mission status updated')
   }
