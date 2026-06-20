@@ -4,13 +4,10 @@ import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
+import { calculateAllFees, isGatewayMethod } from '@/server/services/payment'
+import type { PaymentMethod } from '@/server/services/payment'
 
 const payments = new Hono()
-
-function calculatePlatformFee(amount: number): number {
-  const fee = amount * 0.01
-  return Math.max(fee, 1)
-}
 
 payments.get('/missions/:id/payments', authenticate(), async (c) => {
   const auth = c.get('auth')
@@ -45,9 +42,7 @@ payments.post('/missions/:id/payments',
       throw new AppError('Access denied', 403)
     }
 
-    const platformFee = calculatePlatformFee(Number(amount))
-    const gatewayFee = method === 'cash' ? 0 : Number(amount) * 0.029 + 0.30
-    const netAmount = Number(amount) - platformFee - gatewayFee
+    const { gatewayFee, platformFee, netAmount } = calculateAllFees(Number(amount), method as PaymentMethod)
 
     const payment = await Payment.create({
       missionId,
@@ -57,8 +52,8 @@ payments.post('/missions/:id/payments',
       currency: currency || mission.currency || 'USD',
       method,
       platformFee,
-      gatewayFee: Math.round(gatewayFee * 100) / 100,
-      netAmount: Math.round(netAmount * 100) / 100,
+      gatewayFee,
+      netAmount,
       status: 'pending',
     })
 
@@ -90,9 +85,37 @@ payments.post('/payments/:id/confirm-payee', authenticate(), async (c) => {
   if (!payment) throw new AppError('Payment not found', 404)
   if (payment.payeeId !== auth.userId) throw new AppError('Only payee can confirm', 403)
 
+  const wasBothConfirmed = payment.confirmedByPayer && payment.confirmedByPayee
+
   await payment.update({ confirmedByPayee: true })
-  if (payment.confirmedByPayer && payment.confirmedByPayee) {
+
+  if (!wasBothConfirmed && payment.confirmedByPayer && payment.confirmedByPayee) {
     await payment.update({ status: 'confirmed', confirmedAt: new Date() })
+
+    // Deduct platform fee from agent credits for off-platform payments
+    const method = payment.method as PaymentMethod
+    if (!isGatewayMethod(method)) {
+      const platformFee = Number(payment.platformFee)
+
+      let credit = await PlatformCredit.findOne({ where: { agentId: auth.userId } })
+      if (!credit) {
+        credit = await PlatformCredit.create({ agentId: auth.userId, balance: 0, currency: payment.currency })
+      }
+
+      const currentBalance = Number(credit.balance)
+      if (currentBalance >= platformFee) {
+        await credit.update({ balance: currentBalance - platformFee })
+
+        await CreditTransaction.create({
+          creditId: credit.id,
+          type: 'deduction',
+          amount: platformFee,
+          description: `Platform fee for payment #${payment.id} (mission #${payment.missionId})`,
+        })
+      }
+      // If insufficient credits, the payment is still confirmed
+      // Outstanding fee tracked for billing cycle / invoice
+    }
   }
 
   return successResponse(c, payment, 'Payment confirmed by payee')

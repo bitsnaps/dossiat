@@ -163,7 +163,10 @@
 - [ ] Create Stripe webhook handler — handle `checkout.session.completed`, `payment_intent.succeeded`, etc.
 - [ ] Create PayPal integration endpoints (parallel to Stripe)
 - [x] Implement smart fee calculation: platform fee = 1% of agent labor fee (minimum $1), calculated on net amount after gateway fees
-- [ ] Implement fee deduction from platform credits for cash/off-platform missions
+- [x] Implement fee deduction from platform credits for cash/off-platform missions
+- [x] Create payment provider abstraction layer (`src/server/services/payment/`) with pluggable providers for Stripe, PayPal, and cash
+- [x] Create stubbed Stripe routes (`/api/payments/stripe/connect`, `/create-checkout-session`, `/webhook`, `/status`)
+- [x] Create stubbed PayPal routes (`/api/payments/paypal/setup`, `/create-order`, `/webhook`, `/status`)
 
 ### 3i. Subscription Routes
 
@@ -410,21 +413,22 @@
 
 ### 8d. Backend Tests
 
-- [ ] Write API endpoint tests for auth routes
-- [ ] Write API endpoint tests for mission routes
-- [ ] Write API endpoint tests for payment routes
-- [ ] Write API endpoint tests for messaging routes
-- [ ] Write API endpoint tests for dispute routes
-- [ ] Write API endpoint tests for subscription routes
+- [x] Write API endpoint tests for auth routes
+- [x] Write API endpoint tests for mission routes
+- [x] Write API endpoint tests for payment routes (including credit deduction, bank transfer, Stripe/PayPal stubs)
+- [x] Write API endpoint tests for messaging routes
+- [x] Write API endpoint tests for dispute routes
+- [x] Write API endpoint tests for subscription routes
+- [x] Write unit tests for fee calculator and payment providers
 - [ ] Set up test database (SQLite in-memory) for backend integration tests
 
 ---
 
 ## 9. Business Logic & Rules
 
-- [ ] Implement platform fee calculation: 1% of agent labor fee, minimum $1
-- [ ] Implement fee calculation on net amount (total minus Stripe/PayPal gateway fees) when using online gateways
-- [ ] Implement platform credit deduction for cash/off-platform missions
+- [x] Implement platform fee calculation: 1% of agent labor fee, minimum $1
+- [x] Implement fee calculation on net amount (total minus Stripe/PayPal gateway fees) when using online gateways
+- [x] Implement platform credit deduction for cash/off-platform missions
 - [ ] Implement progressive profile visibility (limited profile for unauthenticated visitors, full after registration)
 - [ ] Implement mission agreement workflow (both parties must check all boxes before mission starts)
 - [ ] Implement recurrent mission auto-generation with proper date scheduling

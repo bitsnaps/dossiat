@@ -8,6 +8,8 @@ import userRoutes from '@/server/routes/users'
 import missionRoutes from '@/server/routes/missions'
 import messageRoutes from '@/server/routes/messages'
 import paymentRoutes from '@/server/routes/payments'
+import stripeRoutes from '@/server/routes/stripe'
+import paypalRoutes from '@/server/routes/paypal'
 import subscriptionRoutes from '@/server/routes/subscriptions'
 import disputeRoutes from '@/server/routes/disputes'
 import notificationRoutes from '@/server/routes/notifications'
@@ -31,6 +33,8 @@ app.route('/api/users', userRoutes)
 app.route('/api/missions', missionRoutes)
 app.route('/api', messageRoutes)
 app.route('/api', paymentRoutes)
+app.route('/api/payments/stripe', stripeRoutes)
+app.route('/api/payments/paypal', paypalRoutes)
 app.route('/api/subscriptions', subscriptionRoutes)
 app.route('/api/disputes', disputeRoutes)
 app.route('/api/notifications', notificationRoutes)

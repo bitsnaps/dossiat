@@ -46,6 +46,7 @@ Follow these guidelines when working on this project.
 **The [`./docs`](./docs/) directory contains comprehensive documentation including the UI design guide and components library. Search with `grep` command to find relevant files efficiently instead of reading the entire directory.**
 
 - **[`docs/TODO.md`](docs/TODO.md)** — Exhaustive project task list with checkboxes grouped by category. Use this as the single source of truth for project progress. Before starting a new task, check the TODO file to see what's pending, pick a task, and check it off when done.
+- **[`ARCHITECTURE.md`](ARCHITECTURE.md)** — Full system architecture: directory structure, backend routes, database schema, payment system, frontend components, deployment, and testing strategy.
 
 
 ## Coding Conventions
@@ -86,4 +87,4 @@ Before starting new work, check `.memory/` for summaries of previous tasks to un
 
 ---
 
-*For detailed documentation, see the [`docs/`](docs/) directory.*
+*For detailed architecture, see [`ARCHITECTURE.md`](ARCHITECTURE.md). For additional documentation, see the [`docs/`](docs/) directory.*
