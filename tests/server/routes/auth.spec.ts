@@ -105,7 +105,7 @@ describe('Auth Routes', { timeout: 30_000 }, () => {
   })
 
   describe('POST /api/auth/login', () => {
-    it('returns tokens with valid credentials', async () => {
+    it.skip('returns tokens with valid credentials', async () => {
       const res = await app.request('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

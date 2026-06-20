@@ -213,24 +213,24 @@
 
 ### 4a. API Client Setup
 
-- [ ] Create `src/services/api.ts` — Axios instance with base URL, interceptors for auth tokens, error handling, and token refresh
-- [ ] Create `src/services/auth.ts` — Auth API functions (login, register, logout, refresh, forgot-password, etc.)
-- [ ] Create `src/services/missions.ts` — Mission API functions (CRUD, agreement, status, attachments)
-- [ ] Create `src/services/messages.ts` — Messaging API functions
-- [ ] Create `src/services/payments.ts` — Payment API functions
-- [ ] Create `src/services/users.ts` — User/profile API functions
-- [ ] Create `src/services/subscriptions.ts` — Subscription API functions
-- [ ] Create `src/services/disputes.ts` — Dispute API functions
+- [x] Create `src/services/api.ts` — Axios instance with base URL, interceptors for auth tokens, error handling, and token refresh
+- [x] Create `src/services/auth.ts` — Auth API functions (login, register, logout, refresh, forgot-password, etc.)
+- [x] Create `src/services/missions.ts` — Mission API functions (CRUD, agreement, status, attachments)
+- [x] Create `src/services/messages.ts` — Messaging API functions
+- [x] Create `src/services/payments.ts` — Payment API functions
+- [x] Create `src/services/users.ts` — User/profile API functions
+- [x] Create `src/services/subscriptions.ts` — Subscription API functions
+- [x] Create `src/services/disputes.ts` — Dispute API functions
 
 ### 4b. Pinia Stores
 
-- [ ] Create `src/stores/auth.ts` — Authentication state (user, tokens, login/logout actions, token refresh)
-- [ ] Create `src/stores/missions.ts` — Missions list, filters, current mission details
-- [ ] Create `src/stores/messages.ts` — Conversations, unread counts, message sending
-- [ ] Create `src/stores/notifications.ts` — Notifications list, unread count, mark as read
-- [ ] Create `src/stores/payments.ts` — Payment history, credit balance
-- [ ] Create `src/stores/subscriptions.ts` — Current plan, billing info
-- [ ] Create `src/stores/ui.ts` — Sidebar state, theme preferences, loading states
+- [x] Create `src/stores/auth.ts` — Authentication state (user, tokens, login/logout actions, token refresh)
+- [x] Create `src/stores/missions.ts` — Missions list, filters, current mission details
+- [x] Create `src/stores/messages.ts` — Conversations, unread counts, message sending
+- [x] Create `src/stores/notifications.ts` — Notifications list, unread count, mark as read
+- [x] Create `src/stores/payments.ts` — Payment history, credit balance
+- [x] Create `src/stores/subscriptions.ts` — Current plan, billing info
+- [x] Create `src/stores/ui.ts` — Sidebar state, theme preferences, loading states
 
 ### 4c. Composables
 
@@ -391,9 +391,9 @@
 
 ### 8a. Unit Tests
 
-- [ ] Write unit tests for all Pinia stores (auth, missions, messages, etc.)
+- [x] Write unit tests for all Pinia stores (auth, missions, messages, etc.)
 - [ ] Write unit tests for all composables
-- [ ] Write unit tests for API service functions (mock axios)
+- [x] Write unit tests for API service functions (mock axios)
 - [ ] Write unit tests for utility functions (fee calculation, currency formatting, date helpers)
 
 ### 8b. Component Tests
