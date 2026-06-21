@@ -21,6 +21,7 @@ const agentLinks = [
   { to: '/app/dashboard', icon: 'bi-grid-1x2', label: 'layout.sidebar.dashboard' },
   { to: '/app/missions', icon: 'bi-clipboard-check', label: 'layout.sidebar.missions' },
   { to: '/app/messages', icon: 'bi-chat-dots', label: 'layout.sidebar.messages' },
+  { to: '/app/discover', icon: 'bi-people', label: 'layout.sidebar.discover', roles: ['client'] },
 ]
 
 const financeLinks = [
@@ -32,7 +33,8 @@ const financeLinks = [
 
 const systemLinks = [
   { to: '/app/disputes', icon: 'bi-flag', label: 'layout.sidebar.disputes' },
-  { to: '/app/settings', icon: 'bi-gear', label: 'layout.sidebar.settings' },
+  { to: '/app/settings', icon: 'bi-gear', label: 'layout.sidebar.settings', roles: ['agent'] },
+  { to: '/app/client/settings', icon: 'bi-gear', label: 'layout.sidebar.settings', roles: ['client'] },
   { to: '/app/admin', icon: 'bi-shield-lock', label: 'layout.sidebar.admin', roles: ['admin'] },
 ]
 

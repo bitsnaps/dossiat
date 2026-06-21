@@ -291,6 +291,7 @@
       "subscriptions": "Abonnements",
       "disputes": "Litiges",
       "settings": "Paramètres",
+      "discover": "Découvrir des Agents",
       "admin": "Admin",
       "sectionMain": "Principal",
       "sectionFinance": "Finance",
@@ -410,6 +411,44 @@
       "regenerate": "Régénérer le lien",
       "regenerateConfirm": "La régénération invalidera l'ancien lien. Êtes-vous sûr ?",
       "linkRegenerated": "Nouveau lien généré avec succès."
+    }
+  },
+  "clientProfile": {
+    "view": {
+      "notFound": "Profil client introuvable.",
+      "backToHome": "← Retour à l'accueil",
+      "client": "Client",
+      "company": "Informations de l'entreprise",
+      "editProfile": "Modifier le profil"
+    },
+    "settings": {
+      "title": "Paramètres client",
+      "subtitle": "Gérez votre profil d'entreprise et vos informations.",
+      "companySection": "Informations de l'entreprise",
+      "companyName": "Nom de l'entreprise",
+      "companyNamePlaceholder": "Entrez le nom de votre entreprise",
+      "companySize": "Taille de l'entreprise",
+      "companySizePlaceholder": "Sélectionnez la taille",
+      "industry": "Secteur d'activité",
+      "industryPlaceholder": "Sélectionnez votre secteur",
+      "save": "Enregistrer les modifications",
+      "saved": "Profil mis à jour avec succès."
+    }
+  },
+  "agentDiscovery": {
+    "title": "Découvrir des Agents",
+    "subtitle": "Parcourez les agents vérifiés pour trouver le bon professionnel pour vos besoins.",
+    "search": "Rechercher des agents",
+    "searchPlaceholder": "Rechercher par nom, spécialité ou localisation…",
+    "searchButton": "Rechercher",
+    "empty": "Aucun agent trouvé.",
+    "emptyHint": "Essayez d'ajuster vos critères de recherche ou parcourez tous les agents disponibles.",
+    "agent": {
+      "verified": "Vérifié",
+      "b2b": "Clients entreprises",
+      "b2c": "Clients particuliers",
+      "both": "Tous les types de clients",
+      "viewProfile": "Voir le profil"
     }
   }
 }

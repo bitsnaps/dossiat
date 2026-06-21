@@ -310,9 +310,9 @@
 
 ### 5c. Client Pages
 
-- [ ] Create `ClientProfileView.vue` — Client profile view
-- [ ] Create `ClientSettingsView.vue` — Edit client profile and company info
-- [ ] Create `AgentDiscoveryView.vue` — Browse agents discovered via invite links (future: public marketplace)
+- [x] Create `ClientProfileView.vue` — Client profile view
+- [x] Create `ClientSettingsView.vue` — Edit client profile and company info
+- [x] Create `AgentDiscoveryView.vue` — Browse agents discovered via invite links (future: public marketplace)
 
 ### 5d. Mission Pages
 

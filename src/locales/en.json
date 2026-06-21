@@ -291,6 +291,7 @@
       "subscriptions": "Subscriptions",
       "disputes": "Disputes",
       "settings": "Settings",
+      "discover": "Discover Agents",
       "admin": "Admin",
       "sectionMain": "Main",
       "sectionFinance": "Finance",
@@ -410,6 +411,44 @@
       "regenerate": "Regenerate Link",
       "regenerateConfirm": "Regenerating will invalidate the old link. Are you sure?",
       "linkRegenerated": "New link generated successfully."
+    }
+  },
+  "clientProfile": {
+    "view": {
+      "notFound": "Client profile not found.",
+      "backToHome": "← Back to home",
+      "client": "Client",
+      "company": "Company Information",
+      "editProfile": "Edit Profile"
+    },
+    "settings": {
+      "title": "Client Settings",
+      "subtitle": "Manage your company profile and information.",
+      "companySection": "Company Information",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Enter your company name",
+      "companySize": "Company Size",
+      "companySizePlaceholder": "Select company size",
+      "industry": "Industry",
+      "industryPlaceholder": "Select your industry",
+      "save": "Save Changes",
+      "saved": "Profile updated successfully."
+    }
+  },
+  "agentDiscovery": {
+    "title": "Discover Agents",
+    "subtitle": "Browse verified agents to find the right professional for your needs.",
+    "search": "Search agents",
+    "searchPlaceholder": "Search by name, specialty, or location…",
+    "searchButton": "Search",
+    "empty": "No agents found.",
+    "emptyHint": "Try adjusting your search criteria or browse all available agents.",
+    "agent": {
+      "verified": "Verified",
+      "b2b": "Business clients",
+      "b2c": "Individual clients",
+      "both": "All client types",
+      "viewProfile": "View profile"
     }
   }
 }

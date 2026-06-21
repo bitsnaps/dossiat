@@ -291,6 +291,7 @@
       "subscriptions": "الاشتراكات",
       "disputes": "النزاعات",
       "settings": "الإعدادات",
+      "discover": "اكتشاف الوكلا",
       "admin": "الإدارة",
       "sectionMain": "الرئيسية",
       "sectionFinance": "المالية",
@@ -410,6 +411,44 @@
       "regenerate": "إعادة توليد الرابط",
       "regenerateConfirm": "ستُبطل إعادة التوليد الرابط القديم. هل أنت متأكد؟",
       "linkRegenerated": "تم توليد رابط جديد بنجاح."
+    }
+  },
+  "clientProfile": {
+    "view": {
+      "notFound": "ملف العميل غير موجود.",
+      "backToHome": "← العودة إلى الصفحة الرئيسية",
+      "client": "عميل",
+      "company": "معلومات الشركة",
+      "editProfile": "تعديل الملف الشخصي"
+    },
+    "settings": {
+      "title": "إعدادات العميل",
+      "subtitle": "إدارة ملف الشركة ومعلوماتك.",
+      "companySection": "معلومات الشركة",
+      "companyName": "اسم الشركة",
+      "companyNamePlaceholder": "أدخل اسم شركتك",
+      "companySize": "حجم الشركة",
+      "companySizePlaceholder": "اختر حجم الشركة",
+      "industry": "القطاع",
+      "industryPlaceholder": "اختر قطاعك",
+      "save": "حفظ التغييرات",
+      "saved": "تم تحديث الملف الشخصي بنجاح."
+    }
+  },
+  "agentDiscovery": {
+    "title": "اكتشاف الوكلا",
+    "subtitle": "تصفح الوكلا الموثقين للعثور على المحترف المناسب لاحتياجاتك.",
+    "search": "بحث عن وكلا",
+    "searchPlaceholder": "بحث بالاسم أو التخصص أو الموقع…",
+    "searchButton": "بحث",
+    "empty": "لم يتم العثور على وكلا.",
+    "emptyHint": "حاول تعديل معايير البحث أو تصفح جميع الوكلا المتاحين.",
+    "agent": {
+      "verified": "موثّق",
+      "b2b": "عملاء شركات",
+      "b2c": "عملاء أفراد",
+      "both": "جميع أنواع العملاء",
+      "viewProfile": "عرض الملف الشخصي"
     }
   }
 }

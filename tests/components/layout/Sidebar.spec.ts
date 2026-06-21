@@ -1,8 +1,16 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import Sidebar from '@/components/layout/Sidebar.vue'
+
+vi.mock('@/stores/auth', () => ({
+  useAuthStore: vi.fn(() => ({
+    user: { id: 1, role: 'agent' },
+    isAuthenticated: true,
+    hasRole: vi.fn((role: string) => role === 'agent'),
+  })),
+}))
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -14,6 +22,8 @@ const router = createRouter({
     { path: '/app/payments', name: 'payments', component: { template: '<div />' } },
     { path: '/app/credits', name: 'credits', component: { template: '<div />' } },
     { path: '/app/settings', name: 'settings', component: { template: '<div />' } },
+    { path: '/app/discover', name: 'discover-agents', component: { template: '<div />' } },
+    { path: '/app/client/settings', name: 'client-settings', component: { template: '<div />' } },
   ],
 })
 

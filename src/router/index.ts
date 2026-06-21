@@ -140,7 +140,25 @@ const router = createRouter({
           path: 'settings',
           name: 'settings',
           component: () => import('@/views/agent/AgentSettingsView.vue'),
-          meta: { requiresAuth: true, title: 'Settings' },
+          meta: { requiresAuth: true, roles: ['agent'], title: 'Settings' },
+        },
+        {
+          path: 'client/profile',
+          name: 'client-profile',
+          component: () => import('@/views/client/ClientProfileView.vue'),
+          meta: { requiresAuth: true, roles: ['client'], title: 'Client Profile' },
+        },
+        {
+          path: 'client/settings',
+          name: 'client-settings',
+          component: () => import('@/views/client/ClientSettingsView.vue'),
+          meta: { requiresAuth: true, roles: ['client'], title: 'Client Settings' },
+        },
+        {
+          path: 'discover',
+          name: 'discover-agents',
+          component: () => import('@/views/client/AgentDiscoveryView.vue'),
+          meta: { requiresAuth: true, roles: ['client'], title: 'Discover Agents' },
         },
         {
           path: 'admin',
