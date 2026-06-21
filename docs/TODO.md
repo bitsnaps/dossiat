@@ -270,26 +270,26 @@
 
 ### 4e. Route Configuration
 
-- [ ] Add route definitions for all pages (auth, dashboard, missions, messages, settings, etc.)
-- [ ] Implement route meta fields for required auth and roles
-- [ ] Create navigation guards — redirect unauthenticated users to login, redirect authenticated users away from auth pages
-- [ ] Implement NProgress page transition loading bar on route changes
+- [x] Add route definitions for all pages (auth, dashboard, missions, messages, settings, etc.)
+- [x] Implement route meta fields for required auth and roles
+- [x] Create navigation guards — redirect unauthenticated users to login, redirect authenticated users away from auth pages
+- [x] Implement NProgress page transition loading bar on route changes
 
 ### 4f. Auth Pages
 
-- [ ] Create `LoginView.vue` — Email/password login form with "Forgot password" link
-- [ ] Create `RegisterView.vue` — Registration form with role selection (Agent or Client)
-- [ ] Create `ForgotPasswordView.vue` — Request password reset form
-- [ ] Create `ResetPasswordView.vue` — Set new password form (with token from email)
-- [ ] Create `VerifyEmailView.vue` — Email verification confirmation page
+- [x] Create `LoginView.vue` — Email/password login form with "Forgot password" link
+- [x] Create `RegisterView.vue` — Registration form with role selection (Agent or Client)
+- [x] Create `ForgotPasswordView.vue` — Request password reset form
+- [x] Create `ResetPasswordView.vue` — Set new password form (with token from email)
+- [x] Create `VerifyEmailView.vue` — Email verification confirmation page
 
 ### 4g. App Layout
 
-- [ ] Create `AppLayout.vue` — Authenticated layout with sidebar, top navbar, and main content area
-- [ ] Create `AuthLayout.vue` — Unauthenticated layout (centered card for login/register)
-- [ ] Create `Sidebar.vue` — Navigation sidebar with links based on user role (agent vs client)
-- [ ] Create `TopNavbar.vue` — Top bar with search, notifications bell, user avatar dropdown
-- [ ] Create `NotificationDropdown.vue` — Dropdown showing recent notifications with mark-as-read
+- [x] Create `AppLayout.vue` — Authenticated layout with sidebar, top navbar, and main content area
+- [x] Create `AuthLayout.vue` — Unauthenticated layout (centered card for login/register)
+- [x] Create `Sidebar.vue` — Navigation sidebar with links based on user role (agent vs client)
+- [x] Create `TopNavbar.vue` — Top bar with search, notifications bell, user avatar dropdown
+- [x] Create `NotificationDropdown.vue` — Dropdown showing recent notifications with mark-as-read
 
 ---
 
@@ -416,7 +416,7 @@
 
 ### 8b. Component Tests
 
-- [ ] Write component tests for auth forms (login, register, forgot password)
+- [x] Write component tests for auth forms (login, register, forgot password)
 - [ ] Write component tests for mission components (checklist, timeline, status badge)
 - [ ] Write component tests for messaging components (thread, composer, bubble)
 - [ ] Write component tests for payment components (confirmation, credit balance)

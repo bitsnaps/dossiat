@@ -17,6 +17,7 @@ export default defineConfig({
       ['tests/server/**', 'node'],
       ['tests/components/**', 'jsdom'],
       ['tests/composables/**', 'jsdom'],
+      ['tests/router/**', 'jsdom'],
       ['tests/App.spec.ts', 'jsdom'],
     ],
     environment: 'jsdom',

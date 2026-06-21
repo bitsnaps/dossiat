@@ -220,5 +220,94 @@
     "dropdown": {
       "select": "Select"
     }
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome back",
+      "subtitle": "Sign in to your Dossiat account.",
+      "email": "Email address",
+      "emailPlaceholder": "you{'@'}example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "register": "Create one"
+    },
+    "register": {
+      "title": "Create your account",
+      "subtitle": "Join Dossiat as an Agent or Client.",
+      "roleAgent": "Agent",
+      "roleClient": "Client",
+      "firstName": "First name",
+      "firstNamePlaceholder": "John",
+      "lastName": "Last name",
+      "lastNamePlaceholder": "Doe",
+      "email": "Email address",
+      "emailPlaceholder": "you{'@'}example.com",
+      "password": "Password",
+      "passwordPlaceholder": "Min. 8 characters",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot password?",
+      "subtitle": "Enter your email and we'll send you a reset link.",
+      "email": "Email address",
+      "emailPlaceholder": "you{'@'}example.com",
+      "submit": "Send reset link",
+      "success": "If an account exists with that email, you'll receive a password reset link shortly.",
+      "backToLogin": "← Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "subtitle": "Choose a strong password for your account.",
+      "password": "New password",
+      "passwordPlaceholder": "Min. 8 characters",
+      "confirmPassword": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submit": "Reset password",
+      "success": "Your password has been reset successfully.",
+      "passwordMismatch": "Passwords do not match.",
+      "backToLogin": "← Back to sign in"
+    },
+    "verifyEmail": {
+      "title": "Email verification",
+      "verifying": "Verifying your email address…",
+      "success": "Your email has been verified successfully! You can now sign in.",
+      "backToLogin": "← Back to sign in"
+    }
+  },
+  "layout": {
+    "sidebar": {
+      "brand": "Dossiat",
+      "dashboard": "Dashboard",
+      "missions": "Missions",
+      "messages": "Messages",
+      "payments": "Payments",
+      "credits": "Credits",
+      "invoices": "Invoices",
+      "subscriptions": "Subscriptions",
+      "disputes": "Disputes",
+      "settings": "Settings",
+      "admin": "Admin",
+      "sectionMain": "Main",
+      "sectionFinance": "Finance",
+      "sectionSystem": "System"
+    },
+    "topbar": {
+      "search": "Search missions, messages…",
+      "notifications": "Notifications",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Sign out"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "markAllRead": "Mark all read",
+      "empty": "No notifications yet",
+      "emptyIcon": "bi-bell"
+    }
   }
 }
