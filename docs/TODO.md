@@ -297,16 +297,16 @@
 
 ### 5a. Dashboard
 
-- [ ] Create `DashboardView.vue` — Overview page with key stats cards (active missions, pending payments, unread messages)
-- [ ] Create `AgentDashboard.vue` — Agent-specific dashboard (earnings chart, active missions, recent client activity)
-- [ ] Create `ClientDashboard.vue` — Client-specific dashboard (spending summary, active missions, pending agreements)
+- [x] Create `DashboardView.vue` — Overview page with key stats cards (active missions, pending payments, unread messages)
+- [x] Create `AgentDashboard.vue` — Agent-specific dashboard (earnings chart, active missions, recent client activity)
+- [x] Create `ClientDashboard.vue` — Client-specific dashboard (spending summary, active missions, pending agreements)
 
 ### 5b. Agent Profile & Onboarding
 
-- [ ] Create `AgentProfileSetup.vue` — Onboarding wizard for new agents (specialties, client types, bio, photo)
-- [ ] Create `AgentProfileView.vue` — Public/semi-public agent profile view (progressive visibility)
-- [ ] Create `AgentSettingsView.vue` — Edit agent profile, specialties, currency, invite link management
-- [ ] Create `InviteLinkShare.vue` — Component to display and share the agent's unique invite link (copy to clipboard, share via WhatsApp/email)
+- [x] Create `AgentProfileSetup.vue` — Onboarding wizard for new agents (specialties, client types, bio, photo)
+- [x] Create `AgentProfileView.vue` — Public/semi-public agent profile view (progressive visibility)
+- [x] Create `AgentSettingsView.vue` — Edit agent profile, specialties, currency, invite link management
+- [x] Create `InviteLinkShare.vue` — Component to display and share the agent's unique invite link (copy to clipboard, share via WhatsApp/email)
 
 ### 5c. Client Pages
 

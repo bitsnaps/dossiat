@@ -82,23 +82,23 @@ describe('Users Service', () => {
   })
 
   describe('getAgentProfile()', () => {
-    it('calls GET /api/agents/:slug', async () => {
+    it('calls GET /api/users/agents/:slug', async () => {
       mockGet.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
 
       const result = await getAgentProfile('john-doe')
 
-      expect(mockGet).toHaveBeenCalledWith('/agents/john-doe')
+      expect(mockGet).toHaveBeenCalledWith('/users/agents/john-doe')
       expect(result).toEqual({ success: true, data: { id: 1 } })
     })
   })
 
   describe('updateAgentProfile()', () => {
-    it('calls PUT /api/agents/me with data', async () => {
+    it('calls PUT /api/users/agents/me with data', async () => {
       mockPut.mockResolvedValueOnce({ success: true } as any)
 
       const result = await updateAgentProfile({ bio: 'Professional agent' })
 
-      expect(mockPut).toHaveBeenCalledWith('/agents/me', { bio: 'Professional agent' })
+      expect(mockPut).toHaveBeenCalledWith('/users/agents/me', { bio: 'Professional agent' })
       expect(result).toEqual({ success: true })
     })
   })

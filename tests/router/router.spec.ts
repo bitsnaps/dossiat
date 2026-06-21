@@ -135,6 +135,12 @@ function createTestRouter(authState: { isAuthenticated: boolean; user: any; hasR
           meta: { requiresAuth: true, title: 'Disputes' },
         },
         {
+          path: 'onboarding',
+          name: 'onboarding',
+          component: StubComponent,
+          meta: { requiresAuth: true, roles: ['agent'], title: 'Profile Setup' },
+        },
+        {
           path: 'settings',
           name: 'settings',
           component: StubComponent,
@@ -147,6 +153,12 @@ function createTestRouter(authState: { isAuthenticated: boolean; user: any; hasR
           meta: { requiresAuth: true, roles: ['admin'], title: 'Admin' },
         },
       ],
+    },
+    {
+      path: '/agents/:slug',
+      name: 'agent-profile',
+      component: StubComponent,
+      meta: { title: 'Agent Profile' },
     },
     {
       path: '/:pathMatch(.*)*',
@@ -321,6 +333,19 @@ describe('Router Configuration', () => {
       expect(route.name).toBe('admin')
     })
 
+    it('defines the onboarding route at /app/onboarding', () => {
+      const router = createTestRouter(authState)
+      const route = router.resolve('/app/onboarding')
+      expect(route.name).toBe('onboarding')
+    })
+
+    it('defines the agent-profile public route at /agents/:slug', () => {
+      const router = createTestRouter(authState)
+      const route = router.resolve('/agents/test-slug')
+      expect(route.name).toBe('agent-profile')
+      expect(route.params.slug).toBe('test-slug')
+    })
+
     it('defines a catch-all 404 route', () => {
       const router = createTestRouter(authState)
       const route = router.resolve('/nonexistent-page')
@@ -353,10 +378,23 @@ describe('Router Configuration', () => {
       expect(subscriptionsRoute.meta.roles).toEqual(['client'])
     })
 
+    it('marks agent-only routes with roles', () => {
+      const router = createTestRouter(authState)
+      const onboardingRoute = router.resolve('/app/onboarding')
+      expect(onboardingRoute.meta.roles).toEqual(['agent'])
+    })
+
     it('marks admin-only routes with roles', () => {
       const router = createTestRouter(authState)
       const adminRoute = router.resolve('/app/admin')
       expect(adminRoute.meta.roles).toEqual(['admin'])
+    })
+
+    it('allows unauthenticated user to access agent-profile route', async () => {
+      const router = createTestRouter(authState)
+      await router.push('/agents/test-slug')
+      await router.isReady()
+      expect(router.currentRoute.value.name).toBe('agent-profile')
     })
 
     it('sets title meta on routes', () => {

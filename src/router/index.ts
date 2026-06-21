@@ -131,9 +131,15 @@ const router = createRouter({
           meta: { requiresAuth: true, title: 'Disputes' },
         },
         {
+          path: 'onboarding',
+          name: 'onboarding',
+          component: () => import('@/views/agent/AgentProfileSetup.vue'),
+          meta: { requiresAuth: true, roles: ['agent'], title: 'Profile Setup' },
+        },
+        {
           path: 'settings',
           name: 'settings',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/agent/AgentSettingsView.vue'),
           meta: { requiresAuth: true, title: 'Settings' },
         },
         {
@@ -143,6 +149,14 @@ const router = createRouter({
           meta: { requiresAuth: true, roles: ['admin'], title: 'Admin' },
         },
       ],
+    },
+
+    /* ── Public agent profile ── */
+    {
+      path: '/agents/:slug',
+      name: 'agent-profile',
+      component: () => import('@/views/agent/AgentProfileView.vue'),
+      meta: { title: 'Agent Profile' },
     },
 
     /* ── 404 catch-all ── */

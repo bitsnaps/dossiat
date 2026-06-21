@@ -20,14 +20,18 @@ export function changePassword(data: {
 
 export function uploadAvatar(file: File) {
   const formData = new FormData()
-  formData.append('file', file)
+  formData.append('avatar', file)
   return post('/users/me/avatar', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
 }
 
 export function getAgentProfile(slug: string) {
-  return get(`/agents/${slug}`)
+  return get(`/users/agents/${slug}`)
+}
+
+export function generateInviteLink() {
+  return post('/users/agents/me/invite-link')
 }
 
 export function updateAgentProfile(data: {
@@ -37,7 +41,7 @@ export function updateAgentProfile(data: {
   currency?: string
   timezone?: string
 }) {
-  return put('/agents/me', data)
+  return put('/users/agents/me', data)
 }
 
 export function getClientProfile() {
