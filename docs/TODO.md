@@ -316,13 +316,13 @@
 
 ### 5d. Mission Pages
 
-- [ ] Create `MissionListView.vue` — List of missions with filters (status, date, type) and sort options
-- [ ] Create `MissionDetailView.vue` — Full mission detail with status timeline, checklist, attachments, and action buttons
-- [ ] Create `MissionCreateView.vue` — Create new mission form (title, description, pricing type, amount, checklist items, currency)
-- [ ] Create `MissionAgreementView.vue` — Checkbox agreement view where both parties review and accept the checklist
-- [ ] Create `MissionTimeline.vue` — Component showing mission status progression (Pending → Agreed → In Progress → Complete)
-- [ ] Create `MissionChecklist.vue` — Interactive checklist component for agreement and completion tracking
-- [ ] Create `MissionAttachments.vue` — File upload and display component for mission proof-of-work documents
+- [x] Create `MissionListView.vue` — List of missions with filters (status, date, type) and sort options
+- [x] Create `MissionDetailView.vue` — Full mission detail with status timeline, checklist, attachments, and action buttons
+- [x] Create `MissionCreateView.vue` — Create new mission form (title, description, pricing type, amount, checklist items, currency)
+- [x] Create `MissionAgreementView.vue` — Checkbox agreement view where both parties review and accept the checklist
+- [x] Create `MissionTimeline.vue` — Component showing mission status progression (Pending → Agreed → In Progress → Complete)
+- [x] Create `MissionChecklist.vue` — Interactive checklist component for agreement and completion tracking
+- [x] Create `MissionAttachments.vue` — File upload and display component for mission proof-of-work documents
 
 ### 5e. Recurrent Missions
 
@@ -417,7 +417,7 @@
 ### 8b. Component Tests
 
 - [x] Write component tests for auth forms (login, register, forgot password)
-- [ ] Write component tests for mission components (checklist, timeline, status badge)
+- [x] Write component tests for mission components (checklist, timeline, status badge)
 - [ ] Write component tests for messaging components (thread, composer, bubble)
 - [ ] Write component tests for payment components (confirmation, credit balance)
 - [ ] Write component tests for shared/common components

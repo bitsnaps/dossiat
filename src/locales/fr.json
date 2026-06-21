@@ -450,5 +450,157 @@
       "both": "Tous les types de clients",
       "viewProfile": "Voir le profil"
     }
+  },
+  "missions": {
+    "list": {
+      "title": "Missions",
+      "create": "Créer une mission",
+      "noResults": "Aucune mission trouvée.",
+      "noResultsHint": "Essayez d'ajuster vos filtres ou créez une nouvelle mission.",
+      "filters": {
+        "status": "Statut",
+        "allStatuses": "Tous les statuts",
+        "type": "Type",
+        "allTypes": "Tous les types",
+        "oneTime": "Ponctuelle",
+        "recurrent": "Récurrente",
+        "startDate": "Date de début",
+        "endDate": "Date de fin",
+        "clear": "Effacer les filtres"
+      },
+      "columns": {
+        "title": "Titre",
+        "status": "Statut",
+        "type": "Type",
+        "pricing": "Tarification",
+        "amount": "Montant",
+        "counterparty": "Contrepartie",
+        "created": "Créée le",
+        "actions": "Actions"
+      },
+      "view": "Voir"
+    },
+    "detail": {
+      "title": "Détail de la mission",
+      "backToList": "← Retour aux missions",
+      "description": "Description",
+      "noDescription": "Aucune description fournie.",
+      "agent": "Agent",
+      "client": "Client",
+      "pricing": "Tarification",
+      "amount": "Montant",
+      "currency": "Devise",
+      "created": "Créée le",
+      "started": "Démarrée le",
+      "completed": "Terminée le",
+      "type": "Type",
+      "oneTime": "Ponctuelle",
+      "recurrent": "Récurrente",
+      "fixed": "Forfait",
+      "hourly": "Taux horaire",
+      "taskBased": "Par tâches",
+      "checklist": "Liste de vérification",
+      "attachments": "Pièces jointes",
+      "timeline": "Chronologie",
+      "actions": {
+        "sendForAgreement": "Envoyer pour accord",
+        "startMission": "Démarrer la mission",
+        "markComplete": "Marquer terminée",
+        "agree": "Accepter",
+        "decline": "Refuser",
+        "cancel": "Annuler la mission",
+        "edit": "Modifier",
+        "initiateDispute": "Ouvrir un litige"
+      },
+      "confirmActions": {
+        "cancelTitle": "Annuler la mission",
+        "cancelMessage": "Êtes-vous sûr de vouloir annuler cette mission ? Cette action est irréversible.",
+        "startTitle": "Démarrer la mission",
+        "startMessage": "Êtes-vous prêt à commencer le travail sur cette mission ?",
+        "completeTitle": "Marquer terminée",
+        "completeMessage": "Marquer cette mission comme terminée ?"
+      }
+    },
+    "create": {
+      "title": "Créer une mission",
+      "subtitle": "Configurez une nouvelle mission pour votre client.",
+      "fields": {
+        "title": "Titre de la mission",
+        "titlePlaceholder": "ex. Payer la facture d'électricité, Enregistrer l'entreprise...",
+        "client": "Client",
+        "clientPlaceholder": "Sélectionner un client",
+        "description": "Description",
+        "descriptionPlaceholder": "Décrivez le périmètre et les objectifs de la mission...",
+        "pricingType": "Type de tarification",
+        "fixed": "Prix forfaitaire",
+        "hourly": "Taux horaire",
+        "taskBased": "Par tâches",
+        "amount": "Montant",
+        "amountPlaceholder": "0.00",
+        "currency": "Devise",
+        "missionType": "Type de mission",
+        "oneTime": "Ponctuelle",
+        "recurrent": "Récurrente"
+      },
+      "checklist": {
+        "title": "Éléments de la liste",
+        "hint": "Définissez les tâches sur lesquelles les deux parties s'accorderont.",
+        "add": "Ajouter un élément",
+        "placeholder": "Saisir un élément..."
+      },
+      "submit": "Créer la mission",
+      "cancel": "Annuler",
+      "creating": "Création...",
+      "created": "Mission créée avec succès.",
+      "validation": {
+        "titleRequired": "Le titre est requis.",
+        "clientRequired": "Veuillez sélectionner un client.",
+        "pricingTypeRequired": "Veuillez sélectionner un type de tarification."
+      }
+    },
+    "agreement": {
+      "title": "Accord de mission",
+      "subtitle": "Vérifiez et acceptez la liste de vérification avant le début du travail.",
+      "missionSummary": "Résumé de la mission",
+      "checklistTitle": "Liste de vérification du périmètre",
+      "checklistHint": "Veuillez confirmer chaque élément ci-dessous pour continuer.",
+      "checkAll": "Tout cocher",
+      "agreeConfirm": "J'accepte le périmètre et les conditions ci-dessus",
+      "confirmAgreement": "Confirmer l'accord",
+      "decline": "Refuser",
+      "confirmDecline": "Êtes-vous sûr de vouloir refuser cette mission ?",
+      "agreed": "Accord confirmé.",
+      "notAgreed": "Veuillez cocher tous les éléments pour confirmer l'accord."
+    },
+    "timeline": {
+      "created": "Créée",
+      "agreed": "Acceptée",
+      "inProgress": "En cours",
+      "completed": "Terminée"
+    },
+    "checklist": {
+      "empty": "Aucun élément de liste défini.",
+      "completed": "{count} sur {total} éléments terminés"
+    },
+    "attachments": {
+      "title": "Pièces jointes",
+      "empty": "Pas encore de pièces jointes.",
+      "upload": "Télécharger un fichier",
+      "uploadHint": "Glissez-déposez ou cliquez pour télécharger",
+      "uploading": "Téléchargement...",
+      "maxSize": "Taille max : 10 Mo",
+      "acceptedTypes": "Acceptés : PDF, DOC, DOCX, JPG, PNG",
+      "uploadedBy": "Téléchargé par {name}",
+      "download": "Télécharger"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "pending_agreement": "En attente d'accord",
+      "agreed": "Acceptée",
+      "in_progress": "En cours",
+      "completed": "Terminée",
+      "disputed": "En litige",
+      "cancelled": "Annulée"
+    }
   }
 }

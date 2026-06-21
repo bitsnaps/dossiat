@@ -79,20 +79,26 @@ const router = createRouter({
         {
           path: 'missions',
           name: 'missions',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/missions/MissionListView.vue'),
           meta: { requiresAuth: true, title: 'Missions' },
         },
         {
           path: 'missions/create',
           name: 'mission-create',
-          component: () => import('@/views/DashboardView.vue'),
-          meta: { requiresAuth: true, title: 'Create Mission' },
+          component: () => import('@/views/missions/MissionCreateView.vue'),
+          meta: { requiresAuth: true, roles: ['agent'], title: 'Create Mission' },
         },
         {
           path: 'missions/:id',
           name: 'mission-detail',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/missions/MissionDetailView.vue'),
           meta: { requiresAuth: true, title: 'Mission Detail' },
+        },
+        {
+          path: 'missions/:id/agree',
+          name: 'mission-agree',
+          component: () => import('@/views/missions/MissionAgreementView.vue'),
+          meta: { requiresAuth: true, title: 'Mission Agreement' },
         },
         {
           path: 'messages',

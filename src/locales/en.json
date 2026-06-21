@@ -450,5 +450,157 @@
       "both": "All client types",
       "viewProfile": "View profile"
     }
+  },
+  "missions": {
+    "list": {
+      "title": "Missions",
+      "create": "Create Mission",
+      "noResults": "No missions found.",
+      "noResultsHint": "Try adjusting your filters or create a new mission.",
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All Statuses",
+        "type": "Type",
+        "allTypes": "All Types",
+        "oneTime": "One-time",
+        "recurrent": "Recurrent",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "clear": "Clear Filters"
+      },
+      "columns": {
+        "title": "Title",
+        "status": "Status",
+        "type": "Type",
+        "pricing": "Pricing",
+        "amount": "Amount",
+        "counterparty": "Counterparty",
+        "created": "Created",
+        "actions": "Actions"
+      },
+      "view": "View"
+    },
+    "detail": {
+      "title": "Mission Detail",
+      "backToList": "← Back to Missions",
+      "description": "Description",
+      "noDescription": "No description provided.",
+      "agent": "Agent",
+      "client": "Client",
+      "pricing": "Pricing",
+      "amount": "Amount",
+      "currency": "Currency",
+      "created": "Created",
+      "started": "Started",
+      "completed": "Completed",
+      "type": "Type",
+      "oneTime": "One-time",
+      "recurrent": "Recurrent",
+      "fixed": "Fixed",
+      "hourly": "Hourly",
+      "taskBased": "Task-based",
+      "checklist": "Mission Checklist",
+      "attachments": "Attachments",
+      "timeline": "Timeline",
+      "actions": {
+        "sendForAgreement": "Send for Agreement",
+        "startMission": "Start Mission",
+        "markComplete": "Mark Complete",
+        "agree": "Agree",
+        "decline": "Decline",
+        "cancel": "Cancel Mission",
+        "edit": "Edit",
+        "initiateDispute": "Initiate Dispute"
+      },
+      "confirmActions": {
+        "cancelTitle": "Cancel Mission",
+        "cancelMessage": "Are you sure you want to cancel this mission? This action cannot be undone.",
+        "startTitle": "Start Mission",
+        "startMessage": "Are you ready to start working on this mission?",
+        "completeTitle": "Mark Complete",
+        "completeMessage": "Mark this mission as completed?"
+      }
+    },
+    "create": {
+      "title": "Create Mission",
+      "subtitle": "Set up a new mission for your client.",
+      "fields": {
+        "title": "Mission Title",
+        "titlePlaceholder": "e.g. Pay electricity bill, Register company...",
+        "client": "Client",
+        "clientPlaceholder": "Select a client",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe the mission scope and objectives...",
+        "pricingType": "Pricing Type",
+        "fixed": "Fixed Price",
+        "hourly": "Hourly Rate",
+        "taskBased": "Task-based",
+        "amount": "Amount",
+        "amountPlaceholder": "0.00",
+        "currency": "Currency",
+        "missionType": "Mission Type",
+        "oneTime": "One-time",
+        "recurrent": "Recurrent"
+      },
+      "checklist": {
+        "title": "Checklist Items",
+        "hint": "Define the tasks that both parties will agree on.",
+        "add": "Add item",
+        "placeholder": "Enter checklist item..."
+      },
+      "submit": "Create Mission",
+      "cancel": "Cancel",
+      "creating": "Creating...",
+      "created": "Mission created successfully.",
+      "validation": {
+        "titleRequired": "Title is required.",
+        "clientRequired": "Please select a client.",
+        "pricingTypeRequired": "Please select a pricing type."
+      }
+    },
+    "agreement": {
+      "title": "Mission Agreement",
+      "subtitle": "Review and agree to the mission checklist before work begins.",
+      "missionSummary": "Mission Summary",
+      "checklistTitle": "Scope Checklist",
+      "checklistHint": "Please confirm each item below to proceed.",
+      "checkAll": "Check all",
+      "agreeConfirm": "I agree to the scope and terms above",
+      "confirmAgreement": "Confirm Agreement",
+      "decline": "Decline",
+      "confirmDecline": "Are you sure you want to decline this mission?",
+      "agreed": "Agreement confirmed.",
+      "notAgreed": "Please check all items to confirm agreement."
+    },
+    "timeline": {
+      "created": "Created",
+      "agreed": "Agreed",
+      "inProgress": "In Progress",
+      "completed": "Completed"
+    },
+    "checklist": {
+      "empty": "No checklist items defined.",
+      "completed": "{count} of {total} items completed"
+    },
+    "attachments": {
+      "title": "Attachments",
+      "empty": "No attachments yet.",
+      "upload": "Upload File",
+      "uploadHint": "Drag and drop or click to upload",
+      "uploading": "Uploading...",
+      "maxSize": "Max file size: 10MB",
+      "acceptedTypes": "Accepted: PDF, DOC, DOCX, JPG, PNG",
+      "uploadedBy": "Uploaded by {name}",
+      "download": "Download"
+    },
+    "status": {
+      "draft": "Draft",
+      "pending_agreement": "Pending Agreement",
+      "agreed": "Agreed",
+      "in_progress": "In Progress",
+      "completed": "Completed",
+      "disputed": "Disputed",
+      "cancelled": "Cancelled"
+    }
   }
 }

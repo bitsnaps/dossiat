@@ -450,5 +450,157 @@
       "both": "جميع أنواع العملاء",
       "viewProfile": "عرض الملف الشخصي"
     }
+  },
+  "missions": {
+    "list": {
+      "title": "المهمات",
+      "create": "إنشاء مهمة",
+      "noResults": "لم يتم العثور على مهمات.",
+      "noResultsHint": "حاول تعديل معايير البحث أو أنشئ مهمة جديدة.",
+      "filters": {
+        "status": "الحالة",
+        "allStatuses": "جميع الحالات",
+        "type": "النوع",
+        "allTypes": "جميع الأنواع",
+        "oneTime": "مرة واحدة",
+        "recurrent": "دوري",
+        "startDate": "تاريخ البداية",
+        "endDate": "تاريخ النهاية",
+        "clear": "مسح التصفية"
+      },
+      "columns": {
+        "title": "العنوان",
+        "status": "الحالة",
+        "type": "النوع",
+        "pricing": "التسعير",
+        "amount": "المبلغ",
+        "counterparty": "الطرف المقابل",
+        "created": "تاريخ الإنشاء",
+        "actions": "الإجراءات"
+      },
+      "view": "عرض"
+    },
+    "detail": {
+      "title": "تفاصيل المهمة",
+      "backToList": "← العودة إلى المهمات",
+      "description": "الوصف",
+      "noDescription": "لم يتم تقديم وصف.",
+      "agent": "الوكيل",
+      "client": "العميل",
+      "pricing": "التسعير",
+      "amount": "المبلغ",
+      "currency": "العملة",
+      "created": "تاريخ الإنشاء",
+      "started": "تاريخ البداية",
+      "completed": "تاريخ الإنجاز",
+      "type": "النوع",
+      "oneTime": "مرة واحدة",
+      "recurrent": "دوري",
+      "fixed": "ثابت",
+      "hourly": "بالساعة",
+      "taskBased": "حسب المهام",
+      "checklist": "قائمة تحقق المهمة",
+      "attachments": "المرفقات",
+      "timeline": "الجدول الزمني",
+      "actions": {
+        "sendForAgreement": "إرسال للموافقة",
+        "startMission": "بدء المهمة",
+        "markComplete": "تحديد كمكتمل",
+        "agree": "موافقة",
+        "decline": "رفض",
+        "cancel": "إلغاء المهمة",
+        "edit": "تعديل",
+        "initiateDispute": "بدء نزاع"
+      },
+      "confirmActions": {
+        "cancelTitle": "إلغاء المهمة",
+        "cancelMessage": "هل أنت متأكد من أنك تريد إلغاء هذه المهمة؟ لا يمكن التراجع عن هذا الإجراء.",
+        "startTitle": "بدء المهمة",
+        "startMessage": "هل أنت مستعد للبدء في العمل على هذه المهمة؟",
+        "completeTitle": "تحديد كمكتمل",
+        "completeMessage": "هل تريد تحديد هذه المهمة كمكتملة؟"
+      }
+    },
+    "create": {
+      "title": "إنشاء مهمة",
+      "subtitle": "قم بإعداد مهمة جديدة لعميلك.",
+      "fields": {
+        "title": "عنوان المهمة",
+        "titlePlaceholder": "مثال: دفع فاتورة الكهرباء، تسجيل شركة...",
+        "client": "العميل",
+        "clientPlaceholder": "اختر عميلاً",
+        "description": "الوصف",
+        "descriptionPlaceholder": "صف نطاق المهمة والأهداف...",
+        "pricingType": "نوع التسعير",
+        "fixed": "سعر ثابت",
+        "hourly": "أجر بالساعة",
+        "taskBased": "حسب المهام",
+        "amount": "المبلغ",
+        "amountPlaceholder": "0.00",
+        "currency": "العملة",
+        "missionType": "نوع المهمة",
+        "oneTime": "مرة واحدة",
+        "recurrent": "دوري"
+      },
+      "checklist": {
+        "title": "بنود قائمة التحقق",
+        "hint": "حدد المهام التي سيوافق عليها الطرفان.",
+        "add": "إضافة بند",
+        "placeholder": "أدخل بند قائمة التحقق..."
+      },
+      "submit": "إنشاء المهمة",
+      "cancel": "إلغاء",
+      "creating": "جارٍ الإنشاء...",
+      "created": "تم إنشاء المهمة بنجاح.",
+      "validation": {
+        "titleRequired": "العنوان مطلوب.",
+        "clientRequired": "يرجى اختيار عميل.",
+        "pricingTypeRequired": "يرجى اختيار نوع التسعير."
+      }
+    },
+    "agreement": {
+      "title": "اتفاق المهمة",
+      "subtitle": "راجع واف على قائمة تحقق المهمة قبل بدء العمل.",
+      "missionSummary": "ملخص المهمة",
+      "checklistTitle": "قائمة تحقق النطاق",
+      "checklistHint": "يرجى تأكيد كل بند أدناه للمتابعة.",
+      "checkAll": "تحديد الكل",
+      "agreeConfirm": "أوافق على النطاق والشروط أعلاه",
+      "confirmAgreement": "تأكيد الموافقة",
+      "decline": "رفض",
+      "confirmDecline": "هل أنت متأكد من أنك تريد رفض هذه المهمة؟",
+      "agreed": "تم تأكيد الاتفاق.",
+      "notAgreed": "يرجى تحديد جميع البنود لتأكيد الموافقة."
+    },
+    "timeline": {
+      "created": "تم الإنشاء",
+      "agreed": "تمت الموافقة",
+      "inProgress": "قيد التنفيذ",
+      "completed": "مكتمل"
+    },
+    "checklist": {
+      "empty": "لم يتم تحديد بنود قائمة التحقق.",
+      "completed": "{count} من {total} بنود مكتملة"
+    },
+    "attachments": {
+      "title": "المرفقات",
+      "empty": "لا توجد مرفقات بعد.",
+      "upload": "رفع ملف",
+      "uploadHint": "اسحب وأفلت أو انقر للرفع",
+      "uploading": "جارٍ الرفع...",
+      "maxSize": "الحد الأقصى لحجم الملف: 10 ميغابايت",
+      "acceptedTypes": "المقبول: PDF, DOC, DOCX, JPG, PNG",
+      "uploadedBy": "رفعه {name}",
+      "download": "تحميل"
+    },
+    "status": {
+      "draft": "مسودة",
+      "pending_agreement": "في انتظار الموافقة",
+      "agreed": "تمت الموافقة",
+      "in_progress": "قيد التنفيذ",
+      "completed": "مكتمل",
+      "disputed": "متنازع",
+      "cancelled": "ملغى"
+    }
   }
 }
