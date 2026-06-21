@@ -388,8 +388,8 @@ onMounted(async () => {
               <div class="tier-target">{{ t('pricing.smallBusinessTarget') }}</div>
               <div class="pricing-divider"></div>
               <ul class="pricing-features">
-                <li><i class="bi bi-check2-circle"></i> <span v-html="t('pricing.feature1', { count: t('pricing.feature1Count2') })"></span></li>
-                <li><i class="bi bi-check2-circle"></i> <span v-html="t('pricing.feature2Recurrent', { count: t('pricing.feature2Recurrent10') })"></span></li>
+                <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature1', { count: t('pricing.feature1Count2') }) }}</li>
+                <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature2Recurrent', { count: t('pricing.feature2Recurrent10') }) }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature3Messaging') }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature4Basic') }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature5Email') }}</li>
@@ -408,7 +408,7 @@ onMounted(async () => {
               <div class="tier-target">{{ t('pricing.professionalTarget') }}</div>
               <div class="pricing-divider"></div>
               <ul class="pricing-features">
-                <li><i class="bi bi-check2-circle"></i> <span v-html="t('pricing.feature1', { count: t('pricing.feature1Count10') })"></span></li>
+                <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature1', { count: t('pricing.feature1Count10') }) }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature2Unlimited') }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature3Messaging') }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature4Custom') }}</li>
