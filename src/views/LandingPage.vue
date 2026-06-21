@@ -54,8 +54,8 @@ onMounted(async () => {
           </ul>
           <div class="d-flex gap-2 mt-3 mt-lg-0 align-items-center">
             <BLanguageSwitcher />
-            <a href="#" class="btn btn-outline-light-custom">{{ t('nav.signIn') }}</a>
-            <a href="#" class="btn btn-accent">{{ t('nav.getStarted') }}</a>
+            <RouterLink to="/login" class="btn btn-outline-light-custom">{{ t('nav.signIn') }}</RouterLink>
+            <RouterLink to="/register" class="btn btn-accent">{{ t('nav.getStarted') }}</RouterLink>
           </div>
         </div>
       </div>
