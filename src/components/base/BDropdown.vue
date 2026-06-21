@@ -1,5 +1,8 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 interface Props {
   label?: string
@@ -7,11 +10,13 @@ interface Props {
   disabled?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   label: undefined,
   placement: 'start',
   disabled: false
 })
+
+const resolvedLabel = computed(() => props.label || t('components.dropdown.select'))
 
 const emit = defineEmits<{ select: [event: MouseEvent] }>()
 const open = ref(false)
@@ -31,7 +36,7 @@ function onSelect(e: MouseEvent) {
     <div class="ds-dropdown-trigger" @click="toggle">
       <slot name="trigger">
         <button type="button" class="ds-btn ds-btn--outline ds-btn--sm" :disabled="disabled">
-          {{ label || 'Select' }}
+          {{ resolvedLabel }}
           <i class="bi bi-chevron-down"></i>
         </button>
       </slot>

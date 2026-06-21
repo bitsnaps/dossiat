@@ -201,8 +201,8 @@ h1, h2, h3, h4, h5, h6, .display-1, .display-2, .display-3, .display-4, .display
 .floating-stat i { font-size: 1.4rem; }
 .floating-stat .label { font-size: 0.7rem; color: var(--ds-text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
 .floating-stat .val { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.05rem; }
-.stat-1 { top: 10%; left: -20px; }
-.stat-2 { bottom: 15%; right: -10px; animation-delay: -3s; }
+.stat-1 { top: 10%; inset-inline-start: -20px; }
+.stat-2 { bottom: 15%; inset-inline-end: -10px; animation-delay: -3s; }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-12px); }
@@ -215,8 +215,8 @@ h1, h2, h3, h4, h5, h6, .display-1, .display-2, .display-3, .display-4, .display
 .trust-marquee::before, .trust-marquee::after {
   content: ''; position: absolute; top: 0; bottom: 0; width: 100px; z-index: 2; pointer-events: none;
 }
-.trust-marquee::before { left: 0; background: linear-gradient(90deg, var(--ds-bg-2), transparent); }
-.trust-marquee::after { right: 0; background: linear-gradient(-90deg, var(--ds-bg-2), transparent); }
+.trust-marquee::before { inset-inline-start: 0; background: linear-gradient(90deg, var(--ds-bg-2), transparent); }
+.trust-marquee::after { inset-inline-end: 0; background: linear-gradient(-90deg, var(--ds-bg-2), transparent); }
 .trust-track { display: flex; gap: 4rem; animation: marquee 30s linear infinite; white-space: nowrap; align-items: center; }
 .trust-track span { font-family: 'Fraunces', serif; font-size: 1.4rem; color: var(--ds-text-muted); opacity: 0.6; font-weight: 500; }
 @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
@@ -241,7 +241,7 @@ section { padding: 6rem 0; position: relative; }
   transition: all .35s ease;
 }
 .feature-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  content: ''; position: absolute; top: 0; inset-inline-start: 0; inset-inline-end: 0; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
   opacity: 0; transition: opacity .35s;
 }
@@ -292,7 +292,7 @@ section { padding: 6rem 0; position: relative; }
   box-shadow: 0 0 60px -20px rgba(200,255,0,0.25);
 }
 .popular-badge {
-  position: absolute; top: -12px; right: 24px;
+  position: absolute; top: -12px; inset-inline-end: 24px;
   background: var(--ds-accent); color: #0a0e1a;
   padding: 0.4rem 0.9rem; border-radius: 100px;
   font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
@@ -498,8 +498,8 @@ footer a:hover { color: var(--ds-text); }
 .ds-input::placeholder { color: var(--ds-text-muted); }
 .ds-input:focus { outline: none; border-color: var(--ds-accent); }
 .ds-input:disabled { opacity: 0.5; cursor: not-allowed; }
-.ds-input-has-icon { padding-left: 36px; }
-.ds-input-icon { position: absolute; left: 12px; color: var(--ds-text-muted); font-size: 1em; }
+.ds-input-has-icon { padding-inline-start: 36px; }
+.ds-input-icon { position: absolute; inset-inline-start: 12px; color: var(--ds-text-muted); font-size: 1em; }
 .ds-input-group.ds-input-error .ds-input { border-color: var(--ds-warm); }
 .ds-input-error-text { font-size: 0.75rem; color: var(--ds-warm); }
 .ds-input-hint { font-size: 0.75rem; color: var(--ds-text-muted); }
@@ -518,7 +518,7 @@ footer a:hover { color: var(--ds-text); }
 .ds-avatar-img { width: 100%; height: 100%; object-fit: cover; }
 .ds-avatar-initials { font-family: 'Space Grotesk', monospace; }
 .ds-avatar-online {
-  position: absolute; bottom: 1px; right: 1px;
+  position: absolute; bottom: 1px; inset-inline-end: 1px;
   width: 10px; height: 10px; border-radius: 50%;
   background: #28c840; border: 2px solid var(--ds-bg);
 }
@@ -561,7 +561,7 @@ footer a:hover { color: var(--ds-text); }
 .ds-dropdown { position: relative; display: inline-block; }
 .ds-dropdown-trigger { cursor: pointer; }
 .ds-dropdown-menu {
-  position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
+  position: absolute; top: calc(100% + 4px); inset-inline-start: 0; z-index: 100;
   min-width: 180px; background: var(--ds-surface); border: 1px solid var(--ds-border);
   border-radius: 12px; padding: 4px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); display: none;
@@ -574,7 +574,7 @@ footer a:hover { color: var(--ds-text); }
   transition: background 0.15s;
 }
 .ds-dropdown-item:hover { background: var(--ds-surface-2); }
-.ds-dropdown--end .ds-dropdown-menu { left: auto; right: 0; }
+.ds-dropdown--end .ds-dropdown-menu { inset-inline-start: auto; inset-inline-end: 0; }
 
 /* ============================================================
    BTable
@@ -611,7 +611,7 @@ footer a:hover { color: var(--ds-text); }
 }
 .ds-table-search__input::placeholder { color: var(--ds-text-muted); }
 .ds-table-search__clear {
-  background: none; border: none; border-left: 1px solid var(--ds-border);
+  background: none; border: none; border-inline-start: 1px solid var(--ds-border);
   color: var(--ds-text-muted); cursor: pointer; padding: 6px 10px;
   transition: color 0.15s;
 }
@@ -639,7 +639,7 @@ footer a:hover { color: var(--ds-text); }
   border-bottom: 1px solid var(--ds-border);
   white-space: nowrap; vertical-align: middle;
   font-weight: 600; font-size: 0.8125rem; color: var(--ds-text-muted);
-  padding: 10px 16px; text-align: left;
+  padding: 10px 16px; text-align: start;
 }
 .ds-table__table td {
   border-bottom: 1px solid var(--ds-border);
@@ -655,7 +655,7 @@ footer a:hover { color: var(--ds-text); }
 .ds-table__th--sortable { cursor: pointer; user-select: none; }
 .ds-table__th--sortable:hover { background: rgba(255,255,255,0.05); }
 .ds-table__th-content { display: flex; align-items: center; }
-.ds-table__sort-indicator { opacity: 0.25; margin-left: 6px; font-size: 0.75rem; }
+.ds-table__sort-indicator { opacity: 0.25; margin-inline-start: 6px; font-size: 0.75rem; }
 .ds-table__th--sort-asc .ds-table__sort-indicator,
 .ds-table__th--sort-desc .ds-table__sort-indicator { opacity: 1; color: var(--ds-accent); }
 
@@ -732,4 +732,37 @@ footer a:hover { color: var(--ds-text); }
 }
 .ds-table-pager__item--disabled .ds-table-pager__link {
   opacity: 0.35; cursor: not-allowed; pointer-events: none;
+}
+
+/* ============================================================
+   RTL Support — Arabic Font Stack
+   ============================================================ */
+html[dir="rtl"] body {
+  font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
+}
+html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6,
+html[dir="rtl"] .display-1, html[dir="rtl"] .display-2,
+html[dir="rtl"] .display-3, html[dir="rtl"] .display-4,
+html[dir="rtl"] .display-5 {
+  font-family: 'IBM Plex Sans Arabic', 'Fraunces', serif;
+}
+html[dir="rtl"] .font-mono {
+  font-family: 'IBM Plex Sans Arabic', 'Space Grotesk', monospace;
+}
+
+/* ============================================================
+   RTL Support — Icon Flip for Pagination
+   ============================================================ */
+html[dir="rtl"] .bi-chevron-left { transform: scaleX(-1); }
+html[dir="rtl"] .bi-chevron-right { transform: scaleX(-1); }
+html[dir="rtl"] .bi-chevron-double-left { transform: scaleX(-1); }
+html[dir="rtl"] .bi-chevron-double-right { transform: scaleX(-1); }
+
+/* ============================================================
+   RTL Support — No-Flip Utility for Mixed Content
+   ============================================================ */
+.no-flip {
+  direction: ltr;
+  unicode-bidi: isolate;
 }

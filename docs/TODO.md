@@ -243,12 +243,30 @@
 
 ### 4d. Internationalization (i18n)
 
-- [ ] Configure `vue-i18n` with supported locales (English, Arabic and French)
-- [ ] Create `src/locales/en.json` — English translations for all UI strings
-- [ ] Create `src/locales/ar.json` — Arabic translations
-- [ ] Create `src/locales/fr.json` — French translations
-- [ ] Create language switcher component
-- [ ] Replace all hardcoded strings in views with i18n translation keys
+- [x] Configure `vue-i18n` with supported locales (English, Arabic and French)
+- [x] Create `src/locales/en.json` — English translations for all UI strings
+- [x] Create `src/locales/ar.json` — Arabic translations
+- [x] Create `src/locales/fr.json` — French translations
+- [x] Create language switcher component
+- [x] Replace all hardcoded strings in views with i18n translation keys
+
+#### 4d-RTL. RTL Support Preparation
+
+- [x] Replace physical CSS properties with logical equivalents in `src/assets/main.css` — convert `padding-left`/`padding-right` to `padding-inline-start`/`padding-inline-end`, `margin-left`/`margin-right` to `margin-inline-start`/`margin-inline-end`, `left`/`right` to `inset-inline-start`/`inset-inline-end`, `border-left`/`border-right` to `border-inline-start`/`border-inline-end`
+- [x] Replace inline directional styles in `src/views/LandingPage.vue` — convert `margin-right:-10px` to `margin-inline-end:-10px` in avatar stack, and review all inline style attributes for directional values
+- [x] Fix directional CSS in base components — update `BInput.vue` icon positioning (`padding-left`, `left`), `BAvatar.vue` online indicator (`right`, `bottom`), `BDropdown.vue` menu positioning (`left`, `right`)
+- [x] Fix table header alignment — convert `text-align: left` in `.ds-table__table th` to `text-align: start`
+- [x] Fix sort indicator margin — convert `.ds-table__sort-indicator` `margin-left` to `margin-inline-start`
+- [x] Fix table search clear button border — convert `.ds-table-search__clear` `border-left` to `border-inline-start`
+- [x] Fix popular badge positioning — convert `.popular-badge` `right: 24px` to `inset-inline-end: 24px`
+- [x] Fix trust marquee gradient edges — convert `.trust-marquee::before` `left: 0` to `inset-inline-start: 0` and `::after` `right: 0` to `inset-inline-end: 0`
+- [x] Add RTL font stack to `index.html` or `main.css` — include Arabic-compatible fonts (e.g., IBM Plex Sans Arabic, Noto Sans Arabic) for `lang="ar"` mode
+- [x] Set `dir="rtl"` attribute dynamically on `<html>` element when Arabic locale is active
+- [x] Add Bootstrap 5 RTL CSS import or use RTL-compatible Bootstrap build for Arabic locale
+- [x] Add `unicode-bidi: isolate` and `direction` rules for mixed LTR/RTL content where needed (e.g., numbers, codes, URLs)
+- [x] Add a composable `src/composables/useDirection.ts` — reactive composable that returns current text direction (`ltr` or `rtl`) based on active locale
+- [x] Audit and test all Bootstrap grid/layout classes — verify `me-*`/`ms-*` are replaced with `ms-*`/`me-*` RTL-aware equivalents or use logical properties
+- [x] Ensure chevron/arrow icons in `BTable.vue` pagination flip direction correctly in RTL mode
 
 ### 4e. Route Configuration
 

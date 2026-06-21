@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { ref, computed, watch, reactive } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 /* ------------------------------------------------------------------
  * BTable — reusable data table component
@@ -74,15 +77,18 @@ const props = withDefaults(defineProps<Props>(), {
   sortKey: '',
   sortDirection: '',
   searchQuery: '',
-  searchPlaceholder: 'Search...',
+  searchPlaceholder: '',
   searchableKeys: null,
   striped: false,
   hover: true,
   bordered: false,
   compact: false,
   sticky: false,
-  emptyText: 'No data available.',
+  emptyText: '',
 })
+
+const resolvedSearchPlaceholder = computed(() => props.searchPlaceholder || t('components.table.search'))
+const resolvedEmptyText = computed(() => props.emptyText || t('components.table.noData'))
 
 const emit = defineEmits<{
   'sort-change': [payload: { key: string; direction: string }]
@@ -318,7 +324,7 @@ const pageWindow = computed(() => {
       <div>
         <slot name="toolbar-left">
           <span v-if="selectable && selectedKeys.size" class="ds-table-toolbar__info">
-            {{ selectedKeys.size }} selected
+            {{ selectedKeys.size }} {{ t('components.table.selected') }}
           </span>
         </slot>
       </div>
@@ -329,7 +335,7 @@ const pageWindow = computed(() => {
             <input
               type="text"
               class="ds-table-search__input"
-              :placeholder="searchPlaceholder"
+              :placeholder="resolvedSearchPlaceholder"
               :value="localSearch"
               @input="onSearchInput"
             />
@@ -416,7 +422,7 @@ const pageWindow = computed(() => {
                     :value="columnFilters[col.key]"
                     @input="onColumnFilter(col.key, ($event.target as HTMLSelectElement).value)"
                   >
-                    <option value="">All</option>
+                    <option value="">{{ t('components.table.all') }}</option>
                     <option v-for="opt in (col.filterOptions || [])" :key="opt" :value="opt">
                       {{ opt }}
                     </option>
@@ -425,7 +431,7 @@ const pageWindow = computed(() => {
                     v-else
                     :type="col.filterType === 'number' ? 'number' : 'text'"
                     class="ds-table-filter"
-                    placeholder="Filter..."
+                    :placeholder="t('components.table.filter')"
                     :value="columnFilters[col.key]"
                     @input="onColumnFilter(col.key, ($event.target as HTMLInputElement).value)"
                   />
@@ -487,7 +493,7 @@ const pageWindow = computed(() => {
                 <slot name="empty">
                   <div class="ds-table-empty">
                     <i class="bi bi-inbox" />
-                    <span>{{ emptyText }}</span>
+                    <span>{{ resolvedEmptyText }}</span>
                   </div>
                 </slot>
               </td>
@@ -502,10 +508,10 @@ const pageWindow = computed(() => {
       <div>
         <slot name="footer-left">
           <span class="ds-table-footer__info">
-            Showing
+            {{ t('components.table.showing') }}
             <strong>{{ pagedRows.length === 0 ? 0 : (internalPage - 1) * internalPageSize + 1 }}</strong>
             – <strong>{{ Math.min(internalPage * internalPageSize, totalItems) }}</strong>
-            of <strong>{{ totalItems }}</strong>
+            {{ t('components.table.of') }} <strong>{{ totalItems }}</strong>
           </span>
         </slot>
       </div>
@@ -516,7 +522,7 @@ const pageWindow = computed(() => {
             :value="internalPageSize"
             @change="changePageSize"
           >
-            <option v-for="n in pageSizeOptions" :key="n" :value="n">{{ n }} / page</option>
+            <option v-for="n in pageSizeOptions" :key="n" :value="n">{{ n }} {{ t('components.table.perPage') }}</option>
           </select>
 
           <nav>
