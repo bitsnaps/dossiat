@@ -593,6 +593,41 @@
       "uploadedBy": "Téléchargé par {name}",
       "download": "Télécharger"
     },
+    "recurrence": {
+      "title": "Paramètres de récurrence",
+      "subtitle": "Configurer la fréquence de répétition de cette mission",
+      "frequency": "Fréquence",
+      "interval": "Répéter tous les",
+      "dayOfWeek": "Jour de la semaine",
+      "dayOfMonth": "Jour du mois",
+      "daily": "Quotidien",
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "annual": "Annuel",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "disable": "Désactiver la récurrence",
+      "enabled": "La récurrence est active",
+      "disabled": "La récurrence n'est pas configurée",
+      "unitDays": "jour(s)",
+      "unitWeeks": "semaine(s)",
+      "unitMonths": "mois",
+      "unitYears": "an(s)",
+      "next": "Suivant",
+      "previewTitle": "Prochaines exécutions",
+      "noRuns": "Aucune exécution à venir",
+      "everyInterval": "Tous les {interval}",
+      "onDayOfWeek": "le {day}",
+      "onDayOfMonth": "le {day}",
+      "listTitle": "Missions récurrentes",
+      "empty": "Aucune mission récurrente active",
+      "nextRun": "Prochaine exécution",
+      "lastRun": "Dernière exécution",
+      "edit": "Modifier",
+      "mission": "Mission",
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
     "status": {
       "draft": "Brouillon",
       "pending_agreement": "En attente d'accord",
@@ -602,5 +637,21 @@
       "disputed": "En litige",
       "cancelled": "Annulée"
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "conversations": "Conversations",
+    "noConversations": "Pas encore de conversations",
+    "noConversationsHint": "Commencez une mission pour débuter la messagerie.",
+    "noMessages": "Pas encore de messages",
+    "you": "Vous",
+    "justNow": "À l'instant",
+    "minutesAgo": "il y a {n} min",
+    "hoursAgo": "il y a {n} h",
+    "daysAgo": "il y a {n} j",
+    "read": "Lu",
+    "unread": "Non lu",
+    "composerPlaceholder": "Écrivez un message...",
+    "send": "Envoyer"
   }
 }

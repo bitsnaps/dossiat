@@ -593,6 +593,41 @@
       "uploadedBy": "Uploaded by {name}",
       "download": "Download"
     },
+    "recurrence": {
+      "title": "Recurrence Settings",
+      "subtitle": "Configure how often this mission repeats",
+      "frequency": "Frequency",
+      "interval": "Repeat every",
+      "dayOfWeek": "Day of week",
+      "dayOfMonth": "Day of month",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "save": "Save",
+      "cancel": "Cancel",
+      "disable": "Disable Recurrence",
+      "enabled": "Recurrence is active",
+      "disabled": "Recurrence is not configured",
+      "unitDays": "day(s)",
+      "unitWeeks": "week(s)",
+      "unitMonths": "month(s)",
+      "unitYears": "year(s)",
+      "next": "Next",
+      "previewTitle": "Upcoming Runs",
+      "noRuns": "No upcoming runs",
+      "everyInterval": "Every {interval}",
+      "onDayOfWeek": "on {day}",
+      "onDayOfMonth": "on day {day}",
+      "listTitle": "Recurrent Missions",
+      "empty": "No active recurrent missions",
+      "nextRun": "Next Run",
+      "lastRun": "Last Run",
+      "edit": "Edit",
+      "mission": "Mission",
+      "active": "Active",
+      "inactive": "Inactive"
+    },
     "status": {
       "draft": "Draft",
       "pending_agreement": "Pending Agreement",
@@ -602,5 +637,21 @@
       "disputed": "Disputed",
       "cancelled": "Cancelled"
     }
+  },
+  "messages": {
+    "title": "Messages",
+    "conversations": "Conversations",
+    "noConversations": "No conversations yet",
+    "noConversationsHint": "Start a mission to begin messaging.",
+    "noMessages": "No messages yet",
+    "you": "You",
+    "justNow": "Just now",
+    "minutesAgo": "{n}m ago",
+    "hoursAgo": "{n}h ago",
+    "daysAgo": "{n}d ago",
+    "read": "Read",
+    "unread": "Unread",
+    "composerPlaceholder": "Type a message...",
+    "send": "Send"
   }
 }

@@ -1,7 +1,11 @@
 import { get, post } from './api'
 
-export function getMessages(missionId: string) {
-  return get(`/missions/${missionId}/messages`)
+export function getConversations() {
+  return get('/conversations')
+}
+
+export function getMessages(missionId: string, page = 1, limit = 50) {
+  return get(`/missions/${missionId}/messages`, { params: { page, limit } })
 }
 
 export function sendMessage(missionId: string, content: string) {
@@ -10,6 +14,10 @@ export function sendMessage(missionId: string, content: string) {
 
 export function markAsRead(messageId: string) {
   return post(`/messages/${messageId}/read`)
+}
+
+export function markAllAsRead(conversationId: string) {
+  return post(`/conversations/${conversationId}/read-all`)
 }
 
 export function getUnreadCount() {

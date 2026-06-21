@@ -103,8 +103,14 @@ const router = createRouter({
         {
           path: 'messages',
           name: 'messages',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/messages/MessageListView.vue'),
           meta: { requiresAuth: true, title: 'Messages' },
+        },
+        {
+          path: 'messages/:missionId',
+          name: 'message-thread',
+          component: () => import('@/views/messages/MessageThreadView.vue'),
+          meta: { requiresAuth: true, title: 'Message Thread' },
         },
         {
           path: 'payments',

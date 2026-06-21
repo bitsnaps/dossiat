@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
-import { Mission, RecurrentMissionConfig } from '@/server/database/models'
+import { Op } from 'sequelize'
+import { Mission, RecurrentMissionConfig, User } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
@@ -45,6 +46,32 @@ function calculateNextRun(
 }
 
 const recurrence = new Hono()
+
+recurrence.get('/recurrences', authenticate(), async (c) => {
+  const auth = c.get('auth')
+
+  const missions = await Mission.findAll({
+    where: { [Op.or]: [{ agentId: auth.userId }, { clientId: auth.userId }] },
+    attributes: ['id'],
+  })
+  const missionIds = missions.map((m) => m.id)
+  if (missionIds.length === 0) return successResponse(c, [])
+
+  const configs = await RecurrentMissionConfig.findAll({
+    where: { missionId: { [Op.in]: missionIds }, isActive: true },
+    include: [{
+      model: Mission,
+      as: 'mission',
+      include: [
+        { model: User, as: 'agent', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: User, as: 'client', attributes: ['id', 'firstName', 'lastName', 'email'] },
+      ],
+    }],
+    order: [['nextRunAt', 'ASC']],
+  })
+
+  return successResponse(c, configs)
+})
 
 recurrence.post('/missions/:id/recurrence',
   authenticate(),

@@ -8,7 +8,7 @@ vi.mock('@/services/api', () => ({
 }))
 
 import { get, post } from '@/services/api'
-import { getMessages, sendMessage, markAsRead, getUnreadCount } from '@/services/messages'
+import { getMessages, sendMessage, markAsRead, getUnreadCount, getConversations, markAllAsRead } from '@/services/messages'
 
 const mockGet = vi.mocked(get)
 const mockPost = vi.mocked(post)
@@ -19,12 +19,12 @@ describe('Messages Service', () => {
   })
 
   describe('getMessages()', () => {
-    it('calls GET /api/missions/:id/messages', async () => {
+    it('calls GET /api/missions/:id/messages with default params', async () => {
       mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
 
       const result = await getMessages('1')
 
-      expect(mockGet).toHaveBeenCalledWith('/missions/1/messages')
+      expect(mockGet).toHaveBeenCalledWith('/missions/1/messages', { params: { page: 1, limit: 50 } })
       expect(result).toEqual({ success: true, data: [] })
     })
   })

@@ -3,12 +3,17 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
+import { useMessagesStore } from '@/stores/messages'
+import { useMessagePolling } from '@/composables/useMessagePolling'
 import NotificationDropdown from './NotificationDropdown.vue'
 import BAvatar from '@/components/base/BAvatar.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const notificationsStore = useNotificationsStore()
+const messagesStore = useMessagesStore()
+
+useMessagePolling()
 
 const emit = defineEmits<{ 'toggle-sidebar': [] }>()
 
@@ -36,6 +41,18 @@ function closeNotifications() {
     <button class="ds-topnavbar__toggle" @click="emit('toggle-sidebar')">
       <i class="bi bi-list" />
     </button>
+
+    <!-- Unread messages badge in topbar -->
+    <RouterLink
+      v-if="messagesStore.unreadCount > 0"
+      to="/app/messages"
+      class="ds-topnavbar__messages-badge"
+    >
+      <i class="bi bi-chat-dots" />
+      <span class="ds-topnavbar__messages-badge-count">
+        {{ messagesStore.unreadCount > 9 ? '9+' : messagesStore.unreadCount }}
+      </span>
+    </RouterLink>
 
     <div class="ds-topnavbar__search">
       <i class="bi bi-search ds-topnavbar__search-icon" />

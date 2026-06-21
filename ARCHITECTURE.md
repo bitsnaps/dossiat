@@ -224,16 +224,39 @@ Base UI components in [`src/components/base/`](src/server/../../components/base/
 
 All components use `<script lang="ts" setup>` syntax and follow Bootstrap 5 styling.
 
+### Mission Components
+
+| Component | Description |
+|-----------|-------------|
+| `MissionTimeline.vue` | Status timeline (created → agreed → in_progress → completed) |
+| `MissionChecklist.vue` | Agreement checklist with progress tracking |
+| `MissionAttachments.vue` | File upload and listing for mission proof |
+| `RecurrentMissionSetup.vue` | Form for configuring recurrence frequency, interval, day |
+| `RecurrentMissionList.vue` | List of active recurrence configs with edit/disable |
+| `RecurrencePreview.vue` | Visual timeline of next 5 upcoming run dates |
+
+### Messaging Components
+
+| Component | Description |
+|-----------|-------------|
+| `MessageBubble.vue` | Individual message display with sender, timestamp, read status |
+| `MessageComposer.vue` | Text input with send button, Enter-to-send, empty validation |
+
 ### State Management
 
 Pinia stores in [`src/stores/`](src/stores/):
 - `auth.ts` — User authentication state, tokens, login/logout
 - `missions.ts` — Mission lists, filters, current mission
-- `messages.ts` — Conversations, unread counts
+- `recurrence.ts` — Recurrence configs CRUD, loading state
+- `messages.ts` — Conversations list, messages, unread counts, mark-as-read
 - `notifications.ts` — Notifications list, mark as read
 - `payments.ts` — Payment history, credit balance
 - `subscriptions.ts` — Current plan, billing
 - `ui.ts` — Sidebar, theme, loading states
+
+### Composables
+
+- `useMessagePolling.ts` — Polls unread message count every 30s, auto-cleanup on unmount
 
 ---
 
@@ -263,6 +286,8 @@ Tests use **Vitest** with SQLite in-memory database for backend tests.
 | Test Type | Location | Coverage |
 |-----------|----------|----------|
 | Component tests | `tests/components/base/` | Base UI components |
+| Mission component tests | `tests/components/mission/` | RecurrencePreview, RecurrentMissionSetup, RecurrentMissionList |
+| Messaging component tests | `tests/components/messaging/` | MessageBubble, MessageComposer |
 | Route tests | `tests/server/routes/` | API endpoint behavior |
 | Middleware tests | `tests/server/middleware/` | Auth, validation, guards |
 | Service tests | `tests/server/services/` | Business logic (fee calculation, providers) |

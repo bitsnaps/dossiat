@@ -326,17 +326,17 @@
 
 ### 5e. Recurrent Missions
 
-- [ ] Create `RecurrentMissionSetup.vue` — UI for configuring recurrence (frequency, interval, day/time)
-- [ ] Create `RecurrentMissionList.vue` — List of active recurrent mission schedules
-- [ ] Implement visual calendar/timeline preview of upcoming recurrent mission instances
+- [x] Create `RecurrentMissionSetup.vue` — UI for configuring recurrence (frequency, interval, day/time)
+- [x] Create `RecurrentMissionList.vue` — List of active recurrent mission schedules
+- [x] Implement visual calendar/timeline preview of upcoming recurrent mission instances
 
 ### 5f. Messaging
 
-- [ ] Create `MessageListView.vue` — List of all conversations (per mission) with unread indicators
-- [ ] Create `MessageThreadView.vue` — Message thread view for a specific mission (like an email thread)
-- [ ] Create `MessageComposer.vue` — Message input with text and file attachment support
-- [ ] Create `MessageBubble.vue` — Individual message display with sender info, timestamp, read status
-- [ ] Implement real-time polling or WebSocket for new message notifications
+- [x] Create `MessageListView.vue` — List of all conversations (per mission) with unread indicators
+- [x] Create `MessageThreadView.vue` — Message thread view for a specific mission (like an email thread)
+- [x] Create `MessageComposer.vue` — Message input with text and file attachment support
+- [x] Create `MessageBubble.vue` — Individual message display with sender info, timestamp, read status
+- [x] Implement real-time polling or WebSocket for new message notifications
 
 ### 5g. Payments
 
