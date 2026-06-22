@@ -362,23 +362,23 @@
 
 ### 5j. Settings
 
-- [ ] Create `SettingsView.vue` — Account settings (email, name, password change)
-- [ ] Create `NotificationSettingsView.vue` — Email notification preferences
-- [ ] Create `AppearanceSettingsView.vue` — Theme and display preferences (future dark/light mode toggle)
+- [x] Create `SettingsView.vue` — Account settings (email, name, password change)
+- [x] Create `NotificationSettingsView.vue` — Email notification preferences
+- [x] Create `AppearanceSettingsView.vue` — Theme and display preferences (future dark/light mode toggle)
 
 ### 5k. Shared Components
 
-- [ ] Create `src/components/common/Modal.vue` — Reusable modal dialog
-- [ ] Create `src/components/common/ConfirmDialog.vue` — Confirmation dialog (yes/no)
-- [ ] Create `src/components/common/LoadingSpinner.vue` — Loading indicator
-- [ ] Create `src/components/common/EmptyState.vue` — Empty state placeholder with icon and action
-- [ ] Create `src/components/common/Pagination.vue` — Pagination controls
-- [ ] Create `src/components/common/SearchInput.vue` — Debounced search input
-- [ ] Create `src/components/common/StatusBadge.vue` — Color-coded status badge for missions/payments
-- [ ] Create `src/components/common/FileUpload.vue` — Drag-and-drop file upload with preview
-- [ ] Create `src/components/common/CurrencyDisplay.vue` — Formatted currency amount display
-- [ ] Create `src/components/common/Avatar.vue` — User avatar with fallback initials
-- [ ] Create `src/components/common/Breadcrumb.vue` — Page breadcrumb navigation
+- [x] Create `src/components/common/Modal.vue` — Reusable modal dialog
+- [x] Create `src/components/common/ConfirmDialog.vue` — Confirmation dialog (yes/no)
+- [x] Create `src/components/common/LoadingSpinner.vue` — Loading indicator
+- [x] Create `src/components/common/EmptyState.vue` — Empty state placeholder with icon and action
+- [x] Create `src/components/common/Pagination.vue` — Pagination controls
+- [x] Create `src/components/common/SearchInput.vue` — Debounced search input
+- [x] Create `src/components/common/StatusBadge.vue` — Color-coded status badge for missions/payments
+- [x] Create `src/components/common/FileUpload.vue` — Drag-and-drop file upload with preview
+- [x] Create `src/components/common/CurrencyDisplay.vue` — Formatted currency amount display
+- [x] Create `src/components/common/Avatar.vue` — User avatar with fallback initials
+- [x] Create `src/components/common/Breadcrumb.vue` — Page breadcrumb navigation
 
 ---
 
@@ -421,7 +421,7 @@
 - [x] Write component tests for mission components (checklist, timeline, status badge)
 - [ ] Write component tests for messaging components (thread, composer, bubble)
 - [ ] Write component tests for payment components (confirmation, credit balance)
-- [ ] Write component tests for shared/common components
+- [x] Write component tests for shared/common components
 
 ### 8c. Integration Tests
 

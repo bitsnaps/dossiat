@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useToast } from '@/composables/useToast'
+import FileUpload from '@/components/common/FileUpload.vue'
 
 const { t } = useI18n()
 const missionsStore = useMissionsStore()
@@ -28,8 +29,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const uploading = ref(false)
-const dragOver = ref(false)
-const fileInput = ref<HTMLInputElement | null>(null)
 
 const canUpload = ['agreed', 'in_progress'].includes(props.status)
 
@@ -56,10 +55,6 @@ function fileIcon(fileType: string): string {
 }
 
 async function handleFileUpload(file: File) {
-  if (file.size > 10 * 1024 * 1024) {
-    toast.error(t('missions.attachments.maxSize'))
-    return
-  }
   uploading.value = true
   try {
     await missionsStore.uploadAttachment(String(props.missionId), file)
@@ -71,31 +66,8 @@ async function handleFileUpload(file: File) {
   }
 }
 
-function onFileChange(e: Event) {
-  const input = e.target as HTMLInputElement
-  if (input.files?.[0]) {
-    handleFileUpload(input.files[0])
-    input.value = ''
-  }
-}
-
-function onDrop(e: DragEvent) {
-  dragOver.value = false
-  const file = e.dataTransfer?.files[0]
-  if (file) handleFileUpload(file)
-}
-
-function onDragOver(e: DragEvent) {
-  e.preventDefault()
-  dragOver.value = true
-}
-
-function onDragLeave() {
-  dragOver.value = false
-}
-
-function triggerUpload() {
-  fileInput.value?.click()
+function onUploadError(message: string) {
+  toast.error(message)
 }
 </script>
 
@@ -132,35 +104,12 @@ function triggerUpload() {
       </div>
     </div>
 
-    <div
+    <FileUpload
       v-if="canUpload"
-      class="ds-mission-attachments__upload"
-      :class="{ 'ds-mission-attachments__upload--dragover': dragOver }"
-      @drop="onDrop"
-      @dragover="onDragOver"
-      @dragleave="onDragLeave"
-      @click="triggerUpload"
-    >
-      <input
-        ref="fileInput"
-        type="file"
-        accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-        class="ds-mission-attachments__file-input"
-        @change="onFileChange"
-      />
-      <div v-if="uploading" class="ds-mission-attachments__uploading">
-        <div class="spinner-border spinner-border-sm" role="status" />
-        <span>{{ t('missions.attachments.uploading') }}</span>
-      </div>
-      <template v-else>
-        <i class="bi bi-cloud-arrow-up" />
-        <span class="ds-mission-attachments__upload-text">{{ t('missions.attachments.upload') }}</span>
-        <span class="ds-mission-attachments__upload-hint">{{ t('missions.attachments.uploadHint') }}</span>
-        <span class="ds-mission-attachments__upload-meta">
-          {{ t('missions.attachments.acceptedTypes') }} · {{ t('missions.attachments.maxSize') }}
-        </span>
-      </template>
-    </div>
+      :loading="uploading"
+      @upload:file="handleFileUpload"
+      @error="onUploadError"
+    />
   </div>
 </template>
 

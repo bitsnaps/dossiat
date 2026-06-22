@@ -6,6 +6,7 @@ import { useDisputesStore } from '@/stores/disputes'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -61,11 +62,12 @@ function goToInitiate() {
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="disputesStore.disputes.length === 0" class="ds-dispute-list__empty">
-      <i class="bi bi-flag ds-dispute-list__empty-icon" />
-      <p class="ds-dispute-list__empty-title">{{ t('disputes.noDisputes') }}</p>
-      <p class="ds-dispute-list__empty-hint">{{ t('disputes.noDisputesHint') }}</p>
-    </div>
+    <EmptyState
+      v-else-if="disputesStore.disputes.length === 0"
+      icon="bi-flag"
+      :title="t('disputes.noDisputes')"
+      :hint="t('disputes.noDisputesHint')"
+    />
 
     <!-- Dispute List -->
     <BCard v-else variant="bordered" padding="none" class="ds-dispute-list__card">

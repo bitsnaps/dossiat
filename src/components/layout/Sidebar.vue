@@ -33,8 +33,7 @@ const financeLinks = [
 
 const systemLinks = [
   { to: '/app/disputes', icon: 'bi-flag', label: 'layout.sidebar.disputes' },
-  { to: '/app/settings', icon: 'bi-gear', label: 'layout.sidebar.settings', roles: ['agent'] },
-  { to: '/app/client/settings', icon: 'bi-gear', label: 'layout.sidebar.settings', roles: ['client'] },
+  { to: '/app/settings', icon: 'bi-gear', label: 'layout.sidebar.settings' },
   { to: '/app/admin', icon: 'bi-shield-lock', label: 'layout.sidebar.admin', roles: ['admin'] },
 ]
 

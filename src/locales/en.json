@@ -944,5 +944,112 @@
         "reasonRequired": "Please describe the reason for this dispute."
       }
     }
+  },
+  "common": {
+    "status": {
+      "mission": {
+        "draft": "Draft",
+        "pending_agreement": "Pending Agreement",
+        "agreed": "Agreed",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "disputed": "Disputed",
+        "cancelled": "Cancelled"
+      },
+      "payment": {
+        "completed": "Completed",
+        "pending": "Pending",
+        "confirmed": "Confirmed",
+        "failed": "Failed",
+        "refunded": "Refunded",
+        "draft": "Draft"
+      },
+      "subscription": {
+        "active": "Active",
+        "past_due": "Past Due",
+        "cancelled": "Cancelled",
+        "trialing": "Trialing",
+        "paused": "Paused"
+      }
+    },
+    "emptyState": {
+      "defaultTitle": "Nothing here yet",
+      "defaultHint": "Items will appear here once they're available.",
+      "noResults": "No results found.",
+      "noResultsHint": "Try adjusting your search or filters."
+    },
+    "loading": "Loading…",
+    "pagination": {
+      "prev": "Previous",
+      "next": "Next",
+      "ellipsis": "…"
+    },
+    "search": {
+      "placeholder": "Search…"
+    },
+    "confirm": {
+      "confirm": "Confirm",
+      "cancel": "Cancel"
+    },
+    "fileUpload": {
+      "clickOrDrag": "Click or drag to upload",
+      "uploading": "Uploading…",
+      "maxSize": "Max size: {size}",
+      "formats": "Supported formats: {formats}"
+    },
+    "breadcrumb": {
+      "home": "Home"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "nav": {
+      "account": "Account",
+      "notifications": "Notifications",
+      "appearance": "Appearance"
+    },
+    "account": {
+      "title": "Account Settings",
+      "personalInfo": "Personal Information",
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email Address",
+      "emailReadonly": "Contact support to change your email.",
+      "changePassword": "Change Password",
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "save": "Save Changes",
+      "saved": "Settings saved successfully.",
+      "passwordMismatch": "Passwords do not match.",
+      "passwordMinLength": "Password must be at least 8 characters."
+    },
+    "notifications": {
+      "title": "Notification Settings",
+      "subtitle": "Manage your email notification preferences.",
+      "missionUpdates": "Mission Updates",
+      "missionUpdatesHint": "Get notified about mission status changes.",
+      "paymentNotifications": "Payment Notifications",
+      "paymentNotificationsHint": "Get notified about payment activity.",
+      "newMessages": "New Messages",
+      "newMessagesHint": "Get notified when you receive a new message.",
+      "disputeUpdates": "Dispute Updates",
+      "disputeUpdatesHint": "Get notified about dispute status changes.",
+      "marketingEmails": "Marketing Emails",
+      "marketingEmailsHint": "Receive product updates and newsletters.",
+      "save": "Save Preferences",
+      "saved": "Preferences saved successfully."
+    },
+    "appearance": {
+      "title": "Appearance Settings",
+      "subtitle": "Customize the look and feel of the application.",
+      "theme": "Theme",
+      "darkMode": "Dark Mode",
+      "lightMode": "Light Mode",
+      "language": "Language",
+      "languageHint": "Select your preferred language.",
+      "save": "Save Preferences",
+      "saved": "Preferences saved successfully."
+    }
   }
 }

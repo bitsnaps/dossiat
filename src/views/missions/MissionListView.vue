@@ -4,8 +4,10 @@ import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useAuthStore } from '@/stores/auth'
 import BCard from '@/components/base/BCard.vue'
-import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
+import StatusBadge from '@/components/common/StatusBadge.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 
 const { t } = useI18n()
 const missionsStore = useMissionsStore()
@@ -14,25 +16,6 @@ const authStore = useAuthStore()
 onMounted(() => {
   missionsStore.fetchMissions()
 })
-
-function statusBadgeVariant(status: string) {
-  const map: Record<string, string> = {
-    in_progress: 'info',
-    agreed: 'accent',
-    pending_agreement: 'warning',
-    completed: 'success',
-    disputed: 'danger',
-    draft: 'default',
-    cancelled: 'default',
-  }
-  return map[status] || 'default'
-}
-
-function statusLabel(status: string) {
-  const key = `missions.status.${status}`
-  const translated = t(key)
-  return translated !== key ? translated : status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
-}
 
 function formatDate(dateStr: string | undefined) {
   if (!dateStr) return '—'
@@ -112,18 +95,20 @@ function counterpartyName(mission: any) {
 
     <!-- Loading -->
     <div v-if="missionsStore.loading" class="ds-mission-list-view__loading">
-      <div class="spinner-border" role="status" />
+      <LoadingSpinner :label="t('common.loading')" />
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="missionsStore.missions.length === 0" class="ds-mission-list-view__empty">
-      <i class="bi bi-clipboard ds-mission-list-view__empty-icon" />
-      <p class="ds-mission-list-view__empty-title">{{ t('missions.list.noResults') }}</p>
-      <p class="ds-mission-list-view__empty-hint">{{ t('missions.list.noResultsHint') }}</p>
+    <EmptyState
+      v-else-if="missionsStore.missions.length === 0"
+      icon="bi-clipboard"
+      :title="t('missions.list.noResults')"
+      :hint="t('missions.list.noResultsHint')"
+    >
       <BButton v-if="authStore.hasRole('agent')" variant="accent" to="/app/missions/create">
         {{ t('missions.list.create') }}
       </BButton>
-    </div>
+    </EmptyState>
 
     <!-- Mission Table -->
     <BCard v-else variant="bordered" padding="none" class="ds-mission-list-view__table-card">
@@ -149,9 +134,7 @@ function counterpartyName(mission: any) {
             </RouterLink>
           </span>
           <span class="ds-mission-table__td">
-            <BBadge :variant="statusBadgeVariant(mission.status) as any" size="sm">
-              {{ statusLabel(mission.status) }}
-            </BBadge>
+            <StatusBadge :status="mission.status" type="mission" />
           </span>
           <span class="ds-mission-table__td font-mono">
             {{ formatPricingType(mission.pricingType) }}

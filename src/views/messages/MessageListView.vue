@@ -6,6 +6,7 @@ import { useMessagesStore } from '@/stores/messages'
 import { useAuthStore } from '@/stores/auth'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
+import EmptyState from '@/components/common/EmptyState.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -65,11 +66,12 @@ function lastMessagePreview(conv: any): string {
     </div>
 
     <!-- Empty State -->
-    <div v-else-if="messagesStore.conversations.length === 0" class="ds-message-list-view__empty">
-      <i class="bi bi-chat-dots ds-message-list-view__empty-icon" />
-      <p class="ds-message-list-view__empty-title">{{ t('messages.noConversations') }}</p>
-      <p class="ds-message-list-view__empty-hint">{{ t('messages.noConversationsHint') }}</p>
-    </div>
+    <EmptyState
+      v-else-if="messagesStore.conversations.length === 0"
+      icon="bi-chat-dots"
+      :title="t('messages.noConversations')"
+      :hint="t('messages.noConversationsHint')"
+    />
 
     <!-- Conversation List -->
     <BCard v-else variant="bordered" padding="none" class="ds-message-list-view__card">

@@ -196,9 +196,28 @@ const router = createRouter({
         },
         {
           path: 'settings',
-          name: 'settings',
-          component: () => import('@/views/agent/AgentSettingsView.vue'),
-          meta: { requiresAuth: true, roles: ['agent'], title: 'Settings' },
+          component: () => import('@/views/settings/SettingsLayout.vue'),
+          meta: { requiresAuth: true, title: 'Settings' },
+          children: [
+            {
+              path: '',
+              name: 'settings',
+              component: () => import('@/views/settings/SettingsView.vue'),
+              meta: { requiresAuth: true, title: 'Account Settings' },
+            },
+            {
+              path: 'notifications',
+              name: 'settings-notifications',
+              component: () => import('@/views/settings/NotificationSettingsView.vue'),
+              meta: { requiresAuth: true, title: 'Notification Settings' },
+            },
+            {
+              path: 'appearance',
+              name: 'settings-appearance',
+              component: () => import('@/views/settings/AppearanceSettingsView.vue'),
+              meta: { requiresAuth: true, title: 'Appearance Settings' },
+            },
+          ],
         },
         {
           path: 'client/profile',

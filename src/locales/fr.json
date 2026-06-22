@@ -944,5 +944,112 @@
         "reasonRequired": "Veuillez décrire le motif de ce litige."
       }
     }
+  },
+  "common": {
+    "status": {
+      "mission": {
+        "draft": "Brouillon",
+        "pending_agreement": "En attente d'accord",
+        "agreed": "Acceptée",
+        "in_progress": "En cours",
+        "completed": "Terminée",
+        "disputed": "En litige",
+        "cancelled": "Annulée"
+      },
+      "payment": {
+        "completed": "Terminé",
+        "pending": "En attente",
+        "confirmed": "Confirmé",
+        "failed": "Échoué",
+        "refunded": "Remboursé",
+        "draft": "Brouillon"
+      },
+      "subscription": {
+        "active": "Actif",
+        "past_due": "En retard",
+        "cancelled": "Annulé",
+        "trialing": "Essai",
+        "paused": "En pause"
+      }
+    },
+    "emptyState": {
+      "defaultTitle": "Rien ici pour le moment",
+      "defaultHint": "Les éléments apparaîtront ici une fois disponibles.",
+      "noResults": "Aucun résultat trouvé.",
+      "noResultsHint": "Essayez d'ajuster votre recherche ou vos filtres."
+    },
+    "loading": "Chargement…",
+    "pagination": {
+      "prev": "Précédent",
+      "next": "Suivant",
+      "ellipsis": "…"
+    },
+    "search": {
+      "placeholder": "Rechercher…"
+    },
+    "confirm": {
+      "confirm": "Confirmer",
+      "cancel": "Annuler"
+    },
+    "fileUpload": {
+      "clickOrDrag": "Cliquez ou glissez pour télécharger",
+      "uploading": "Téléchargement…",
+      "maxSize": "Taille max : {size}",
+      "formats": "Formats supportés : {formats}"
+    },
+    "breadcrumb": {
+      "home": "Accueil"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "nav": {
+      "account": "Compte",
+      "notifications": "Notifications",
+      "appearance": "Apparence"
+    },
+    "account": {
+      "title": "Paramètres du compte",
+      "personalInfo": "Informations personnelles",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Adresse email",
+      "emailReadonly": "Contactez le support pour modifier votre email.",
+      "changePassword": "Changer le mot de passe",
+      "currentPassword": "Mot de passe actuel",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "save": "Enregistrer les modifications",
+      "saved": "Paramètres enregistrés avec succès.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères."
+    },
+    "notifications": {
+      "title": "Paramètres de notification",
+      "subtitle": "Gérez vos préférences de notification par email.",
+      "missionUpdates": "Mises à jour des missions",
+      "missionUpdatesHint": "Soyez notifié des changements de statut des missions.",
+      "paymentNotifications": "Notifications de paiement",
+      "paymentNotificationsHint": "Soyez notifié de l'activité de paiement.",
+      "newMessages": "Nouveaux messages",
+      "newMessagesHint": "Soyez notifié lorsque vous recevez un nouveau message.",
+      "disputeUpdates": "Mises à jour des litiges",
+      "disputeUpdatesHint": "Soyez notifié des changements de statut des litiges.",
+      "marketingEmails": "Emails marketing",
+      "marketingEmailsHint": "Recevez les mises à jour produit et les newsletters.",
+      "save": "Enregistrer les préférences",
+      "saved": "Préférences enregistrées avec succès."
+    },
+    "appearance": {
+      "title": "Paramètres d'apparence",
+      "subtitle": "Personnalisez l'apparence de l'application.",
+      "theme": "Thème",
+      "darkMode": "Mode sombre",
+      "lightMode": "Mode clair",
+      "language": "Langue",
+      "languageHint": "Sélectionnez votre langue préférée.",
+      "save": "Enregistrer les préférences",
+      "saved": "Préférences enregistrées avec succès."
+    }
   }
 }

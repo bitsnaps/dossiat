@@ -56,7 +56,7 @@ describe('DisputeListView', () => {
 
   it('shows empty state when no disputes', () => {
     const wrapper = mountView()
-    expect(wrapper.find('.ds-dispute-list__empty').exists()).toBe(true)
+    expect(wrapper.find('.ds-empty-state').exists()).toBe(true)
   })
 
   it('renders initiate dispute button', () => {

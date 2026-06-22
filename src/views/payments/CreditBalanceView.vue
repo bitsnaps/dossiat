@@ -7,6 +7,7 @@ import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
 import BInput from '@/components/base/BInput.vue'
 import BAlert from '@/components/base/BAlert.vue'
+import CurrencyDisplay from '@/components/common/CurrencyDisplay.vue'
 
 const { t } = useI18n()
 const store = usePaymentsStore()
@@ -78,10 +79,11 @@ async function handlePurchase() {
     <BCard variant="bordered" padding="md" class="ds-credit-balance__balance">
       <div class="ds-credit-balance__balance-content">
         <span class="ds-credit-balance__balance-label">{{ t('payments.credits.balance') }}</span>
-        <span class="ds-credit-balance__balance-value">
-          {{ store.creditBalance?.currency || 'USD' }}
-          {{ formatAmount(store.creditBalance?.balance || 0) }}
-        </span>
+        <CurrencyDisplay
+          :amount="store.creditBalance?.balance || 0"
+          :currency="store.creditBalance?.currency || 'USD'"
+          size="lg"
+        />
       </div>
     </BCard>
 
@@ -132,8 +134,8 @@ async function handlePurchase() {
               {{ transactionTypeLabel(tx.type) }}
             </BBadge>
           </span>
-          <span class="ds-credit-transaction-list__td font-mono">
-            {{ formatAmount(tx.amount) }}
+          <span class="ds-credit-transaction-list__td">
+            <CurrencyDisplay :amount="tx.amount" :currency="store.creditBalance?.currency || 'USD'" size="sm" />
           </span>
           <span class="ds-credit-transaction-list__td">
             {{ tx.description }}
