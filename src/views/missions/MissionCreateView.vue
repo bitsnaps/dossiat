@@ -7,6 +7,8 @@ import { useToast } from '@/composables/useToast'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
 import BButton from '@/components/base/BButton.vue'
+import BRadioGroup from '@/components/base/BRadioGroup.vue'
+import BSelect from '@/components/base/BSelect.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -22,6 +24,30 @@ const currency = ref('USD')
 const missionType = ref<'one_time' | 'recurrent'>('one_time')
 const checklistItems = ref<string[]>([''])
 const submitting = ref(false)
+
+const pricingTypeOptions = computed(() => [
+  { value: 'fixed', label: t('missions.create.fields.fixed') },
+  { value: 'hourly', label: t('missions.create.fields.hourly') },
+  { value: 'task_based', label: t('missions.create.fields.taskBased') },
+])
+
+const missionTypeOptions = computed(() => [
+  { value: 'one_time', label: t('missions.create.fields.oneTime') },
+  { value: 'recurrent', label: t('missions.create.fields.recurrent') },
+])
+
+const currencyOptions = [
+  { value: 'USD', label: 'USD' },
+  { value: 'EUR', label: 'EUR' },
+  { value: 'GBP', label: 'GBP' },
+  { value: 'MAD', label: 'MAD' },
+  { value: 'AED', label: 'AED' },
+  { value: 'SAR', label: 'SAR' },
+  { value: 'CAD', label: 'CAD' },
+  { value: 'AUD', label: 'AUD' },
+  { value: 'JPY', label: 'JPY' },
+  { value: 'CHF', label: 'CHF' },
+]
 
 const errors = ref<Record<string, string>>({})
 
@@ -106,53 +132,33 @@ async function handleSubmit() {
         </div>
 
         <!-- Pricing Type -->
-        <div class="ds-form-group">
-          <label class="ds-form-label">{{ t('missions.create.fields.pricingType') }}</label>
-          <div class="ds-radio-group">
-            <label class="ds-radio">
-              <input v-model="pricingType" type="radio" value="fixed" />
-              <span>{{ t('missions.create.fields.fixed') }}</span>
-            </label>
-            <label class="ds-radio">
-              <input v-model="pricingType" type="radio" value="hourly" />
-              <span>{{ t('missions.create.fields.hourly') }}</span>
-            </label>
-            <label class="ds-radio">
-              <input v-model="pricingType" type="radio" value="task_based" />
-              <span>{{ t('missions.create.fields.taskBased') }}</span>
-            </label>
-          </div>
-        </div>
+        <BRadioGroup
+          v-model="pricingType"
+          :options="pricingTypeOptions"
+          :label="t('missions.create.fields.pricingType')"
+        />
 
-        <!-- Amount & Currency -->
-        <div class="ds-form-row">
-          <BInput
-            v-model="agreedAmount"
-            :label="t('missions.create.fields.amount')"
-            :placeholder="t('missions.create.fields.amountPlaceholder')"
-            type="number"
-          />
-          <BInput
-            v-model="currency"
-            :label="t('missions.create.fields.currency')"
-            type="text"
-          />
-        </div>
+        <!-- Amount -->
+        <BInput
+          v-model="agreedAmount"
+          :label="t('missions.create.fields.amount')"
+          :placeholder="t('missions.create.fields.amountPlaceholder')"
+          type="number"
+        />
+
+        <!-- Currency -->
+        <BSelect
+          v-model="currency"
+          :options="currencyOptions"
+          :label="t('missions.create.fields.currency')"
+        />
 
         <!-- Mission Type -->
-        <div class="ds-form-group">
-          <label class="ds-form-label">{{ t('missions.create.fields.missionType') }}</label>
-          <div class="ds-radio-group">
-            <label class="ds-radio">
-              <input v-model="missionType" type="radio" value="one_time" />
-              <span>{{ t('missions.create.fields.oneTime') }}</span>
-            </label>
-            <label class="ds-radio">
-              <input v-model="missionType" type="radio" value="recurrent" />
-              <span>{{ t('missions.create.fields.recurrent') }}</span>
-            </label>
-          </div>
-        </div>
+        <BRadioGroup
+          v-model="missionType"
+          :options="missionTypeOptions"
+          :label="t('missions.create.fields.missionType')"
+        />
 
         <!-- Checklist -->
         <div class="ds-form-group">
@@ -269,25 +275,6 @@ async function handleSubmit() {
   outline: none;
   border-color: var(--ds-accent, #6366f1);
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
-}
-
-.ds-radio-group {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.ds-radio {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--ds-text, #f1f5f9);
-  cursor: pointer;
-}
-
-.ds-radio input[type="radio"] {
-  accent-color: var(--ds-accent, #6366f1);
 }
 
 .ds-checklist-builder {

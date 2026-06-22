@@ -505,6 +505,137 @@ footer a:hover { color: var(--ds-text); }
 .ds-input-hint { font-size: 0.75rem; color: var(--ds-text-muted); }
 
 /* ============================================================
+   DsRadioGroup
+   ============================================================ */
+.ds-radio-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.ds-radio-group--vertical {
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ds-radio-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  color: var(--ds-text);
+  user-select: none;
+}
+.ds-radio-option:hover {
+  border-color: var(--ds-border-strong);
+  background: var(--ds-surface-2);
+}
+.ds-radio-option--active {
+  border-color: var(--ds-accent);
+  background: rgba(200, 255, 0, 0.06);
+  color: var(--ds-text);
+}
+.ds-radio-option--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ds-radio-option__input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.ds-radio-option__icon {
+  font-size: 1em;
+}
+.ds-radio-option__label {
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 500;
+}
+
+/* ============================================================
+   DsTagGroup
+   ============================================================ */
+.ds-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.ds-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 100px;
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  color: var(--ds-text-muted);
+  font-family: 'Space Grotesk', monospace;
+  font-weight: 500;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.ds-tag:hover {
+  border-color: var(--ds-border-strong);
+  color: var(--ds-text);
+  background: var(--ds-surface-2);
+}
+.ds-tag--active {
+  background: rgba(200, 255, 0, 0.1);
+  border-color: rgba(200, 255, 0, 0.3);
+  color: var(--ds-accent);
+}
+.ds-tag--active:hover {
+  background: rgba(200, 255, 0, 0.15);
+  border-color: rgba(200, 255, 0, 0.4);
+}
+.ds-tag--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ds-tag__icon {
+  font-size: 0.9em;
+}
+.ds-tag__remove {
+  font-size: 0.7em;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  margin-inline-start: 2px;
+}
+.ds-tag__remove:hover {
+  opacity: 1;
+}
+
+/* ============================================================
+   DsSelect
+   ============================================================ */
+.ds-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 2.5rem;
+  cursor: pointer;
+}
+.ds-select option {
+  background: var(--ds-surface);
+  color: var(--ds-text);
+}
+.ds-select__chevron {
+  position: absolute;
+  inset-inline-end: 12px;
+  color: var(--ds-text-muted);
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+/* ============================================================
    DsAvatar
    ============================================================ */
 .ds-avatar {

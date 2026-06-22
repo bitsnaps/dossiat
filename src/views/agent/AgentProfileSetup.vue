@@ -7,6 +7,9 @@ import { useToast } from '@/composables/useToast'
 import BCard from '@/components/base/BCard.vue'
 import BButton from '@/components/base/BButton.vue'
 import BInput from '@/components/base/BInput.vue'
+import BTagGroup from '@/components/base/BTagGroup.vue'
+import BRadioGroup from '@/components/base/BRadioGroup.vue'
+import BSelect from '@/components/base/BSelect.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -30,18 +33,33 @@ const avatarPreview = ref<string | null>(null)
 const errors = ref<Record<string, string>>({})
 
 const specialtyOptions = [
-  'Legal',
-  'Finance',
-  'Real Estate',
-  'Admin',
-  'IT / Tech',
-  'HR',
-  'Consulting',
-  'Other',
+  { value: 'Legal', label: 'Legal' },
+  { value: 'Finance', label: 'Finance' },
+  { value: 'Real Estate', label: 'Real Estate' },
+  { value: 'Admin', label: 'Admin' },
+  { value: 'IT / Tech', label: 'IT / Tech' },
+  { value: 'HR', label: 'HR' },
+  { value: 'Consulting', label: 'Consulting' },
+  { value: 'Other', label: 'Other' },
+]
+
+const clientTypeOptions = [
+  { value: 'B2B', label: 'B2B' },
+  { value: 'B2C', label: 'B2C' },
+  { value: 'Both', label: 'Both' },
 ]
 
 const currencyOptions = [
-  'USD', 'EUR', 'GBP', 'MAD', 'AED', 'SAR', 'CAD', 'AUD', 'JPY', 'CHF',
+  { value: 'USD', label: 'USD' },
+  { value: 'EUR', label: 'EUR' },
+  { value: 'GBP', label: 'GBP' },
+  { value: 'MAD', label: 'MAD' },
+  { value: 'AED', label: 'AED' },
+  { value: 'SAR', label: 'SAR' },
+  { value: 'CAD', label: 'CAD' },
+  { value: 'AUD', label: 'AUD' },
+  { value: 'JPY', label: 'JPY' },
+  { value: 'CHF', label: 'CHF' },
 ]
 
 const progress = computed(() => Math.round((currentStep.value / totalSteps) * 100))
@@ -96,15 +114,6 @@ function nextStep() {
 function prevStep() {
   if (currentStep.value > 1) {
     currentStep.value--
-  }
-}
-
-function toggleSpecialty(s: string) {
-  const idx = specialties.value.indexOf(s)
-  if (idx === -1) {
-    specialties.value.push(s)
-  } else {
-    specialties.value.splice(idx, 1)
   }
 }
 
@@ -184,58 +193,32 @@ async function handleSubmit() {
           :label="t('agentProfile.setup.timezone')"
           :error="errors.timezone"
         />
-        <div class="ds-form-group">
-          <label class="ds-label">{{ t('agentProfile.setup.currency') }}</label>
-          <select v-model="currency" class="ds-input">
-            <option v-for="c in currencyOptions" :key="c" :value="c">{{ c }}</option>
-          </select>
-          <span v-if="errors.currency" class="ds-error">{{ errors.currency }}</span>
-        </div>
+        <BSelect
+          v-model="currency"
+          :options="currencyOptions"
+          :label="t('agentProfile.setup.currency')"
+          :error="errors.currency"
+        />
       </div>
 
       <!-- Step 2: Specialties -->
       <div v-if="currentStep === 2" class="ds-agent-setup__step-content">
         <p class="ds-hint">{{ t('agentProfile.setup.specialtiesHint') }}</p>
-        <div class="ds-specialty-grid">
-          <button
-            v-for="s in specialtyOptions"
-            :key="s"
-            :class="[
-              'ds-specialty-chip',
-              { 'ds-specialty-chip--active': specialties.includes(s) },
-            ]"
-            @click="toggleSpecialty(s)"
-          >
-            {{ s }}
-          </button>
-        </div>
-        <span v-if="errors.specialties" class="ds-error">{{ errors.specialties }}</span>
+        <BTagGroup
+          v-model="specialties"
+          :options="specialtyOptions"
+          :error="errors.specialties"
+        />
       </div>
 
       <!-- Step 3: Client Types -->
       <div v-if="currentStep === 3" class="ds-agent-setup__step-content">
         <p class="ds-hint">{{ t('agentProfile.setup.clientTypesHint') }}</p>
-        <div class="ds-radio-group">
-          <label
-            :class="['ds-radio-option', { 'ds-radio-option--active': acceptedClientTypes === 'B2B' }]"
-          >
-            <input v-model="acceptedClientTypes" type="radio" value="B2B" />
-            <span>{{ t('agentProfile.setup.clientTypesB2B') }}</span>
-          </label>
-          <label
-            :class="['ds-radio-option', { 'ds-radio-option--active': acceptedClientTypes === 'B2C' }]"
-          >
-            <input v-model="acceptedClientTypes" type="radio" value="B2C" />
-            <span>{{ t('agentProfile.setup.clientTypesB2C') }}</span>
-          </label>
-          <label
-            :class="['ds-radio-option', { 'ds-radio-option--active': acceptedClientTypes === 'Both' }]"
-          >
-            <input v-model="acceptedClientTypes" type="radio" value="Both" />
-            <span>{{ t('agentProfile.setup.clientTypesBoth') }}</span>
-          </label>
-        </div>
-        <span v-if="errors.clientTypes" class="ds-error">{{ errors.clientTypes }}</span>
+        <BRadioGroup
+          v-model="acceptedClientTypes"
+          :options="clientTypeOptions"
+          :error="errors.clientTypes"
+        />
       </div>
 
       <!-- Step 4: Photo -->
@@ -318,3 +301,10 @@ async function handleSubmit() {
     </BCard>
   </div>
 </template>
+
+
+<style lang="css" scoped>
+.ds-review-item, .ds-review-item_label {
+  margin-top: 1rem;
+}
+</style>

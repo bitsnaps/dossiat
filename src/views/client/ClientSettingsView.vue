@@ -6,6 +6,7 @@ import { useToast } from '@/composables/useToast'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
 import BButton from '@/components/base/BButton.vue'
+import BSelect from '@/components/base/BSelect.vue'
 
 const { t } = useI18n()
 const clientProfileStore = useClientProfileStore()
@@ -20,24 +21,24 @@ const companySize = ref('')
 const industry = ref('')
 
 const companySizeOptions = [
-  '1-10',
-  '11-50',
-  '51-200',
-  '201-500',
-  '500+',
+  { value: '1-10', label: '1-10' },
+  { value: '11-50', label: '11-50' },
+  { value: '51-200', label: '51-200' },
+  { value: '201-500', label: '201-500' },
+  { value: '500+', label: '500+' },
 ]
 
 const industryOptions = [
-  'Legal',
-  'Finance',
-  'Real Estate',
-  'Consulting',
-  'IT / Tech',
-  'Healthcare',
-  'Manufacturing',
-  'Retail',
-  'Education',
-  'Other',
+  { value: 'Legal', label: 'Legal' },
+  { value: 'Finance', label: 'Finance' },
+  { value: 'Real Estate', label: 'Real Estate' },
+  { value: 'Consulting', label: 'Consulting' },
+  { value: 'IT / Tech', label: 'IT / Tech' },
+  { value: 'Healthcare', label: 'Healthcare' },
+  { value: 'Manufacturing', label: 'Manufacturing' },
+  { value: 'Retail', label: 'Retail' },
+  { value: 'Education', label: 'Education' },
+  { value: 'Other', label: 'Other' },
 ]
 
 onMounted(async () => {
@@ -91,22 +92,20 @@ async function handleSave() {
       />
 
       <!-- Company Size -->
-      <div class="ds-form-group">
-        <label class="ds-label">{{ t('clientProfile.settings.companySize') }}</label>
-        <select v-model="companySize" class="ds-input">
-          <option value="">{{ t('clientProfile.settings.companySizePlaceholder') }}</option>
-          <option v-for="s in companySizeOptions" :key="s" :value="s">{{ s }}</option>
-        </select>
-      </div>
+      <BSelect
+        v-model="companySize"
+        :options="companySizeOptions"
+        :label="t('clientProfile.settings.companySize')"
+        :placeholder="t('clientProfile.settings.companySizePlaceholder')"
+      />
 
       <!-- Industry -->
-      <div class="ds-form-group">
-        <label class="ds-label">{{ t('clientProfile.settings.industry') }}</label>
-        <select v-model="industry" class="ds-input">
-          <option value="">{{ t('clientProfile.settings.industryPlaceholder') }}</option>
-          <option v-for="i in industryOptions" :key="i" :value="i">{{ i }}</option>
-        </select>
-      </div>
+      <BSelect
+        v-model="industry"
+        :options="industryOptions"
+        :label="t('clientProfile.settings.industry')"
+        :placeholder="t('clientProfile.settings.industryPlaceholder')"
+      />
 
       <BButton
         variant="accent"

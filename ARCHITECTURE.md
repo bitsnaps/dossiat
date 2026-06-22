@@ -220,6 +220,9 @@ Base UI components in [`src/components/base/`](src/server/../../components/base/
 | `BDropdown.vue` | Dropdown menu |
 | `BInput.vue` | Text input with validation |
 | `BModal.vue` | Modal dialog |
+| `BRadioGroup.vue` | Radio button group with v-model, options, error/hint states |
+| `BSelect.vue` | Styled native select dropdown with v-model, options, placeholder |
+| `BTagGroup.vue` | Multi-select toggle chips with v-model, removable mode |
 | `BTable.vue` | Data table with sorting, pagination, selection |
 
 All components use `<script lang="ts" setup>` syntax and follow Bootstrap 5 styling.
