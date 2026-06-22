@@ -653,5 +653,159 @@
     "unread": "غير مقروء",
     "composerPlaceholder": "اكتب رسالة...",
     "send": "إرسال"
+  },
+  "payments": {
+    "summary": {
+      "title": "المدفوعات",
+      "subtitle": "نظرة عامة على جميع المدفوعات المرسلة والمقبوضة.",
+      "columns": {
+        "status": "الحالة",
+        "amount": "المبلغ",
+        "method": "الطريقة",
+        "mission": "المهمة",
+        "date": "التاريخ",
+        "actions": "الإجراءات"
+      },
+      "filters": {
+        "all": "جميع المدفوعات",
+        "sent": "مرسلة",
+        "received": "مستلمة",
+        "pending": "قيد الانتظار",
+        "confirmed": "مؤكدة"
+      },
+      "noPayments": "لم يتم العثور على مدفوعات.",
+      "noPaymentsHint": "ستظهر المدفوعات هنا بمجرد تسجيلها أو استلامها.",
+      "totalSent": "إجمالي المرسل",
+      "totalReceived": "إجمالي المستلم",
+      "pendingCount": "تأكيدات معلقة"
+    },
+    "record": {
+      "title": "تسجيل دفعة",
+      "subtitle": "تسجيل دفعة لمهمة.",
+      "fields": {
+        "amount": "المبلغ",
+        "amountPlaceholder": "0.00",
+        "currency": "العملة",
+        "method": "طريقة الدفع",
+        "mission": "المهمة",
+        "missionPlaceholder": "اختر مهمة",
+        "payee": "المستلم"
+      },
+      "methods": {
+        "cash": "نقداً",
+        "bankTransfer": "تحويل بنكي",
+        "stripe": "Stripe",
+        "paypal": "PayPal"
+      },
+      "submit": "تسجيل الدفعة",
+      "cancel": "إلغاء",
+      "recording": "جاري التسجيل...",
+      "recorded": "تم تسجيل الدفعة بنجاح.",
+      "validation": {
+        "amountRequired": "المبلغ مطلوب.",
+        "missionRequired": "يرجى اختيار مهمة.",
+        "methodRequired": "يرجى اختيار طريقة الدفع."
+      }
+    },
+    "confirm": {
+      "title": "تأكيد الدفعة",
+      "subtitle": "مراجعة وتأكيد تفاصيل الدفعة.",
+      "sent": "تم إرسال الدفعة",
+      "received": "تم استلام الدفعة",
+      "payerConfirm": "تأكيد الإرسال",
+      "payeeConfirm": "تأكيد الاستلام",
+      "confirmed": "مؤكد",
+      "pending": "قيد الانتظار",
+      "confirming": "جاري التأكيد...",
+      "confirmedMessage": "تم تأكيد الدفعة بنجاح.",
+      "status": {
+        "confirmed": "مؤكد",
+        "pending": "قيد الانتظار",
+        "awaitingPayer": "في انتظار تأكيد الدافع",
+        "awaitingPayee": "في انتظار تأكيد المستلم",
+        "awaitingBoth": "في انتظار التأكيد من الطرفين"
+      },
+      "details": {
+        "amount": "المبلغ",
+        "method": "الطريقة",
+        "date": "التاريخ",
+        "platformFee": "رسوم المنصة",
+        "gatewayFee": "رسوم البوابة",
+        "netAmount": "صافي المبلغ",
+        "payerConfirmation": "تأكيد الدافع",
+        "payeeConfirmation": "تأكيد المستلم"
+      }
+    },
+    "credits": {
+      "title": "رصيد المنصة",
+      "subtitle": "إدارة رصيد الأرصدة وعرض سجل المعاملات.",
+      "balance": "الرصيد الحالي",
+      "purchaseTitle": "شراء أرصدة",
+      "purchaseAmount": "المبلغ",
+      "purchaseAmountPlaceholder": "0.00",
+      "purchaseButton": "شراء",
+      "purchasing": "جاري المعالجة...",
+      "purchased": "تم شراء الأرصدة بنجاح.",
+      "transactions": "سجل المعاملات",
+      "transactionsTitle": "المعاملات الأخيرة",
+      "columns": {
+        "type": "النوع",
+        "amount": "المبلغ",
+        "description": "الوصف",
+        "date": "التاريخ"
+      },
+      "types": {
+        "purchase": "شراء",
+        "deduction": "خصم رسوم",
+        "refund": "استرداد",
+        "adjustment": "تعديل"
+      },
+      "noTransactions": "لا توجد معاملات بعد."
+    },
+    "invoices": {
+      "title": "الفواتير",
+      "subtitle": "عرض فواتيرك وسجل الفوترة.",
+      "columns": {
+        "period": "الفترة",
+        "totalFees": "إجمالي الرسوم",
+        "status": "الحالة",
+        "paidAt": "تاريخ الدفع"
+      },
+      "status": {
+        "draft": "مسودة",
+        "sent": "مرسلة",
+        "paid": "مدفوعة"
+      },
+      "noInvoices": "لم يتم العثور على فواتير."
+    },
+    "stripe": {
+      "title": "اتصال Stripe",
+      "subtitle": "ربط حسابك بـ Stripe لتلقي المدفوعات عبر الإنترنت.",
+      "status": {
+        "connected": "متصل",
+        "notConnected": "غير متصل",
+        "connecting": "جاري الاتصال..."
+      },
+      "connect": "ربط حساب Stripe",
+      "disconnect": "قطع الاتصال",
+      "configured": "Stripe مكون على هذه المنصة.",
+      "notConfigured": "Stripe غير مكون على هذه المنصة. اتصل بالدعم.",
+      "connecting": "جاري التوجيه إلى Stripe...",
+      "connectedMessage": "حسابك على Stripe متصل وجاهز.",
+      "notConnectedMessage": "اربط حسابك بـ Stripe لبدء تلقي المدفوعات عبر الإنترنت.",
+      "detailsPending": "إعداد الحساب قيد التقدم",
+      "detailsSubmitted": "اكتمل إعداد الحساب"
+    },
+    "methods": {
+      "cash": "نقداً",
+      "bank_transfer": "تحويل بنكي",
+      "stripe": "Stripe",
+      "paypal": "PayPal"
+    },
+    "status": {
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "failed": "فشل"
+    }
   }
 }

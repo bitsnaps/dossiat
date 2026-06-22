@@ -653,5 +653,159 @@
     "unread": "Unread",
     "composerPlaceholder": "Type a message...",
     "send": "Send"
+  },
+  "payments": {
+    "summary": {
+      "title": "Payments",
+      "subtitle": "Overview of all payments sent and received.",
+      "columns": {
+        "status": "Status",
+        "amount": "Amount",
+        "method": "Method",
+        "mission": "Mission",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "filters": {
+        "all": "All Payments",
+        "sent": "Sent",
+        "received": "Received",
+        "pending": "Pending",
+        "confirmed": "Confirmed"
+      },
+      "noPayments": "No payments found.",
+      "noPaymentsHint": "Payments will appear here once you record or receive them.",
+      "totalSent": "Total Sent",
+      "totalReceived": "Total Received",
+      "pendingCount": "Pending Confirmations"
+    },
+    "record": {
+      "title": "Record Payment",
+      "subtitle": "Record a payment for a mission.",
+      "fields": {
+        "amount": "Amount",
+        "amountPlaceholder": "0.00",
+        "currency": "Currency",
+        "method": "Payment Method",
+        "mission": "Mission",
+        "missionPlaceholder": "Select a mission",
+        "payee": "Payee"
+      },
+      "methods": {
+        "cash": "Cash",
+        "bankTransfer": "Bank Transfer",
+        "stripe": "Stripe",
+        "paypal": "PayPal"
+      },
+      "submit": "Record Payment",
+      "cancel": "Cancel",
+      "recording": "Recording...",
+      "recorded": "Payment recorded successfully.",
+      "validation": {
+        "amountRequired": "Amount is required.",
+        "missionRequired": "Please select a mission.",
+        "methodRequired": "Please select a payment method."
+      }
+    },
+    "confirm": {
+      "title": "Confirm Payment",
+      "subtitle": "Review and confirm the payment details.",
+      "sent": "Payment Sent",
+      "received": "Payment Received",
+      "payerConfirm": "Confirm Sent",
+      "payeeConfirm": "Confirm Received",
+      "confirmed": "Confirmed",
+      "pending": "Pending",
+      "confirming": "Confirming...",
+      "confirmedMessage": "Payment confirmed successfully.",
+      "status": {
+        "confirmed": "Confirmed",
+        "pending": "Pending",
+        "awaitingPayer": "Awaiting Payer Confirmation",
+        "awaitingPayee": "Awaiting Payee Confirmation",
+        "awaitingBoth": "Awaiting Both Confirmations"
+      },
+      "details": {
+        "amount": "Amount",
+        "method": "Method",
+        "date": "Date",
+        "platformFee": "Platform Fee",
+        "gatewayFee": "Gateway Fee",
+        "netAmount": "Net Amount",
+        "payerConfirmation": "Payer Confirmation",
+        "payeeConfirmation": "Payee Confirmation"
+      }
+    },
+    "credits": {
+      "title": "Platform Credits",
+      "subtitle": "Manage your platform credit balance and view transaction history.",
+      "balance": "Current Balance",
+      "purchaseTitle": "Purchase Credits",
+      "purchaseAmount": "Amount",
+      "purchaseAmountPlaceholder": "0.00",
+      "purchaseButton": "Purchase",
+      "purchasing": "Processing...",
+      "purchased": "Credits purchased successfully.",
+      "transactions": "Transaction History",
+      "transactionsTitle": "Recent Transactions",
+      "columns": {
+        "type": "Type",
+        "amount": "Amount",
+        "description": "Description",
+        "date": "Date"
+      },
+      "types": {
+        "purchase": "Purchase",
+        "deduction": "Fee Deduction",
+        "refund": "Refund",
+        "adjustment": "Adjustment"
+      },
+      "noTransactions": "No transactions yet."
+    },
+    "invoices": {
+      "title": "Invoices",
+      "subtitle": "View your platform invoices and billing history.",
+      "columns": {
+        "period": "Period",
+        "totalFees": "Total Fees",
+        "status": "Status",
+        "paidAt": "Paid At"
+      },
+      "status": {
+        "draft": "Draft",
+        "sent": "Sent",
+        "paid": "Paid"
+      },
+      "noInvoices": "No invoices found."
+    },
+    "stripe": {
+      "title": "Stripe Connection",
+      "subtitle": "Connect your Stripe account to receive online payments.",
+      "status": {
+        "connected": "Connected",
+        "notConnected": "Not Connected",
+        "connecting": "Connecting..."
+      },
+      "connect": "Connect Stripe Account",
+      "disconnect": "Disconnect",
+      "configured": "Stripe is configured on this platform.",
+      "notConfigured": "Stripe is not configured on this platform. Contact support.",
+      "connecting": "Redirecting to Stripe...",
+      "connectedMessage": "Your Stripe account is connected and ready.",
+      "notConnectedMessage": "Connect your Stripe account to start receiving online payments.",
+      "detailsSubmitted": "Account setup complete",
+      "detailsPending": "Account setup in progress"
+    },
+    "methods": {
+      "cash": "Cash",
+      "bank_transfer": "Bank Transfer",
+      "stripe": "Stripe",
+      "paypal": "PayPal"
+    },
+    "status": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "failed": "Failed"
+    }
   }
 }

@@ -115,20 +115,38 @@ const router = createRouter({
         {
           path: 'payments',
           name: 'payments',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/payments/PaymentSummaryView.vue'),
           meta: { requiresAuth: true, title: 'Payments' },
+        },
+        {
+          path: 'payments/record',
+          name: 'payment-record',
+          component: () => import('@/views/payments/PaymentRecordView.vue'),
+          meta: { requiresAuth: true, title: 'Record Payment' },
+        },
+        {
+          path: 'payments/:id/confirm',
+          name: 'payment-confirm',
+          component: () => import('@/views/payments/PaymentConfirmationView.vue'),
+          meta: { requiresAuth: true, title: 'Confirm Payment' },
         },
         {
           path: 'credits',
           name: 'credits',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/payments/CreditBalanceView.vue'),
           meta: { requiresAuth: true, roles: ['agent'], title: 'Credits' },
         },
         {
           path: 'invoices',
           name: 'invoices',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/payments/InvoiceListView.vue'),
           meta: { requiresAuth: true, roles: ['agent'], title: 'Invoices' },
+        },
+        {
+          path: 'stripe/connect',
+          name: 'stripe-connect',
+          component: () => import('@/views/payments/StripeConnectView.vue'),
+          meta: { requiresAuth: true, roles: ['agent'], title: 'Stripe Connect' },
         },
         {
           path: 'subscriptions',

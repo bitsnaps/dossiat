@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { Op } from 'sequelize'
 import { Payment, Mission, PlatformCredit, CreditTransaction, Invoice } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
@@ -171,6 +172,21 @@ payments.get('/agents/me/credit-transactions', authenticate(), async (c) => {
   })
 
   return successResponse(c, transactions)
+})
+
+payments.get('/agents/me/payments', authenticate(), async (c) => {
+  const auth = c.get('auth')
+  const paymentList = await Payment.findAll({
+    where: {
+      [Op.or]: [
+        { payerId: auth.userId },
+        { payeeId: auth.userId },
+      ],
+    },
+    include: [{ model: Mission, as: 'mission', attributes: ['id', 'title'] }],
+    order: [['createdAt', 'DESC']],
+  })
+  return successResponse(c, paymentList)
 })
 
 payments.get('/agents/me/invoices', authenticate(), async (c) => {

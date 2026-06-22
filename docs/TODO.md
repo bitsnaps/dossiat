@@ -340,12 +340,12 @@
 
 ### 5g. Payments
 
-- [ ] Create `PaymentSummaryView.vue` — Overview of payments sent/received, pending confirmations
-- [ ] Create `PaymentRecordView.vue` — Record a payment (cash, bank transfer, or gateway selection)
-- [ ] Create `PaymentConfirmationView.vue` — Confirm payment sent/received toggle UI
-- [ ] Create `CreditBalanceView.vue` — Agent platform credit balance, purchase credits, transaction history
-- [ ] Create `InvoiceListView.vue` — Agent's platform invoices list
-- [ ] Create `StripeConnectView.vue` — Stripe account connection flow for agents
+- [x] Create `PaymentSummaryView.vue` — Overview of payments sent/received, pending confirmations
+- [x] Create `PaymentRecordView.vue` — Record a payment (cash, bank transfer, or gateway selection)
+- [x] Create `PaymentConfirmationView.vue` — Confirm payment sent/received toggle UI
+- [x] Create `CreditBalanceView.vue` — Agent platform credit balance, purchase credits, transaction history
+- [x] Create `InvoiceListView.vue` — Agent's platform invoices list
+- [x] Create `StripeConnectView.vue` — Stripe account connection flow for agents
 
 ### 5h. Subscriptions
 

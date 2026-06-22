@@ -653,5 +653,159 @@
     "unread": "Non lu",
     "composerPlaceholder": "Écrivez un message...",
     "send": "Envoyer"
+  },
+  "payments": {
+    "summary": {
+      "title": "Paiements",
+      "subtitle": "Aperçu de tous les paiements envoyés et reçus.",
+      "columns": {
+        "status": "Statut",
+        "amount": "Montant",
+        "method": "Méthode",
+        "mission": "Mission",
+        "date": "Date",
+        "actions": "Actions"
+      },
+      "filters": {
+        "all": "Tous les paiements",
+        "sent": "Envoyés",
+        "received": "Reçus",
+        "pending": "En attente",
+        "confirmed": "Confirmés"
+      },
+      "noPayments": "Aucun paiement trouvé.",
+      "noPaymentsHint": "Les paiements apparaîtront ici une fois que vous les aurez enregistrés ou reçus.",
+      "totalSent": "Total envoyé",
+      "totalReceived": "Total reçu",
+      "pendingCount": "Confirmations en attente"
+    },
+    "record": {
+      "title": "Enregistrer un paiement",
+      "subtitle": "Enregistrer un paiement pour une mission.",
+      "fields": {
+        "amount": "Montant",
+        "amountPlaceholder": "0,00",
+        "currency": "Devise",
+        "method": "Mode de paiement",
+        "mission": "Mission",
+        "missionPlaceholder": "Sélectionner une mission",
+        "payee": "Bénéficiaire"
+      },
+      "methods": {
+        "cash": "Espèces",
+        "bankTransfer": "Virement bancaire",
+        "stripe": "Stripe",
+        "paypal": "PayPal"
+      },
+      "submit": "Enregistrer le paiement",
+      "cancel": "Annuler",
+      "recording": "Enregistrement...",
+      "recorded": "Paiement enregistré avec succès.",
+      "validation": {
+        "amountRequired": "Le montant est requis.",
+        "missionRequired": "Veuillez sélectionner une mission.",
+        "methodRequired": "Veuillez sélectionner un mode de paiement."
+      }
+    },
+    "confirm": {
+      "title": "Confirmer le paiement",
+      "subtitle": "Vérifier et confirmer les détails du paiement.",
+      "sent": "Paiement envoyé",
+      "received": "Paiement reçu",
+      "payerConfirm": "Confirmer l'envoi",
+      "payeeConfirm": "Confirmer la réception",
+      "confirmed": "Confirmé",
+      "pending": "En attente",
+      "confirming": "Confirmation...",
+      "confirmedMessage": "Paiement confirmé avec succès.",
+      "status": {
+        "confirmed": "Confirmé",
+        "pending": "En attente",
+        "awaitingPayer": "En attente de la confirmation du payeur",
+        "awaitingPayee": "En attente de la confirmation du bénéficiaire",
+        "awaitingBoth": "En attente des deux confirmations"
+      },
+      "details": {
+        "amount": "Montant",
+        "method": "Méthode",
+        "date": "Date",
+        "platformFee": "Frais de plateforme",
+        "gatewayFee": "Frais de passerelle",
+        "netAmount": "Montant net",
+        "payerConfirmation": "Confirmation du payeur",
+        "payeeConfirmation": "Confirmation du bénéficiaire"
+      }
+    },
+    "credits": {
+      "title": "Crédits plateforme",
+      "subtitle": "Gérer votre solde de crédits et consulter l'historique des transactions.",
+      "balance": "Solde actuel",
+      "purchaseTitle": "Acheter des crédits",
+      "purchaseAmount": "Montant",
+      "purchaseAmountPlaceholder": "0,00",
+      "purchaseButton": "Acheter",
+      "purchasing": "Traitement...",
+      "purchased": "Crédits achetés avec succès.",
+      "transactions": "Historique des transactions",
+      "transactionsTitle": "Transactions récentes",
+      "columns": {
+        "type": "Type",
+        "amount": "Montant",
+        "description": "Description",
+        "date": "Date"
+      },
+      "types": {
+        "purchase": "Achat",
+        "deduction": "Déduction de frais",
+        "refund": "Remboursement",
+        "adjustment": "Ajustement"
+      },
+      "noTransactions": "Aucune transaction pour le moment."
+    },
+    "invoices": {
+      "title": "Factures",
+      "subtitle": "Consulter vos factures et l'historique de facturation.",
+      "columns": {
+        "period": "Période",
+        "totalFees": "Frais totaux",
+        "status": "Statut",
+        "paidAt": "Payé le"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "sent": "Envoyée",
+        "paid": "Payée"
+      },
+      "noInvoices": "Aucune facture trouvée."
+    },
+    "stripe": {
+      "title": "Connexion Stripe",
+      "subtitle": "Connectez votre compte Stripe pour recevoir les paiements en ligne.",
+      "status": {
+        "connected": "Connecté",
+        "notConnected": "Non connecté",
+        "connecting": "Connexion..."
+      },
+      "connect": "Connecter un compte Stripe",
+      "disconnect": "Déconnecter",
+      "configured": "Stripe est configuré sur cette plateforme.",
+      "notConfigured": "Stripe n'est pas configuré sur cette plateforme. Contactez le support.",
+      "connecting": "Redirection vers Stripe...",
+      "connectedMessage": "Votre compte Stripe est connecté et prêt.",
+      "notConnectedMessage": "Connectez votre compte Stripe pour commencer à recevoir les paiements en ligne.",
+      "detailsSubmitted": "Configuration du compte terminée",
+      "detailsPending": "Configuration du compte en cours"
+    },
+    "methods": {
+      "cash": "Espèces",
+      "bank_transfer": "Virement bancaire",
+      "stripe": "Stripe",
+      "paypal": "PayPal"
+    },
+    "status": {
+      "pending": "En attente",
+      "confirmed": "Confirmé",
+      "failed": "Échoué"
+    }
   }
 }
