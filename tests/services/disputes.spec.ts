@@ -8,7 +8,7 @@ vi.mock('@/services/api', () => ({
 }))
 
 import { get, post, put } from '@/services/api'
-import { getDisputes, getDispute, sendMessage, resolveDispute, escalateDispute } from '@/services/disputes'
+import { getDisputes, getDispute, sendMessage, resolveDispute, escalateDispute, createDispute } from '@/services/disputes'
 
 const mockGet = vi.mocked(get)
 const mockPost = vi.mocked(post)
@@ -71,6 +71,16 @@ describe('Disputes Service', () => {
 
       expect(mockPut).toHaveBeenCalledWith('/disputes/1/escalate')
       expect(result).toEqual({ success: true })
+    })
+    describe('createDispute()', () => {
+      it('calls POST /api/missions/:id/dispute with reason', async () => {
+        mockPost.mockResolvedValueOnce({ success: true, data: { id: 1, missionId: 5, reason: 'Not delivered' } } as any)
+  
+        const result = await createDispute('5', 'Not delivered')
+  
+        expect(mockPost).toHaveBeenCalledWith('/missions/5/dispute', { reason: 'Not delivered' })
+        expect(result).toEqual({ success: true, data: { id: 1, missionId: 5, reason: 'Not delivered' } })
+      })
     })
   })
 })

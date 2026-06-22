@@ -877,5 +877,72 @@
       "noInvoicesHint": "Invoices will appear here once your subscription billing begins.",
       "backToManage": "← Back to Manage Subscription"
     }
+  },
+  "disputes": {
+    "title": "Disputes",
+    "subtitle": "View and manage dispute reconciliation rooms.",
+    "noDisputes": "No disputes yet.",
+    "noDisputesHint": "If a mission has issues, you can initiate a dispute from the mission detail page.",
+    "initiate": "Initiate Dispute",
+    "view": "View",
+    "status": {
+      "open": "Open",
+      "reconciling": "Reconciling",
+      "resolved": "Resolved",
+      "escalated": "Escalated"
+    },
+    "columns": {
+      "mission": "Mission",
+      "initiatedBy": "Initiated By",
+      "status": "Status",
+      "created": "Created",
+      "actions": "Actions"
+    },
+    "detail": {
+      "title": "Dispute #{id}",
+      "mission": "Mission",
+      "initiator": "Initiated By",
+      "reason": "Reason",
+      "status": "Status",
+      "resolution": "Resolution",
+      "resolvedAt": "Resolved At",
+      "messages": "Messages",
+      "noMessages": "No messages yet. Start the conversation below.",
+      "composerPlaceholder": "Type a message to the other party...",
+      "actions": {
+        "resolve": "Resolve Dispute",
+        "escalate": "Escalate to Admin",
+        "back": "← Back to Disputes"
+      },
+      "resolveModal": {
+        "title": "Resolve Dispute",
+        "message": "Describe the resolution agreed upon by both parties.",
+        "placeholder": "Enter the resolution details...",
+        "confirm": "Confirm Resolution",
+        "cancel": "Cancel"
+      },
+      "escalateConfirm": "Are you sure you want to escalate this dispute to admin review?",
+      "resolved": "Dispute resolved successfully.",
+      "escalated": "Dispute escalated to admin.",
+      "messageSent": "Message sent."
+    },
+    "initiate": {
+      "title": "Initiate Dispute",
+      "subtitle": "Report an issue with a mission to start the reconciliation process.",
+      "fields": {
+        "mission": "Mission",
+        "missionPlaceholder": "Select a mission",
+        "reason": "Reason for Dispute",
+        "reasonPlaceholder": "Describe the issue you are experiencing with this mission..."
+      },
+      "submit": "Submit Dispute",
+      "submitting": "Submitting...",
+      "submitted": "Dispute initiated successfully.",
+      "back": "← Back",
+      "validation": {
+        "missionRequired": "Please select a mission.",
+        "reasonRequired": "Please describe the reason for this dispute."
+      }
+    }
   }
 }

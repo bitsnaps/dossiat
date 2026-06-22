@@ -19,3 +19,7 @@ export function resolveDispute(id: string, resolution: string) {
 export function escalateDispute(id: string) {
   return put(`/disputes/${id}/escalate`)
 }
+
+export function createDispute(missionId: string, reason: string) {
+  return post(`/missions/${missionId}/dispute`, { reason })
+}

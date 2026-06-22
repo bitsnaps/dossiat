@@ -877,5 +877,72 @@
       "noInvoicesHint": "Les factures apparaîtront ici une fois que la facturation de votre abonnement commencera.",
       "backToManage": "← Retour à la gestion de l'abonnement"
     }
+  },
+  "disputes": {
+    "title": "Litiges",
+    "subtitle": "Consultez et gérez les salles de réconciliation de litiges.",
+    "noDisputes": "Pas encore de litiges.",
+    "noDisputesHint": "Si une mission présente des problèmes, vous pouvez ouvrir un litige depuis la page de détail de la mission.",
+    "initiate": "Ouvrir un litige",
+    "view": "Voir",
+    "status": {
+      "open": "Ouvert",
+      "reconciling": "En réconciliation",
+      "resolved": "Résolu",
+      "escalated": "Escaladé"
+    },
+    "columns": {
+      "mission": "Mission",
+      "initiatedBy": "Ouvert par",
+      "status": "Statut",
+      "created": "Créé le",
+      "actions": "Actions"
+    },
+    "detail": {
+      "title": "Litige #{id}",
+      "mission": "Mission",
+      "initiator": "Ouvert par",
+      "reason": "Motif",
+      "status": "Statut",
+      "resolution": "Résolution",
+      "resolvedAt": "Résolu le",
+      "messages": "Messages",
+      "noMessages": "Pas encore de messages. Commencez la conversation ci-dessous.",
+      "composerPlaceholder": "Écrivez un message à l'autre partie...",
+      "actions": {
+        "resolve": "Résoudre le litige",
+        "escalate": "Escalader à l'admin",
+        "back": "← Retour aux litiges"
+      },
+      "resolveModal": {
+        "title": "Résoudre le litige",
+        "message": "Décrivez la résolution convenue par les deux parties.",
+        "placeholder": "Saisissez les détails de la résolution...",
+        "confirm": "Confirmer la résolution",
+        "cancel": "Annuler"
+      },
+      "escalateConfirm": "Êtes-vous sûr de vouloir escalader ce litige pour examen par l'administrateur ?",
+      "resolved": "Litige résolu avec succès.",
+      "escalated": "Litige escaladé à l'administrateur.",
+      "messageSent": "Message envoyé."
+    },
+    "initiate": {
+      "title": "Ouvrir un litige",
+      "subtitle": "Signalez un problème avec une mission pour démarrer le processus de réconciliation.",
+      "fields": {
+        "mission": "Mission",
+        "missionPlaceholder": "Sélectionner une mission",
+        "reason": "Motif du litige",
+        "reasonPlaceholder": "Décrivez le problème que vous rencontrez avec cette mission..."
+      },
+      "submit": "Soumettre le litige",
+      "submitting": "Soumission...",
+      "submitted": "Litige ouvert avec succès.",
+      "back": "← Retour",
+      "validation": {
+        "missionRequired": "Veuillez sélectionner une mission.",
+        "reasonRequired": "Veuillez décrire le motif de ce litige."
+      }
+    }
   }
 }

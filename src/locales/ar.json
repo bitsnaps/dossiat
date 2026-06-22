@@ -877,5 +877,72 @@
       "noInvoicesHint": "ستظهر الفواتير هنا بمجرد بدء فوترة اشتراكك.",
       "backToManage": "← العودة إلى إدارة الاشتراك"
     }
+  },
+  "disputes": {
+    "title": "النزاعات",
+    "subtitle": "عرض وإدارة غرف التوفيق للنزاعات.",
+    "noDisputes": "لا توجد نزاعات بعد.",
+    "noDisputesHint": "إذا كانت هناك مشاكل في مهمة، يمكنك بدء نزاع من صفحة تفاصيل المهمة.",
+    "initiate": "بدء نزاع",
+    "view": "عرض",
+    "status": {
+      "open": "مفتوح",
+      "reconciling": "قيد التوفيق",
+      "resolved": "محلول",
+      "escalated": "تم التصعيد"
+    },
+    "columns": {
+      "mission": "المهمة",
+      "initiatedBy": "بدأه",
+      "status": "الحالة",
+      "created": "تاريخ الإنشاء",
+      "actions": "الإجراءات"
+    },
+    "detail": {
+      "title": "نزاع #{id}",
+      "mission": "المهمة",
+      "initiator": "بدأه",
+      "reason": "السبب",
+      "status": "الحالة",
+      "resolution": "الحل",
+      "resolvedAt": "تاريخ الحل",
+      "messages": "الرسائل",
+      "noMessages": "لا توجد رسائل بعد. ابدأ المحادثة أدناه.",
+      "composerPlaceholder": "اكتب رسالة للطرف الآخر...",
+      "actions": {
+        "resolve": "حل النزاع",
+        "escalate": "تصعيد للإدارة",
+        "back": "← العودة إلى النزاعات"
+      },
+      "resolveModal": {
+        "title": "حل النزاع",
+        "message": "صف الحل المتفق عليه من الطرفين.",
+        "placeholder": "أدخل تفاصيل الحل...",
+        "confirm": "تأكيد الحل",
+        "cancel": "إلغاء"
+      },
+      "escalateConfirm": "هل أنت متأكد من أنك تريد تصعيد هذا النزاع لمراجعة الإدارة؟",
+      "resolved": "تم حل النزاع بنجاح.",
+      "escalated": "تم تصعيد النزاع للإدارة.",
+      "messageSent": "تم إرسال الرسالة."
+    },
+    "initiate": {
+      "title": "بدء نزاع",
+      "subtitle": "الإبلاغ عن مشكلة في مهمة لبدء عملية التوفيق.",
+      "fields": {
+        "mission": "المهمة",
+        "missionPlaceholder": "اختر مهمة",
+        "reason": "سبب النزاع",
+        "reasonPlaceholder": "صف المشكلة التي تواجهها مع هذه المهمة..."
+      },
+      "submit": "إرسال النزاع",
+      "submitting": "جاري الإرسال...",
+      "submitted": "تم بدء النزاع بنجاح.",
+      "back": "← رجوع",
+      "validation": {
+        "missionRequired": "يرجى اختيار مهمة.",
+        "reasonRequired": "يرجى وصف سبب هذا النزاع."
+      }
+    }
   }
 }

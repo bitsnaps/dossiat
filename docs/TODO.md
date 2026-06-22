@@ -231,6 +231,7 @@
 - [x] Create `src/stores/payments.ts` — Payment history, credit balance
 - [x] Create `src/stores/subscriptions.ts` — Current plan, billing info
 - [x] Create `src/stores/ui.ts` — Sidebar state, theme preferences, loading states
+- [x] Create `src/stores/disputes.ts` — Disputes list, current dispute, messaging, resolve/escalate
 
 ### 4c. Composables
 
@@ -355,9 +356,9 @@
 
 ### 5i. Disputes
 
-- [ ] Create `DisputeListView.vue` — List of disputes for current user
-- [ ] Create `DisputeDetailView.vue` — Dispute reconciliation room with structured messaging
-- [ ] Create `DisputeInitiateView.vue` — Form to initiate a dispute on a mission
+- [x] Create `DisputeListView.vue` — List of disputes for current user
+- [x] Create `DisputeDetailView.vue` — Dispute reconciliation room with structured messaging
+- [x] Create `DisputeInitiateView.vue` — Form to initiate a dispute on a mission
 
 ### 5j. Settings
 

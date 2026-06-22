@@ -173,8 +173,20 @@ const router = createRouter({
         {
           path: 'disputes',
           name: 'disputes',
-          component: () => import('@/views/DashboardView.vue'),
+          component: () => import('@/views/disputes/DisputeListView.vue'),
           meta: { requiresAuth: true, title: 'Disputes' },
+        },
+        {
+          path: 'disputes/initiate',
+          name: 'dispute-initiate',
+          component: () => import('@/views/disputes/DisputeInitiateView.vue'),
+          meta: { requiresAuth: true, title: 'Initiate Dispute' },
+        },
+        {
+          path: 'disputes/:id',
+          name: 'dispute-detail',
+          component: () => import('@/views/disputes/DisputeDetailView.vue'),
+          meta: { requiresAuth: true, title: 'Dispute Detail' },
         },
         {
           path: 'onboarding',
