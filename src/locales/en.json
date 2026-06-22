@@ -807,5 +807,75 @@
       "confirmed": "Confirmed",
       "failed": "Failed"
     }
+  },
+  "subscriptions": {
+    "plans": {
+      "title": "Subscription Plans",
+      "subtitle": "Choose the plan that fits your team. All plans include the full mission workflow.",
+      "currentPlan": "Current Plan",
+      "perMonth": "/mo",
+      "maxSeats": "{count} user seats",
+      "maxSeatsUnlimited": "Unlimited user seats",
+      "maxRecurrent": "{count} recurrent missions/mo",
+      "maxRecurrentUnlimited": "Unlimited recurrent missions",
+      "subscribe": "Subscribe",
+      "subscribing": "Subscribing...",
+      "subscribed": "Subscribed",
+      "cta": "Start free trial",
+      "ctaEnterprise": "Talk to sales",
+      "popular": "Most popular",
+      "currencyNote": "All prices in USD. Multi-currency support available on every plan."
+    },
+    "manage": {
+      "title": "Manage Subscription",
+      "subtitle": "View and manage your current subscription plan.",
+      "noSubscription": "No Active Subscription",
+      "noSubscriptionHint": "You don't have an active subscription yet. Choose a plan to get started.",
+      "browsePlans": "Browse Plans",
+      "currentPlan": "Current Plan",
+      "planDetails": "Plan Details",
+      "seats": "User Seats",
+      "recurrentMissions": "Recurrent Missions",
+      "periodStart": "Period Start",
+      "periodEnd": "Period End",
+      "status": "Status",
+      "active": "Active",
+      "pastDue": "Past Due",
+      "cancelled": "Cancelled",
+      "switchPlan": "Change Plan",
+      "selectPlan": "Select a plan to switch to",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade",
+      "changePlan": "Change Plan",
+      "changing": "Changing...",
+      "planChanged": "Your plan has been updated successfully.",
+      "cancelSubscription": "Cancel Subscription",
+      "cancelConfirmTitle": "Cancel Subscription",
+      "cancelConfirmMessage": "Are you sure you want to cancel your subscription? You will retain access until the end of your current billing period.",
+      "cancelConfirm": "Yes, Cancel",
+      "cancelConfirmDeny": "Keep Subscription",
+      "cancelledSuccess": "Your subscription has been cancelled.",
+      "manageBilling": "Manage Billing",
+      "manageBillingHint": "Update payment methods, view invoices, and manage your billing details.",
+      "openPortal": "Open Billing Portal"
+    },
+    "billing": {
+      "title": "Billing History",
+      "subtitle": "View your subscription invoices and payment history.",
+      "columns": {
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status",
+        "paidAt": "Paid At"
+      },
+      "status": {
+        "pending": "Pending",
+        "paid": "Paid",
+        "failed": "Failed"
+      },
+      "noInvoices": "No invoices found.",
+      "noInvoicesHint": "Invoices will appear here once your subscription billing begins.",
+      "backToManage": "← Back to Manage Subscription"
+    }
   }
 }

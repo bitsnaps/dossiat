@@ -807,5 +807,75 @@
       "confirmed": "مؤكد",
       "failed": "فشل"
     }
+  },
+  "subscriptions": {
+    "plans": {
+      "title": "خطط الاشتراك",
+      "subtitle": "اختر الخطة المناسبة لفريقك. جميع الخطط تشمل سير عمل المهمات الكامل.",
+      "currentPlan": "الخطة الحالية",
+      "perMonth": "/شهرياً",
+      "maxSeats": "{count} أماكن مستخدم",
+      "maxSeatsUnlimited": "أماكن مستخدم غير محدودة",
+      "maxRecurrent": "{count} مهمات دورية/شهرياً",
+      "maxRecurrentUnlimited": "مهمات دورية غير محدودة",
+      "subscribe": "اشترك",
+      "subscribing": "جارٍ الاشتراك...",
+      "subscribed": "مشترك",
+      "cta": "تجربة مجانية",
+      "ctaEnterprise": "تحدث مع المبيعات",
+      "popular": "الأكثر شعبية",
+      "currencyNote": "جميع الأسعار بالدولار الأمريكي. الدعم متعدد العملات متاح في جميع الخطط."
+    },
+    "manage": {
+      "title": "إدارة الاشتراك",
+      "subtitle": "عرض وإدارة خطة الاشتراك الحالية.",
+      "noSubscription": "لا يوجد اشتراك نشط",
+      "noSubscriptionHint": "ليس لديك اشتراك نشط بعد. اختر خطة للبدء.",
+      "browsePlans": "عرض الخطط",
+      "currentPlan": "الخطة الحالية",
+      "planDetails": "تفاصيل الخطة",
+      "seats": "أماكن المستخدم",
+      "recurrentMissions": "المهمات الدورية",
+      "periodStart": "بداية الفترة",
+      "periodEnd": "نهاية الفترة",
+      "status": "الحالة",
+      "active": "نشط",
+      "pastDue": "متأخر",
+      "cancelled": "ملغى",
+      "switchPlan": "تغيير الخطة",
+      "selectPlan": "اختر خطة للتحويل",
+      "upgrade": "ترقية",
+      "downgrade": "تخفيض",
+      "changePlan": "تغيير الخطة",
+      "changing": "جارٍ التغيير...",
+      "planChanged": "تم تحديث خطتك بنجاح.",
+      "cancelSubscription": "إلغاء الاشتراك",
+      "cancelConfirmTitle": "إلغاء الاشتراك",
+      "cancelConfirmMessage": "هل أنت متأكد من أنك تريد إلغاء اشتراكك؟ ستحتفظ بالوصول حتى نهاية فترة الفوترة الحالية.",
+      "cancelConfirm": "نعم، إلغاء",
+      "cancelConfirmDeny": "الاحتفاظ بالاشتراك",
+      "cancelledSuccess": "تم إلغاء اشتراكك.",
+      "manageBilling": "إدارة الفوترة",
+      "manageBillingHint": "حدّث طرق الدفع، واطلع على الفواتير، وأدر تفاصيل الفوترة.",
+      "openPortal": "فتح بوابة الفوترة"
+    },
+    "billing": {
+      "title": "سجل الفوترة",
+      "subtitle": "عرض فواتير الاشتراك وسجل الدفعات.",
+      "columns": {
+        "date": "التاريخ",
+        "amount": "المبلغ",
+        "status": "الحالة",
+        "paidAt": "تاريخ الدفع"
+      },
+      "status": {
+        "pending": "قيد الانتظار",
+        "paid": "مدفوع",
+        "failed": "فشل"
+      },
+      "noInvoices": "لم يتم العثور على فواتير.",
+      "noInvoicesHint": "ستظهر الفواتير هنا بمجرد بدء فوترة اشتراكك.",
+      "backToManage": "← العودة إلى إدارة الاشتراك"
+    }
   }
 }

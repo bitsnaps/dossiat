@@ -150,9 +150,25 @@ const router = createRouter({
         },
         {
           path: 'subscriptions',
-          name: 'subscriptions',
-          component: () => import('@/views/DashboardView.vue'),
-          meta: { requiresAuth: true, roles: ['client'], title: 'Subscriptions' },
+          redirect: { name: 'subscription-manage' },
+        },
+        {
+          path: 'subscriptions/plans',
+          name: 'subscription-plans',
+          component: () => import('@/views/subscription/SubscriptionPlansView.vue'),
+          meta: { requiresAuth: true, roles: ['client'], title: 'Subscription Plans' },
+        },
+        {
+          path: 'subscriptions/manage',
+          name: 'subscription-manage',
+          component: () => import('@/views/subscription/SubscriptionManageView.vue'),
+          meta: { requiresAuth: true, roles: ['client'], title: 'Manage Subscription' },
+        },
+        {
+          path: 'subscriptions/billing',
+          name: 'subscription-billing',
+          component: () => import('@/views/subscription/SubscriptionBillingView.vue'),
+          meta: { requiresAuth: true, roles: ['client'], title: 'Billing History' },
         },
         {
           path: 'disputes',

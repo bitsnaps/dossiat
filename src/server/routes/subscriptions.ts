@@ -72,6 +72,25 @@ subscriptions.get('/me', authenticate(), roleGuard('client'), async (c) => {
   return successResponse(c, subscription)
 })
 
+// GET /api/subscriptions/me/invoices
+subscriptions.get('/me/invoices', authenticate(), roleGuard('client'), async (c) => {
+  const auth = c.get('auth')
+  const clientProfile = await ClientProfile.findOne({ where: { userId: auth.userId } })
+  if (!clientProfile) throw new AppError('Client profile not found', 404)
+
+  const subscription = await Subscription.findOne({
+    where: { clientId: clientProfile.id, status: 'active' },
+  })
+  if (!subscription) throw new AppError('No active subscription', 404)
+
+  const invoices = await SubscriptionInvoice.findAll({
+    where: { subscriptionId: subscription.id },
+    order: [['createdAt', 'DESC']],
+  })
+
+  return successResponse(c, invoices)
+})
+
 // PUT /api/subscriptions/me
 subscriptions.put('/me',
   authenticate(),

@@ -807,5 +807,75 @@
       "confirmed": "Confirmé",
       "failed": "Échoué"
     }
+  },
+  "subscriptions": {
+    "plans": {
+      "title": "Plans d'abonnement",
+      "subtitle": "Choisissez le plan qui correspond à votre équipe. Tous les plans incluent le workflow complet des missions.",
+      "currentPlan": "Plan actuel",
+      "perMonth": "/mois",
+      "maxSeats": "{count} places utilisateur",
+      "maxSeatsUnlimited": "Places utilisateur illimitées",
+      "maxRecurrent": "{count} missions récurrentes/mois",
+      "maxRecurrentUnlimited": "Missions récurrentes illimitées",
+      "subscribe": "S'abonner",
+      "subscribing": "Abonnement en cours...",
+      "subscribed": "Abonné",
+      "cta": "Essai gratuit",
+      "ctaEnterprise": "Parler aux ventes",
+      "popular": "Le plus populaire",
+      "currencyNote": "Tous les prix en USD. Support multi-devises disponible sur tous les plans."
+    },
+    "manage": {
+      "title": "Gérer l'abonnement",
+      "subtitle": "Consultez et gérez votre plan d'abonnement actuel.",
+      "noSubscription": "Aucun abonnement actif",
+      "noSubscriptionHint": "Vous n'avez pas encore d'abonnement actif. Choisissez un plan pour commencer.",
+      "browsePlans": "Voir les plans",
+      "currentPlan": "Plan actuel",
+      "planDetails": "Détails du plan",
+      "seats": "Places utilisateur",
+      "recurrentMissions": "Missions récurrentes",
+      "periodStart": "Début de période",
+      "periodEnd": "Fin de période",
+      "status": "Statut",
+      "active": "Actif",
+      "pastDue": "En retard",
+      "cancelled": "Annulé",
+      "switchPlan": "Changer de plan",
+      "selectPlan": "Sélectionnez un plan pour changer",
+      "upgrade": "Upgrade",
+      "downgrade": "Downgrade",
+      "changePlan": "Changer de plan",
+      "changing": "Changement en cours...",
+      "planChanged": "Votre plan a été mis à jour avec succès.",
+      "cancelSubscription": "Annuler l'abonnement",
+      "cancelConfirmTitle": "Annuler l'abonnement",
+      "cancelConfirmMessage": "Êtes-vous sûr de vouloir annuler votre abonnement ? Vous conserverez l'accès jusqu'à la fin de votre période de facturation en cours.",
+      "cancelConfirm": "Oui, annuler",
+      "cancelConfirmDeny": "Conserver l'abonnement",
+      "cancelledSuccess": "Votre abonnement a été annulé.",
+      "manageBilling": "Gérer la facturation",
+      "manageBillingHint": "Mettez à jour les méthodes de paiement, consultez les factures et gérez vos détails de facturation.",
+      "openPortal": "Ouvrir le portail de facturation"
+    },
+    "billing": {
+      "title": "Historique de facturation",
+      "subtitle": "Consultez vos factures d'abonnement et l'historique des paiements.",
+      "columns": {
+        "date": "Date",
+        "amount": "Montant",
+        "status": "Statut",
+        "paidAt": "Payé le"
+      },
+      "status": {
+        "pending": "En attente",
+        "paid": "Payé",
+        "failed": "Échoué"
+      },
+      "noInvoices": "Aucune facture trouvée.",
+      "noInvoicesHint": "Les factures apparaîtront ici une fois que la facturation de votre abonnement commencera.",
+      "backToManage": "← Retour à la gestion de l'abonnement"
+    }
   }
 }

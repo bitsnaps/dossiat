@@ -349,9 +349,9 @@
 
 ### 5h. Subscriptions
 
-- [ ] Create `SubscriptionPlansView.vue` — Display 3 tiers with feature comparison (port from landing page pricing section)
-- [ ] Create `SubscriptionManageView.vue` — Current plan details, upgrade/downgrade, cancel
-- [ ] Create `SubscriptionBillingView.vue` — Billing history and invoices
+- [x] Create `SubscriptionPlansView.vue` — Display 3 tiers with feature comparison (port from landing page pricing section)
+- [x] Create `SubscriptionManageView.vue` — Current plan details, upgrade/downgrade, cancel
+- [x] Create `SubscriptionBillingView.vue` — Billing history and invoices
 
 ### 5i. Disputes
 
