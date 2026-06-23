@@ -707,6 +707,7 @@
     "verifiedAgent": "وكيل موثّق"
   },
   "nav": {
+    "dashboard": "لوحة التحكم",
     "faq": "الأسئلة الشائعة",
     "features": "المميزات",
     "forAgents": "للوكلاء",

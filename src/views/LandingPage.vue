@@ -1,11 +1,20 @@
 <script lang="ts" setup>
 import { onMounted, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useDirection } from '@/composables/useDirection'
+import { useAuthStore } from '@/stores/auth'
 import BLanguageSwitcher from '@/components/base/BLanguageSwitcher.vue'
 
 const { t } = useI18n()
+const router = useRouter()
+const authStore = useAuthStore()
 useDirection()
+
+async function handleLogout() {
+  await authStore.logout()
+  router.push('/')
+}
 
 onMounted(async () => {
   await nextTick()
@@ -38,9 +47,9 @@ onMounted(async () => {
     <!-- NAV -->
     <nav class="navbar navbar-expand-lg fixed-top">
       <div class="container">
-        <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <RouterLink class="navbar-brand d-flex align-items-center gap-2 text-accent" to="/">
           <span class="dot"></span> Dossiat
-        </a>
+        </RouterLink>
         <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
           <i class="bi bi-list text-light fs-3"></i>
         </button>
@@ -54,8 +63,14 @@ onMounted(async () => {
           </ul>
           <div class="d-flex gap-2 mt-3 mt-lg-0 align-items-center">
             <BLanguageSwitcher />
-            <RouterLink to="/login" class="btn btn-outline-light-custom">{{ t('nav.signIn') }}</RouterLink>
-            <RouterLink to="/register" class="btn btn-accent">{{ t('nav.getStarted') }}</RouterLink>
+            <template v-if="!authStore.isAuthenticated">
+              <RouterLink to="/login" class="btn btn-outline-light-custom">{{ t('nav.signIn') }}</RouterLink>
+              <RouterLink to="/register" class="btn btn-accent">{{ t('nav.getStarted') }}</RouterLink>
+            </template>
+            <template v-else>
+              <RouterLink to="/app/dashboard" class="btn btn-outline-light-custom">{{ t('nav.dashboard') }}</RouterLink>
+              <button class="btn btn-accent" @click="handleLogout">{{ t('layout.topbar.logout') }}</button>
+            </template>
           </div>
         </div>
       </div>

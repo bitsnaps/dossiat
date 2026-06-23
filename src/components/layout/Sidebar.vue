@@ -63,7 +63,9 @@ async function handleLogout() {
   <aside class="ds-sidebar" :class="{ 'ds-sidebar--collapsed': collapsed, 'ds-sidebar--mobile-open': mobileOpen }">
     <div class="ds-sidebar__brand" @click="emit('toggle')">
       <span class="ds-sidebar__brand-dot" />
-      <span class="ds-sidebar__brand-name">{{ t('layout.sidebar.brand') }}</span>
+      <RouterLink to="/" class="ds-sidebar__brand-name">
+        {{ t('layout.sidebar.brand') }}
+      </RouterLink>
     </div>
 
     <nav class="ds-sidebar__nav">

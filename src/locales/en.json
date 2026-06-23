@@ -6,7 +6,8 @@
     "pricing": "Pricing",
     "faq": "FAQ",
     "signIn": "Sign in",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "dashboard": "Dashboard"
   },
   "hero": {
     "badge": "Now in private beta",
