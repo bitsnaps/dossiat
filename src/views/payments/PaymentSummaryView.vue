@@ -5,6 +5,7 @@ import { usePaymentsStore } from '@/stores/payments'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const store = usePaymentsStore()
@@ -78,8 +79,18 @@ function formatAmount(amount: number, currency: string) {
 
     <p class="ds-payment-summary__subtitle">{{ t('payments.summary.subtitle') }}</p>
 
+    <!-- Stat Cards — Skeleton -->
+    <div v-if="store.loading" class="ds-payment-summary__stats">
+      <BCard v-for="i in 3" :key="i" variant="bordered" padding="sm">
+        <div class="ds-payment-summary__stat">
+          <SkeletonLoader variant="text" width="60%" height="10px" />
+          <SkeletonLoader variant="text" width="40%" height="18px" />
+        </div>
+      </BCard>
+    </div>
+
     <!-- Stat Cards -->
-    <div class="ds-payment-summary__stats">
+    <div v-else class="ds-payment-summary__stats">
       <BCard variant="bordered" padding="sm" class="ds-payment-summary__stat">
         <span class="ds-payment-summary__stat-label">{{ t('payments.summary.totalSent') }}</span>
         <span class="ds-payment-summary__stat-value">{{ formatAmount(totalSent, 'USD') }}</span>

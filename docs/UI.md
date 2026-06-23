@@ -187,3 +187,149 @@ Full-featured data table with search, sort, filter, pagination, selection, and e
 **Events:** `sort-change`, `filter-change`, `page-change`, `page-size-change`, `selection-change`, `row-click`, `row-expand`, `update:search-query`
 
 **Slots:** `header-{key}`, `cell-{key}` (scoped: `{ row, value, index }`), `expanded-row`, `empty`, `loading`, `toolbar-left`, `toolbar-right`, `footer-left`, `footer-right`
+
+---
+
+## 🎨 Design Tokens
+
+All design tokens are defined as CSS custom properties in [`:root`](src/assets/main.css:5) of `src/assets/main.css`.
+
+### Colors
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--ds-bg` | `#0a0e1a` | Page background |
+| `--ds-bg-2` | `#0f1424` | Elevated background (sidebar, footer) |
+| `--ds-surface` | `#131a2e` | Card/panel surface |
+| `--ds-surface-2` | `#1a2238` | Hover/active surface |
+| `--ds-border` | `rgba(255,255,255,0.08)` | Default borders |
+| `--ds-border-strong` | `rgba(255,255,255,0.14)` | Emphasized borders |
+| `--ds-text` | `#e8ecf4` | Primary text |
+| `--ds-text-muted` | `#9aa3b8` | Secondary/muted text |
+| `--ds-accent` | `#c8ff00` | Primary accent (lime green) |
+| `--ds-accent-2` | `#7c5cff` | Secondary accent (purple) |
+| `--ds-accent-3` | `#00d4ff` | Tertiary accent (cyan) |
+| `--ds-warm` | `#ff7a59` | Danger/warning accent |
+| `--ds-success` | `#28c840` | Success indicator |
+| `--ds-grad` | 135deg gradient | Multi-accent gradient |
+| `--ds-grad-soft` | Soft gradient | Subtle gradient backgrounds |
+
+### Typography
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--ds-text-xs` | `0.6875rem` | 11px — tiny labels |
+| `--ds-text-sm` | `0.75rem` | 12px — small text |
+| `--ds-text-base` | `0.8125rem` | 13px — base/body |
+| `--ds-text-md` | `0.875rem` | 14px — medium text |
+| `--ds-text-lg` | `1rem` | 16px — large text |
+| `--ds-text-xl` | `1.125rem` | 18px — extra large |
+| `--ds-text-2xl` | `1.25rem` | 20px — section title |
+| `--ds-text-3xl` | `1.5rem` | 24px — page title |
+
+### Spacing
+
+| Token | Value | Pixels |
+|-------|-------|--------|
+| `--ds-space-1` | `0.25rem` | 4px |
+| `--ds-space-2` | `0.5rem` | 8px |
+| `--ds-space-3` | `0.75rem` | 12px |
+| `--ds-space-4` | `1rem` | 16px |
+| `--ds-space-5` | `1.25rem` | 20px |
+| `--ds-space-6` | `1.5rem` | 24px |
+| `--ds-space-7` | `2rem` | 32px |
+| `--ds-space-8` | `2.5rem` | 40px |
+| `--ds-space-9` | `3rem` | 48px |
+| `--ds-space-10` | `4rem` | 64px |
+
+### Border Radius
+
+| Token | Value |
+|-------|-------|
+| `--ds-radius-xs` | `4px` |
+| `--ds-radius-sm` | `6px` |
+| `--ds-radius-md` | `8px` |
+| `--ds-radius-lg` | `12px` |
+| `--ds-radius-xl` | `16px` |
+| `--ds-radius-2xl` | `20px` |
+| `--ds-radius-3xl` | `24px` |
+| `--ds-radius-full` | `100px` |
+
+### Shadows
+
+| Token | Value |
+|-------|-------|
+| `--ds-shadow-sm` | `0 2px 8px rgba(0,0,0,0.3)` |
+| `--ds-shadow-md` | `0 4px 16px rgba(0,0,0,0.4)` |
+| `--ds-shadow-lg` | `0 8px 32px rgba(0,0,0,0.5)` |
+| `--ds-shadow-xl` | `0 20px 60px rgba(0,0,0,0.6)` |
+
+### Transitions
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--ds-duration-fast` | `0.15s` | Hover states, color changes |
+| `--ds-duration-normal` | `0.25s` | Transforms, layout shifts |
+| `--ds-duration-slow` | `0.4s` | Page transitions, reveals |
+
+### Utility Classes
+
+Layout: `.ds-flex`, `.ds-flex-col`, `.ds-flex-wrap`, `.ds-flex-1`, `.ds-items-center`, `.ds-justify-center`, `.ds-justify-between`
+
+Gap: `.ds-gap-1` through `.ds-gap-6`
+
+Spacing: `.ds-p-0` through `.ds-p-6`, `.ds-m-0`, `.ds-mt-1`–`.ds-mt-4`, `.ds-mb-1`–`.ds-mb-4`
+
+Text: `.ds-text-center`, `.ds-text-start`, `.ds-text-end`, `.ds-text-xs`–`.ds-text-3xl`, `.ds-font-medium`, `.ds-font-semibold`, `.ds-font-bold`, `.ds-truncate`
+
+Sizing: `.ds-w-full`, `.ds-h-full`, `.ds-max-w-480`, `.ds-max-w-720`
+
+Responsive: `.ds-show-mobile` / `.ds-show-desktop`, `.ds-hidden-mobile` / `.ds-hidden-desktop`
+
+---
+
+## 🔄 SkeletonLoader
+
+Configurable shimmer skeleton placeholder for async data loading.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `variant` | `'text' \| 'circle' \| 'card' \| 'line' \| 'avatar' \| 'badge'` | `'text'` | Skeleton shape |
+| `width` | `string` | `'100%'` | Custom width |
+| `height` | `string` | auto | Custom height |
+| `lines` | `number` | `3` | Number of lines (text/card variants) |
+
+**Usage patterns:**
+
+- **Stats grid:** 4 skeleton cards with avatar + 2 text lines each
+- **Table rows:** Skeleton rows with text + badge placeholders
+- **Form loading:** Skeleton text lines in card layout
+- **Message list:** Avatar + text skeleton per row
+
+CSS classes: `.ds-skeleton`, `.ds-skeleton--text`, `.ds-skeleton--circle`, `.ds-skeleton--line`, `.ds-skeleton--card`, `.ds-skeleton--avatar`, `.ds-skeleton--badge`
+
+---
+
+## 📐 Responsive Design
+
+### Breakpoints
+
+| Breakpoint | Width | Behavior |
+|------------|-------|----------|
+| Desktop | `> 768px` | Full sidebar, multi-column layouts |
+| Mobile | `≤ 768px` | Hidden sidebar (hamburger toggle), stacked layouts |
+
+### Mobile Sidebar
+
+- Sidebar slides in from the left via `ds-sidebar--mobile-open` class
+- Semi-transparent overlay (`ds-sidebar-overlay`) behind sidebar
+- Tapping a nav link or the overlay closes the sidebar
+- TopNavbar hamburger button toggles the sidebar
+
+### Responsive Patterns
+
+- Dashboard stats: 4 columns → 2 columns (≤1200px) → 1 column (≤640px)
+- Tables: Header row hidden on mobile, content stacked
+- Forms: Fields stack vertically
+- Content grids: 2-column → 1-column on mobile
+- App layout padding: 2.5rem → 1rem on mobile

@@ -8,13 +8,25 @@ const uiStore = useUiStore()
 
 <template>
   <div class="ds-app-layout">
-    <Sidebar :collapsed="uiStore.sidebarCollapsed" @toggle="uiStore.toggleSidebar" />
+    <!-- Mobile sidebar overlay -->
+    <div
+      v-if="uiStore.sidebarOpen"
+      class="ds-sidebar-overlay"
+      @click="uiStore.closeMobileSidebar"
+    />
+
+    <Sidebar
+      :collapsed="uiStore.sidebarCollapsed"
+      :mobile-open="uiStore.sidebarOpen"
+      @toggle="uiStore.toggleSidebar"
+      @close-mobile="uiStore.closeMobileSidebar"
+    />
 
     <div
       class="ds-app-layout__main"
       :class="{ 'ds-app-layout__main--sidebar-collapsed': uiStore.sidebarCollapsed }"
     >
-      <TopNavbar @toggle-sidebar="uiStore.toggleSidebar" />
+      <TopNavbar @toggle-sidebar="uiStore.toggleMobileSidebar" />
 
       <main class="ds-app-layout__content">
         <RouterView />

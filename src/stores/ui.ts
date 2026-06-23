@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 
 export const useUiStore = defineStore('ui', () => {
   const sidebarCollapsed = ref(false)
+  const sidebarOpen = ref(false)
   const loadingStates = ref<Record<string, boolean>>({})
   const theme = ref<'dark' | 'light'>('dark')
 
@@ -12,6 +13,14 @@ export const useUiStore = defineStore('ui', () => {
 
   function toggleSidebar() {
     sidebarCollapsed.value = !sidebarCollapsed.value
+  }
+
+  function toggleMobileSidebar() {
+    sidebarOpen.value = !sidebarOpen.value
+  }
+
+  function closeMobileSidebar() {
+    sidebarOpen.value = false
   }
 
   function setSidebarCollapsed(value: boolean) {
@@ -32,10 +41,13 @@ export const useUiStore = defineStore('ui', () => {
 
   return {
     sidebarCollapsed,
+    sidebarOpen,
     loadingStates,
     theme,
     isLoading,
     toggleSidebar,
+    toggleMobileSidebar,
+    closeMobileSidebar,
     setSidebarCollapsed,
     setLoading,
     clearLoading,

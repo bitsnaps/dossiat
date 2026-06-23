@@ -7,6 +7,7 @@ import { useAuthStore } from '@/stores/auth'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const router = useRouter()
@@ -60,9 +61,17 @@ function lastMessagePreview(conv: any): string {
       <h1 class="ds-message-list-view__title">{{ t('messages.title') }}</h1>
     </div>
 
-    <!-- Loading -->
+    <!-- Loading — Skeleton -->
     <div v-if="messagesStore.loading" class="ds-message-list-view__loading">
-      <div class="spinner-border" role="status" />
+      <BCard variant="bordered" padding="none">
+        <div v-for="i in 5" :key="i" class="ds-message-list-view__item">
+          <SkeletonLoader variant="avatar" width="40px" height="40px" />
+          <div class="ds-message-list-view__content">
+            <SkeletonLoader variant="text" width="60%" height="12px" />
+            <SkeletonLoader variant="text" width="80%" height="10px" />
+          </div>
+        </div>
+      </BCard>
     </div>
 
     <!-- Empty State -->
@@ -205,7 +214,7 @@ function lastMessagePreview(conv: any): string {
 .ds-message-list-view__unread-dot {
   position: absolute;
   top: 0;
-  right: 0;
+  inset-inline-end: 0;
   width: 8px;
   height: 8px;
   border-radius: 50%;

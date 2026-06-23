@@ -8,6 +8,7 @@ import BButton from '@/components/base/BButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import EmptyState from '@/components/common/EmptyState.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const missionsStore = useMissionsStore()
@@ -93,9 +94,19 @@ function counterpartyName(mission: any) {
       </div>
     </BCard>
 
-    <!-- Loading -->
+    <!-- Loading — Skeleton -->
     <div v-if="missionsStore.loading" class="ds-mission-list-view__loading">
-      <LoadingSpinner :label="t('common.loading')" />
+      <BCard variant="bordered" padding="none">
+        <div class="ds-mission-list">
+          <div v-for="i in 5" :key="i" class="ds-mission-row">
+            <div class="ds-mission-row__info">
+              <SkeletonLoader variant="text" width="60%" height="14px" />
+              <SkeletonLoader variant="text" width="40%" height="10px" />
+            </div>
+            <SkeletonLoader variant="badge" width="72px" height="22px" />
+          </div>
+        </div>
+      </BCard>
     </div>
 
     <!-- Empty State -->

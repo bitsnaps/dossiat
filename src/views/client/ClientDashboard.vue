@@ -7,6 +7,7 @@ import { useMessagesStore } from '@/stores/messages'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const missionsStore = useMissionsStore()
@@ -68,12 +69,27 @@ function statusBadgeVariant(status: string) {
 function statusLabel(status: string) {
   return status.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 }
+
+const isLoading = computed(() => missionsStore.loading && missionsStore.missions.length === 0)
 </script>
 
 <template>
   <div class="ds-client-dashboard">
+    <!-- Stats Cards — Skeleton -->
+    <div v-if="isLoading" class="ds-client-dashboard__stats">
+      <BCard v-for="i in 4" :key="i" variant="elevated" padding="md">
+        <div class="ds-stat">
+          <SkeletonLoader variant="avatar" width="40px" height="40px" />
+          <div class="ds-stat__info ds-gap-1">
+            <SkeletonLoader variant="text" width="48px" height="20px" />
+            <SkeletonLoader variant="text" width="80px" height="12px" />
+          </div>
+        </div>
+      </BCard>
+    </div>
+
     <!-- Stats Cards -->
-    <div class="ds-client-dashboard__stats">
+    <div v-else class="ds-client-dashboard__stats">
       <BCard
         v-for="stat in stats"
         :key="stat.label"

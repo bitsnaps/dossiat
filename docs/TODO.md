@@ -384,12 +384,12 @@
 
 ## 6. Styling & UI
 
-- [ ] Audit and refactor `src/assets/main.css` — extract reusable CSS variables and utility classes
-- [ ] Ensure consistent dark theme across all new pages (navy/black background, gradient accents)
-- [ ] Ensure responsive design — mobile-first approach for all views
-- [ ] Create a style guide or design tokens file documenting colors, typography, spacing, and component patterns
-- [ ] Verify all pages work with Bootstrap 5 grid and utility classes consistently
-- [ ] Add loading states and skeleton screens for async data fetching
+- [x] Audit and refactor `src/assets/main.css` — extract reusable CSS variables and utility classes
+- [x] Ensure consistent dark theme across all new pages (navy/black background, gradient accents)
+- [x] Ensure responsive design — mobile-first approach for all views
+- [x] Create a style guide or design tokens file documenting colors, typography, spacing, and component patterns
+- [x] Verify all pages work with Bootstrap 5 grid and utility classes consistently
+- [x] Add loading states and skeleton screens for async data fetching
 
 ---
 

@@ -228,4 +228,17 @@ function goToInitiate() {
 .ds-dispute-list__item-action {
   flex-shrink: 0;
 }
+
+@media (max-width: 768px) {
+  .ds-dispute-list__header {
+    flex-direction: column;
+  }
+  .ds-dispute-list__item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .ds-dispute-list__item-action {
+    align-self: flex-end;
+  }
+}
 </style>

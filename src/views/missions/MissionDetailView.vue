@@ -11,6 +11,7 @@ import BButton from '@/components/base/BButton.vue'
 import MissionTimeline from '@/components/mission/MissionTimeline.vue'
 import MissionChecklist from '@/components/mission/MissionChecklist.vue'
 import MissionAttachments from '@/components/mission/MissionAttachments.vue'
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -136,10 +137,30 @@ function goBack() {
       {{ t('missions.detail.backToList') }}
     </button>
 
-    <!-- Loading -->
-    <div v-if="missionsStore.loading && !mission" class="ds-mission-detail__loading">
-      <div class="spinner-border" role="status" />
-    </div>
+    <!-- Loading — Skeleton -->
+    <template v-if="missionsStore.loading && !mission">
+      <div class="ds-mission-detail__loading">
+        <div class="ds-mission-detail ds-gap-6">
+          <SkeletonLoader variant="text" width="120px" height="14px" />
+          <div class="ds-flex ds-items-center ds-gap-3">
+            <SkeletonLoader variant="text" width="300px" height="28px" />
+            <SkeletonLoader variant="badge" width="80px" height="24px" />
+          </div>
+          <div class="ds-mission-detail__info-cards">
+            <SkeletonLoader v-for="i in 4" :key="i" variant="card" />
+          </div>
+          <div class="ds-mission-detail__content-grid">
+            <div class="ds-mission-detail__content-main">
+              <SkeletonLoader variant="card" :lines="3" />
+              <SkeletonLoader variant="card" :lines="4" />
+            </div>
+            <div class="ds-mission-detail__content-aside">
+              <SkeletonLoader variant="card" :lines="3" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </template>
 
     <!-- Not Found -->
     <div v-else-if="!mission" class="ds-mission-detail__empty">

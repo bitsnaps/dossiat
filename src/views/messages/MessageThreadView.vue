@@ -164,4 +164,11 @@ function goBack() {
 .ds-message-thread__empty i {
   font-size: 2rem;
 }
+
+@media (max-width: 768px) {
+  .ds-message-thread {
+    height: calc(100vh - 3.5rem);
+    max-height: calc(100vh - 3.5rem);
+  }
+}
 </style>

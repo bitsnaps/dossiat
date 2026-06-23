@@ -350,4 +350,16 @@ async function handleSubmit() {
   padding-top: 1rem;
   border-top: 1px solid var(--ds-border, #334155);
 }
+
+@media (max-width: 768px) {
+  .ds-mission-create {
+    max-width: 100%;
+  }
+  .ds-form-row {
+    grid-template-columns: 1fr;
+  }
+  .ds-mission-create__actions {
+    flex-direction: column-reverse;
+  }
+}
 </style>

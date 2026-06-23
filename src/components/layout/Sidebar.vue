@@ -9,13 +9,15 @@ const authStore = useAuthStore()
 
 interface Props {
   collapsed?: boolean
+  mobileOpen?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
   collapsed: false,
+  mobileOpen: false,
 })
 
-const emit = defineEmits<{ toggle: [] }>()
+const emit = defineEmits<{ toggle: []; 'close-mobile': [] }>()
 
 const agentLinks = [
   { to: '/app/dashboard', icon: 'bi-grid-1x2', label: 'layout.sidebar.dashboard' },
@@ -45,10 +47,14 @@ function isVisible(link: { roles?: string[] }) {
 function isActive(path: string) {
   return route.path.startsWith(path)
 }
+
+function handleNavClick() {
+  emit('close-mobile')
+}
 </script>
 
 <template>
-  <aside class="ds-sidebar" :class="{ 'ds-sidebar--collapsed': collapsed }">
+  <aside class="ds-sidebar" :class="{ 'ds-sidebar--collapsed': collapsed, 'ds-sidebar--mobile-open': mobileOpen }">
     <div class="ds-sidebar__brand" @click="emit('toggle')">
       <span class="ds-sidebar__brand-dot" />
       <span class="ds-sidebar__brand-name">{{ t('layout.sidebar.brand') }}</span>
@@ -62,6 +68,7 @@ function isActive(path: string) {
         :to="link.to"
         class="ds-sidebar__link"
         :class="{ 'ds-sidebar__link--active': isActive(link.to) }"
+        @click="handleNavClick"
       >
         <i :class="['bi', link.icon]" />
         <span class="ds-sidebar__link-label">{{ t(link.label) }}</span>
@@ -74,6 +81,7 @@ function isActive(path: string) {
           :to="link.to"
           class="ds-sidebar__link"
           :class="{ 'ds-sidebar__link--active': isActive(link.to) }"
+          @click="handleNavClick"
         >
           <i :class="['bi', link.icon]" />
           <span class="ds-sidebar__link-label">{{ t(link.label) }}</span>
@@ -87,6 +95,7 @@ function isActive(path: string) {
           :to="link.to"
           class="ds-sidebar__link"
           :class="{ 'ds-sidebar__link--active': isActive(link.to) }"
+          @click="handleNavClick"
         >
           <i :class="['bi', link.icon]" />
           <span class="ds-sidebar__link-label">{{ t(link.label) }}</span>

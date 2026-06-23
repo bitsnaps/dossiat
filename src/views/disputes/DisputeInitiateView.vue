@@ -196,4 +196,13 @@ async function handleSubmit() {
   justify-content: flex-end;
   gap: 0.5rem;
 }
+
+@media (max-width: 768px) {
+  .ds-dispute-initiate {
+    max-width: 100%;
+  }
+  .ds-dispute-initiate__actions {
+    flex-direction: column-reverse;
+  }
+}
 </style>

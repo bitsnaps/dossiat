@@ -323,4 +323,16 @@ async function handleDecline() {
   padding-top: 1.5rem;
   border-top: 1px solid var(--ds-border, #334155);
 }
+
+@media (max-width: 768px) {
+  .ds-mission-agreement {
+    max-width: 100%;
+  }
+  .ds-mission-agreement__summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .ds-mission-agreement__actions {
+    flex-direction: column-reverse;
+  }
+}
 </style>

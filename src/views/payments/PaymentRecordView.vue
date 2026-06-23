@@ -250,4 +250,13 @@ async function handleSubmit() {
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
+
+@media (max-width: 768px) {
+  .ds-payment-record {
+    max-width: 100%;
+  }
+  .ds-payment-record__actions {
+    flex-direction: column-reverse;
+  }
+}
 </style>

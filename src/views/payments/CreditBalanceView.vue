@@ -8,6 +8,7 @@ import BButton from '@/components/base/BButton.vue'
 import BInput from '@/components/base/BInput.vue'
 import BAlert from '@/components/base/BAlert.vue'
 import CurrencyDisplay from '@/components/common/CurrencyDisplay.vue'
+import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
 
 const { t } = useI18n()
 const store = usePaymentsStore()
@@ -75,8 +76,16 @@ async function handlePurchase() {
       {{ store.error }}
     </BAlert>
 
+    <!-- Balance Card — Skeleton -->
+    <BCard v-if="store.loading && !store.creditBalance" variant="bordered" padding="md" class="ds-credit-balance__balance">
+      <div class="ds-credit-balance__balance-content">
+        <SkeletonLoader variant="text" width="60px" height="10px" />
+        <SkeletonLoader variant="text" width="120px" height="24px" />
+      </div>
+    </BCard>
+
     <!-- Balance Card -->
-    <BCard variant="bordered" padding="md" class="ds-credit-balance__balance">
+    <BCard v-else variant="bordered" padding="md" class="ds-credit-balance__balance">
       <div class="ds-credit-balance__balance-content">
         <span class="ds-credit-balance__balance-label">{{ t('payments.credits.balance') }}</span>
         <CurrencyDisplay
