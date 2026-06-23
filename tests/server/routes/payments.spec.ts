@@ -13,13 +13,13 @@ beforeAll(async () => {
   await CreditTransaction.destroy({ where: {} })
   await PlatformCredit.destroy({ where: {} })
   await Payment.destroy({ where: {} })
-  await Mission.destroy({ where: {} })
+  // await Mission.destroy({ where: {} })
   await EmailVerificationToken.destroy({ where: {} })
   await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
-  await ClientProfile.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  // await ClientProfile.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 
   const agentRes = await app.request('/api/auth/register', {
     method: 'POST',

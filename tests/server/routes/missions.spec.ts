@@ -16,7 +16,7 @@ beforeAll(async () => {
   await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
-  await ClientProfile.destroy({ where: {} })
+  // await ClientProfile.destroy({ where: {} })
   // await User.destroy({ where: {} })
 
   // Register agent
