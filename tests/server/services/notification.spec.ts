@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { User, AgentProfile, ClientProfile, RefreshToken, Notification } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, RefreshToken, Notification, EmailVerificationToken, PasswordResetToken } from '@/server/database/models'
 import { createNotification, bulkCreateNotifications } from '@/server/services/notification'
 
 let testUserId: number
@@ -7,10 +7,12 @@ let testUserId2: number
 
 beforeAll(async () => {
   await Notification.destroy({ where: {} })
+  await EmailVerificationToken.destroy({ where: {} })
+  await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
-  await ClientProfile.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  // await ClientProfile.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 
   const user1 = await User.create({
     email: `notif-agent-${Date.now()}@test.com`,
@@ -33,10 +35,12 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await Notification.destroy({ where: {} })
+  await EmailVerificationToken.destroy({ where: {} })
+  await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
-  await ClientProfile.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  // await ClientProfile.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 })
 
 describe('Notification Service', () => {

@@ -1,0 +1,217 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+
+vi.mock('@/services/api', () => ({
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+  del: vi.fn(),
+}))
+
+import { get, post, put, del } from '@/services/api'
+import * as admin from '@/services/admin'
+
+const mockGet = vi.mocked(get)
+const mockPost = vi.mocked(post)
+const mockPut = vi.mocked(put)
+const mockDel = vi.mocked(del)
+
+describe('Admin Service', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  // ─── Stats ───
+
+  describe('getStats()', () => {
+    it('calls GET /admin/stats', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { totalUsers: 10 } } as any)
+
+      const result = await admin.getStats()
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/stats')
+      expect(result).toEqual({ success: true, data: { totalUsers: 10 } })
+    })
+  })
+
+  // ─── Users ───
+
+  describe('getUsers()', () => {
+    it('calls GET /admin/users with params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getUsers({ page: 1, role: 'agent', search: 'John' })
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/users', { params: { page: 1, role: 'agent', search: 'John' } })
+    })
+
+    it('calls GET /admin/users without params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getUsers()
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/users', { params: undefined })
+    })
+  })
+
+  describe('getUser()', () => {
+    it('calls GET /admin/users/:id', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
+
+      const result = await admin.getUser('1')
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/users/1')
+      expect(result).toEqual({ success: true, data: { id: 1 } })
+    })
+  })
+
+  describe('updateUser()', () => {
+    it('calls PUT /admin/users/:id with data', async () => {
+      mockPut.mockResolvedValueOnce({ success: true } as any)
+
+      const result = await admin.updateUser('1', { role: 'agent', emailVerified: true })
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/users/1', { role: 'agent', emailVerified: true })
+      expect(result).toEqual({ success: true })
+    })
+  })
+
+  describe('deleteUser()', () => {
+    it('calls DELETE /admin/users/:id', async () => {
+      mockDel.mockResolvedValueOnce({ success: true } as any)
+
+      const result = await admin.deleteUser('1')
+
+      expect(mockDel).toHaveBeenCalledWith('/admin/users/1')
+      expect(result).toEqual({ success: true })
+    })
+  })
+
+  // ─── Missions ───
+
+  describe('getMissions()', () => {
+    it('calls GET /admin/missions with params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getMissions({ status: 'in_progress', search: 'test' })
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/missions', { params: { status: 'in_progress', search: 'test' } })
+    })
+  })
+
+  describe('getMission()', () => {
+    it('calls GET /admin/missions/:id', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
+
+      await admin.getMission('1')
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/missions/1')
+    })
+  })
+
+  describe('updateMissionStatus()', () => {
+    it('calls PUT /admin/missions/:id/status', async () => {
+      mockPut.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.updateMissionStatus('1', 'completed')
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/missions/1/status', { status: 'completed' })
+    })
+  })
+
+  // ─── Payments ───
+
+  describe('getPayments()', () => {
+    it('calls GET /admin/payments with params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getPayments({ status: 'confirmed', method: 'stripe' })
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/payments', { params: { status: 'confirmed', method: 'stripe' } })
+    })
+  })
+
+  describe('getPayment()', () => {
+    it('calls GET /admin/payments/:id', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
+
+      await admin.getPayment('1')
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/payments/1')
+    })
+  })
+
+  // ─── Disputes ───
+
+  describe('getDisputes()', () => {
+    it('calls GET /admin/disputes with params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getDisputes({ status: 'open' })
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/disputes', { params: { status: 'open' } })
+    })
+  })
+
+  describe('getDispute()', () => {
+    it('calls GET /admin/disputes/:id', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
+
+      await admin.getDispute('1')
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/disputes/1')
+    })
+  })
+
+  describe('resolveDispute()', () => {
+    it('calls PUT /admin/disputes/:id/resolve', async () => {
+      mockPut.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.resolveDispute('1', 'Issue resolved by admin')
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/disputes/1/resolve', { resolution: 'Issue resolved by admin' })
+    })
+  })
+
+  // ─── Subscription Plans ───
+
+  describe('getPlans()', () => {
+    it('calls GET /admin/subscription-plans', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getPlans()
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/subscription-plans')
+    })
+  })
+
+  describe('createPlan()', () => {
+    it('calls POST /admin/subscription-plans', async () => {
+      mockPost.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
+
+      const data = { name: 'enterprise', price: 999 }
+      await admin.createPlan(data as any)
+
+      expect(mockPost).toHaveBeenCalledWith('/admin/subscription-plans', data)
+    })
+  })
+
+  describe('updatePlan()', () => {
+    it('calls PUT /admin/subscription-plans/:id', async () => {
+      mockPut.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.updatePlan('1', { price: 599 })
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/subscription-plans/1', { price: 599 })
+    })
+  })
+
+  describe('deletePlan()', () => {
+    it('calls DELETE /admin/subscription-plans/:id', async () => {
+      mockDel.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.deletePlan('1')
+
+      expect(mockDel).toHaveBeenCalledWith('/admin/subscription-plans/1')
+    })
+  })
+})

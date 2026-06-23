@@ -1,15 +1,18 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import app from '@/server/index'
-import { User, ClientProfile, Subscription, SubscriptionPlan, RefreshToken } from '@/server/database/models'
+import { User, ClientProfile, Subscription, SubscriptionPlan, RefreshToken, Notification, EmailVerificationToken, PasswordResetToken } from '@/server/database/models'
 
 let clientToken: string
 let planId: number
 
 beforeAll(async () => {
+  await Notification.destroy({ where: {} })
   await Subscription.destroy({ where: {} })
+  await EmailVerificationToken.destroy({ where: {} })
+  await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await ClientProfile.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 
   const clientRes = await app.request('/api/auth/register', {
     method: 'POST',

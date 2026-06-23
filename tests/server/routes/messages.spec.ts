@@ -1,19 +1,22 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import app from '@/server/index'
-import { User, AgentProfile, ClientProfile, Mission, Conversation, Message, RefreshToken } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, Mission, Conversation, Message, RefreshToken, Notification, EmailVerificationToken, PasswordResetToken } from '@/server/database/models'
 
 let agentToken: string
 let clientToken: string
 let missionId: number
 
 beforeAll(async () => {
+  await Notification.destroy({ where: {} })
   await Message.destroy({ where: {} })
   await Conversation.destroy({ where: {} })
   await Mission.destroy({ where: {} })
+  await EmailVerificationToken.destroy({ where: {} })
+  await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
   await ClientProfile.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 
   const agentRes = await app.request('/api/auth/register', {
     method: 'POST',

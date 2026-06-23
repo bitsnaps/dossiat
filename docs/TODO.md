@@ -192,7 +192,7 @@
 - [x] Create `PUT /api/notifications/read-all` — Mark all notifications as read
 - [x] Implement server-side notification creation on key events (new mission, message, payment confirmation, etc.)
 
-### 3l. Admin Routes (Internal / Future)
+### 3l. Admin Routes (Basic — expanded in Section 13)
 
 - [x] Create `GET /api/admin/users` — List all users (admin only)
 - [x] Create `GET /api/admin/stats` — Platform statistics (total users, missions, revenue)
@@ -495,14 +495,90 @@
 
 ---
 
-## 13. Future Scope (Post-MVP)
+## 13. Admin Management
+
+> Full admin panel with backend CRUD routes, frontend views, service, store, and sidebar. All built using TDD.
+> See detailed plan: `plans/section-7-admin-management.md`
+
+### 13a. Backend Admin Routes (expand existing)
+
+- [ ] Write tests for admin user management routes in `tests/server/routes/admin.spec.ts`
+- [ ] Enhance `GET /api/admin/users` — add search, role filter, and pagination params
+- [ ] Create `GET /api/admin/users/:id` — get user detail with associated profiles
+- [ ] Create `PUT /api/admin/users/:id` — update user role, emailVerified status
+- [ ] Create `DELETE /api/admin/users/:id` — deactivate user account
+- [ ] Create `GET /api/admin/missions` — list all missions with filters (status, date range, search)
+- [ ] Create `GET /api/admin/missions/:id` — get mission detail with participants and payments
+- [ ] Create `PUT /api/admin/missions/:id/status` — admin override of mission status
+- [ ] Create `GET /api/admin/payments` — list all payments with filters (method, status, date range)
+- [ ] Create `GET /api/admin/payments/:id` — get payment detail with mission context
+- [ ] Enhance `GET /api/admin/disputes` — support all statuses (not just open), add search
+- [ ] Create `GET /api/admin/disputes/:id` — get dispute detail with messages and mission context
+- [ ] Create `PUT /api/admin/disputes/:id/resolve` — admin resolve dispute with resolution note
+- [ ] Create `GET /api/admin/subscription-plans` — list all subscription plans
+- [ ] Create `POST /api/admin/subscription-plans` — create new subscription plan
+- [ ] Create `PUT /api/admin/subscription-plans/:id` — update subscription plan
+- [ ] Create `DELETE /api/admin/subscription-plans/:id` — deactivate subscription plan
+- [ ] Create `GET /api/admin/stats/revenue` — revenue breakdown by period
+- [ ] Create `GET /api/admin/stats/activity` — recent platform activity feed
+
+### 13b. Frontend Admin Service
+
+- [ ] Write tests for admin service in `tests/services/admin.spec.ts`
+- [ ] Create `src/services/admin.ts` — all admin API functions (user, mission, payment, dispute, plan CRUD, stats)
+
+### 13c. Frontend Admin Store
+
+- [ ] Write tests for admin store in `tests/stores/admin.spec.ts`
+- [ ] Create `src/stores/admin.ts` — admin state (users, missions, payments, disputes, plans, stats, pagination, loading)
+
+### 13d. Frontend Admin Views
+
+- [ ] Write component tests for admin layout in `tests/components/admin/AdminLayout.spec.ts`
+- [ ] Create `src/views/admin/AdminLayout.vue` — admin layout with admin-specific sidebar
+- [ ] Create `src/views/admin/AdminSidebar.vue` — admin navigation sidebar
+- [ ] Write component tests for admin dashboard in `tests/components/admin/AdminDashboardView.spec.ts`
+- [ ] Create `src/views/admin/AdminDashboardView.vue` — stats overview cards, recent activity
+- [ ] Write component tests for admin users in `tests/components/admin/AdminUsersView.spec.ts`
+- [ ] Create `src/views/admin/AdminUsersView.vue` — user list with search, role filter, action buttons
+- [ ] Write component tests for admin user detail in `tests/components/admin/AdminUserDetailView.spec.ts`
+- [ ] Create `src/views/admin/AdminUserDetailView.vue` — user detail, edit role, view profiles
+- [ ] Write component tests for admin missions in `tests/components/admin/AdminMissionsView.spec.ts`
+- [ ] Create `src/views/admin/AdminMissionsView.vue` — all missions list with filters
+- [ ] Write component tests for admin mission detail in `tests/components/admin/AdminMissionDetailView.spec.ts`
+- [ ] Create `src/views/admin/AdminMissionDetailView.vue` — mission detail with status override
+- [ ] Write component tests for admin payments in `tests/components/admin/AdminPaymentsView.spec.ts`
+- [ ] Create `src/views/admin/AdminPaymentsView.vue` — all payments list with filters
+- [ ] Write component tests for admin disputes in `tests/components/admin/AdminDisputesView.spec.ts`
+- [ ] Create `src/views/admin/AdminDisputesView.vue` — all disputes list with status filter
+- [ ] Write component tests for admin dispute detail in `tests/components/admin/AdminDisputeDetailView.spec.ts`
+- [ ] Create `src/views/admin/AdminDisputeDetailView.vue` — dispute detail with admin resolve
+- [ ] Write component tests for admin subscriptions in `tests/components/admin/AdminSubscriptionsView.spec.ts`
+- [ ] Create `src/views/admin/AdminSubscriptionsView.vue` — subscription plans CRUD
+
+### 13e. Router & Navigation
+
+- [ ] Write tests for admin routes in `tests/router/router.spec.ts`
+- [ ] Update `src/router/index.ts` — replace single `/app/admin` with nested admin route group
+- [ ] Write tests for sidebar admin link in `tests/components/layout/Sidebar.spec.ts`
+- [ ] Update `src/components/layout/Sidebar.vue` — fix admin link to point to admin layout
+
+### 13f. i18n
+
+- [ ] Add admin translation keys to `src/locales/en.json`
+- [ ] Add admin translation keys to `src/locales/fr.json`
+- [ ] Add admin translation keys to `src/locales/ar.json`
+- [ ] Run `pnpm i18n:sync` to validate translations
+
+---
+
+## 14. Future Scope (Post-MVP)
 
 - [ ] Build opt-in Public Marketplace for Agent discovery without invite links
 - [ ] Add real-time messaging via WebSocket or Server-Sent Events
 - [ ] Add push notifications (browser push, mobile if PWA)
 - [ ] Implement multi-language support beyond EN/FR
 - [ ] Add analytics dashboard for agents (earnings trends, client retention)
-- [ ] Build admin dashboard for platform management
 - [ ] Implement Agent rating and review system
 - [ ] Add document management system with OCR for receipts/invoices
 - [ ] Build mobile app or PWA for on-the-go mission management

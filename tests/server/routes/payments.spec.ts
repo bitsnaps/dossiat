@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import app from '@/server/index'
-import { User, AgentProfile, ClientProfile, Mission, Payment, PlatformCredit, CreditTransaction, RefreshToken } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, Mission, Payment, PlatformCredit, CreditTransaction, RefreshToken, Notification, EmailVerificationToken, PasswordResetToken } from '@/server/database/models'
 
 let agentToken: string
 let clientToken: string
@@ -9,10 +9,13 @@ let agentId: number
 let clientId: number
 
 beforeAll(async () => {
+  await Notification.destroy({ where: {} })
   await CreditTransaction.destroy({ where: {} })
   await PlatformCredit.destroy({ where: {} })
   await Payment.destroy({ where: {} })
   await Mission.destroy({ where: {} })
+  await EmailVerificationToken.destroy({ where: {} })
+  await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
   await ClientProfile.destroy({ where: {} })

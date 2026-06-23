@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import app from '@/server/index'
-import { User, AgentProfile, ClientProfile, Mission, RefreshToken, Conversation } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, Mission, RefreshToken, Conversation, Notification, EmailVerificationToken, PasswordResetToken } from '@/server/database/models'
 import { generateAccessToken } from '@/server/utils/jwt'
 
 let agentToken: string
@@ -9,12 +9,15 @@ let agentId: number
 let clientId: number
 
 beforeAll(async () => {
-  await Mission.destroy({ where: {} })
-  await Conversation.destroy({ where: {} })
+  await Notification.destroy({ where: {} })
+  // await Mission.destroy({ where: {} })
+  // await Conversation.destroy({ where: {} })
+  await EmailVerificationToken.destroy({ where: {} })
+  await PasswordResetToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })
   await AgentProfile.destroy({ where: {} })
   await ClientProfile.destroy({ where: {} })
-  await User.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 
   // Register agent
   const agentRes = await app.request('/api/auth/register', {

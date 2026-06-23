@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import app from '@/server/index'
-import { User, RefreshToken, EmailVerificationToken } from '@/server/database/models'
+import { User, RefreshToken, EmailVerificationToken, Notification } from '@/server/database/models'
 import bcrypt from 'bcryptjs'
 import crypto from 'node:crypto'
 import { generateRefreshToken } from '@/server/utils/jwt'
@@ -8,9 +8,10 @@ import { generateRefreshToken } from '@/server/utils/jwt'
 let testEmail = `auth-test-${Date.now()}@test.com`
 
 beforeAll(async () => {
-  await User.destroy({ where: {} })
-  await RefreshToken.destroy({ where: {} })
+  await Notification.destroy({ where: {} })
   await EmailVerificationToken.destroy({ where: {} })
+  await RefreshToken.destroy({ where: {} })
+  // await User.destroy({ where: {} })
 })
 
 describe('Auth Routes', { timeout: 30_000 }, () => {
