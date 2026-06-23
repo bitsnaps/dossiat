@@ -1,11 +1,19 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 
+function applyThemeToDom(newTheme: 'dark' | 'light') {
+  document.documentElement.setAttribute('data-theme', newTheme)
+  document.documentElement.classList.remove('dark', 'light')
+  document.documentElement.classList.add(newTheme)
+}
+
 export const useUiStore = defineStore('ui', () => {
   const sidebarCollapsed = ref(false)
   const sidebarOpen = ref(false)
   const loadingStates = ref<Record<string, boolean>>({})
-  const theme = ref<'dark' | 'light'>('dark')
+  const theme = ref<'dark' | 'light'>(
+    (localStorage.getItem('dossiat-theme') as 'dark' | 'light') || 'dark'
+  )
 
   const isLoading = computed(() => {
     return Object.values(loadingStates.value).some(Boolean)
@@ -37,6 +45,15 @@ export const useUiStore = defineStore('ui', () => {
 
   function setTheme(newTheme: 'dark' | 'light') {
     theme.value = newTheme
+    applyThemeToDom(newTheme)
+    localStorage.setItem('dossiat-theme', newTheme)
+  }
+
+  function initTheme() {
+    const saved = localStorage.getItem('dossiat-theme') as 'dark' | 'light' | null
+    const resolved = saved || 'dark'
+    theme.value = resolved
+    applyThemeToDom(resolved)
   }
 
   return {
@@ -52,5 +69,6 @@ export const useUiStore = defineStore('ui', () => {
     setLoading,
     clearLoading,
     setTheme,
+    initTheme,
   }
 })

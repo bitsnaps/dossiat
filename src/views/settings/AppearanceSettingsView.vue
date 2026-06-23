@@ -39,8 +39,7 @@ async function handleSave() {
   try {
     uiStore.setTheme(selectedTheme.value as 'dark' | 'light')
     locale.value = selectedLanguage.value
-    localStorage.setItem('dossiat-theme', selectedTheme.value)
-    localStorage.setItem('dossiat-locale', selectedLanguage.value)
+    localStorage.setItem('ds-locale', selectedLanguage.value)
     toast.success(t('settings.appearance.saved'))
   } catch (err: any) {
     toast.error(err.message || 'Failed to save')

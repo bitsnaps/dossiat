@@ -8,6 +8,7 @@ import { Hono } from 'hono'
  */
 export function honoDevPlugin(): Plugin {
   let cachedApp: Hono | null = null
+  let dbInitialized = false
 
   return {
     name: 'vite-plugin-hono-api',
@@ -16,6 +17,17 @@ export function honoDevPlugin(): Plugin {
       server.middlewares.use(async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
         if (!req.url?.startsWith('/api')) {
           return next()
+        }
+
+        // Initialize database on first API request
+        if (!dbInitialized) {
+          dbInitialized = true
+          try {
+            const { initDevDatabase } = await server.ssrLoadModule('./src/server/dev-init.ts') as any
+            await initDevDatabase()
+          } catch (err) {
+            console.error('[dev-init] Database initialization failed:', err)
+          }
         }
 
         try {

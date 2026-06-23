@@ -15,7 +15,10 @@
     "db:migrate:undo": "sequelize-cli db:migrate:undo:all --config src/server/database/config/database.config.cjs --migrations-path src/server/database/migrations",
     "db:seed": "sequelize-cli db:seed:all --config src/server/database/config/database.config.cjs --seeders-path src/server/database/seeders",
     "db:seed:undo": "sequelize-cli db:seed:undo:all --config src/server/database/config/database.config.cjs --seeders-path src/server/database/seeders",
-    "db:reset": "sequelize-cli db:migrate:undo:all --config src/server/database/config/database.config.cjs --migrations-path src/server/database/migrations && npm run db:migrate && npm run db:seed"
+    "db:reset": "sequelize-cli db:migrate:undo:all --config src/server/database/config/database.config.cjs --migrations-path src/server/database/migrations && npm run db:migrate && npm run db:seed",
+    "i18n:sync": "node scripts/sync-i18n.mjs",
+    "i18n:sync:fix": "node scripts/sync-i18n.mjs --fix",
+    "check": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^2.0.3",
