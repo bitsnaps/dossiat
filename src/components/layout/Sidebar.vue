@@ -1,10 +1,11 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 const { t } = useI18n()
 const route = useRoute()
+const router = useRouter()
 const authStore = useAuthStore()
 
 interface Props {
@@ -50,6 +51,11 @@ function isActive(path: string) {
 
 function handleNavClick() {
   emit('close-mobile')
+}
+
+async function handleLogout() {
+  await authStore.logout()
+  router.push('/')
 }
 </script>
 
@@ -104,7 +110,7 @@ function handleNavClick() {
     </nav>
 
     <div class="ds-sidebar__footer">
-      <RouterLink to="/" class="ds-sidebar__link">
+      <RouterLink to="/" class="ds-sidebar__link ds-sidebar__link--logout" @click="handleLogout">
         <i class="bi bi-box-arrow-left" />
         <span class="ds-sidebar__link-label">{{ t('layout.topbar.logout') }}</span>
       </RouterLink>
