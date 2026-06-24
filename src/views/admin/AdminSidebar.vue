@@ -55,10 +55,10 @@ async function handleLogout() {
         <i class="bi bi-arrow-left" />
         <span class="ds-sidebar__link-label">{{ t('admin.sidebar.backToApp') }}</span>
       </RouterLink>
-      <button class="ds-sidebar__link ds-sidebar__link--logout" @click="handleLogout">
+      <RouterLink to="/" class="ds-sidebar__link ds-sidebar__link--logout" @click="handleLogout">
         <i class="bi bi-box-arrow-left" />
         <span class="ds-sidebar__link-label">{{ t('layout.topbar.logout') }}</span>
-      </button>
+      </RouterLink>
     </div>
   </aside>
 </template>
