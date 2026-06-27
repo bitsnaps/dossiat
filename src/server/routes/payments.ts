@@ -17,7 +17,7 @@ payments.get('/missions/:id/payments', authenticate(), async (c) => {
 
   const mission = await Mission.findByPk(missionId)
   if (!mission) throw new AppError('Mission not found', 404)
-  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId && auth.role !== 'admin') {
     throw new AppError('Access denied', 403)
   }
 
@@ -40,7 +40,7 @@ payments.post('/missions/:id/payments',
 
     const mission = await Mission.findByPk(missionId)
     if (!mission) throw new AppError('Mission not found', 404)
-    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId && auth.role !== 'admin') {
       throw new AppError('Access denied', 403)
     }
 
@@ -176,13 +176,16 @@ payments.get('/agents/me/credit-transactions', authenticate(), async (c) => {
 
 payments.get('/agents/me/payments', authenticate(), async (c) => {
   const auth = c.get('auth')
+  const where: any = auth.role === 'admin'
+    ? {}
+    : {
+        [Op.or]: [
+          { payerId: auth.userId },
+          { payeeId: auth.userId },
+        ],
+      }
   const paymentList = await Payment.findAll({
-    where: {
-      [Op.or]: [
-        { payerId: auth.userId },
-        { payeeId: auth.userId },
-      ],
-    },
+    where,
     include: [{ model: Mission, as: 'mission', attributes: ['id', 'title'] }],
     order: [['createdAt', 'DESC']],
   })
