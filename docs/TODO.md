@@ -221,6 +221,7 @@
 - [x] Create `src/services/users.ts` — User/profile API functions
 - [x] Create `src/services/subscriptions.ts` — Subscription API functions
 - [x] Create `src/services/disputes.ts` — Dispute API functions
+- [x] Create `src/services/admin.ts` — Admin API functions (user, mission, payment, dispute, plan CRUD, stats)
 
 ### 4b. Pinia Stores
 
@@ -232,6 +233,7 @@
 - [x] Create `src/stores/subscriptions.ts` — Current plan, billing info
 - [x] Create `src/stores/ui.ts` — Sidebar state, theme preferences, loading states
 - [x] Create `src/stores/disputes.ts` — Disputes list, current dispute, messaging, resolve/escalate
+- [x] Create `src/stores/admin.ts` — Admin state (users, missions, payments, disputes, plans, stats, pagination)
 
 ### 4c. Composables
 
@@ -437,8 +439,11 @@
 - [x] Write API endpoint tests for payment routes (including credit deduction, bank transfer, Stripe/PayPal stubs)
 - [x] Write API endpoint tests for messaging routes
 - [x] Write API endpoint tests for dispute routes
+- [x] Write API endpoint tests for admin routes (`tests/server/routes/admin.spec.ts` — 19 tests)
 - [x] Write API endpoint tests for subscription routes
 - [x] Write unit tests for fee calculator and payment providers
+- [x] Write unit tests for admin service (`tests/services/admin.spec.ts` — 18 tests)
+- [x] Write unit tests for admin store (`tests/stores/admin.spec.ts` — 12 tests)
 - [ ] Set up test database (SQLite in-memory) for backend integration tests
 
 ---
@@ -502,73 +507,64 @@
 
 ### 13a. Backend Admin Routes (expand existing)
 
-- [ ] Write tests for admin user management routes in `tests/server/routes/admin.spec.ts`
-- [ ] Enhance `GET /api/admin/users` — add search, role filter, and pagination params
-- [ ] Create `GET /api/admin/users/:id` — get user detail with associated profiles
-- [ ] Create `PUT /api/admin/users/:id` — update user role, emailVerified status
-- [ ] Create `DELETE /api/admin/users/:id` — deactivate user account
-- [ ] Create `GET /api/admin/missions` — list all missions with filters (status, date range, search)
-- [ ] Create `GET /api/admin/missions/:id` — get mission detail with participants and payments
-- [ ] Create `PUT /api/admin/missions/:id/status` — admin override of mission status
-- [ ] Create `GET /api/admin/payments` — list all payments with filters (method, status, date range)
-- [ ] Create `GET /api/admin/payments/:id` — get payment detail with mission context
-- [ ] Enhance `GET /api/admin/disputes` — support all statuses (not just open), add search
-- [ ] Create `GET /api/admin/disputes/:id` — get dispute detail with messages and mission context
-- [ ] Create `PUT /api/admin/disputes/:id/resolve` — admin resolve dispute with resolution note
-- [ ] Create `GET /api/admin/subscription-plans` — list all subscription plans
-- [ ] Create `POST /api/admin/subscription-plans` — create new subscription plan
-- [ ] Create `PUT /api/admin/subscription-plans/:id` — update subscription plan
-- [ ] Create `DELETE /api/admin/subscription-plans/:id` — deactivate subscription plan
+- [x] Write tests for admin user management routes in `tests/server/routes/admin.spec.ts` (19 tests)
+- [x] Enhance `GET /api/admin/users` — add search, role filter, and pagination params
+- [x] Create `GET /api/admin/users/:id` — get user detail with associated profiles
+- [x] Create `PUT /api/admin/users/:id` — update user role, emailVerified status
+- [x] Create `DELETE /api/admin/users/:id` — deactivate user account
+- [x] Create `GET /api/admin/missions` — list all missions with filters (status, date range, search)
+- [x] Create `GET /api/admin/missions/:id` — get mission detail with participants and payments
+- [x] Create `PUT /api/admin/missions/:id/status` — admin override of mission status
+- [x] Create `GET /api/admin/payments` — list all payments with filters (method, status, date range)
+- [x] Create `GET /api/admin/payments/:id` — get payment detail with mission context
+- [x] Enhance `GET /api/admin/disputes` — support all statuses (not just open), add search
+- [x] Create `GET /api/admin/disputes/:id` — get dispute detail with messages and mission context
+- [x] Create `PUT /api/admin/disputes/:id/resolve` — admin resolve dispute with resolution note
+- [x] Create `GET /api/admin/subscription-plans` — list all subscription plans
+- [x] Create `POST /api/admin/subscription-plans` — create new subscription plan
+- [x] Create `PUT /api/admin/subscription-plans/:id` — update subscription plan
+- [x] Create `DELETE /api/admin/subscription-plans/:id` — deactivate subscription plan
 - [ ] Create `GET /api/admin/stats/revenue` — revenue breakdown by period
 - [ ] Create `GET /api/admin/stats/activity` — recent platform activity feed
 
 ### 13b. Frontend Admin Service
 
-- [ ] Write tests for admin service in `tests/services/admin.spec.ts`
-- [ ] Create `src/services/admin.ts` — all admin API functions (user, mission, payment, dispute, plan CRUD, stats)
+- [x] Write tests for admin service in `tests/services/admin.spec.ts` (18 tests)
+- [x] Create `src/services/admin.ts` — all admin API functions (user, mission, payment, dispute, plan CRUD, stats)
 
 ### 13c. Frontend Admin Store
 
-- [ ] Write tests for admin store in `tests/stores/admin.spec.ts`
-- [ ] Create `src/stores/admin.ts` — admin state (users, missions, payments, disputes, plans, stats, pagination, loading)
+- [x] Write tests for admin store in `tests/stores/admin.spec.ts` (12 tests)
+- [x] Create `src/stores/admin.ts` — admin state (users, missions, payments, disputes, plans, stats, pagination, loading)
 
 ### 13d. Frontend Admin Views
 
-- [ ] Write component tests for admin layout in `tests/components/admin/AdminLayout.spec.ts`
-- [ ] Create `src/views/admin/AdminLayout.vue` — admin layout with admin-specific sidebar
-- [ ] Create `src/views/admin/AdminSidebar.vue` — admin navigation sidebar
-- [ ] Write component tests for admin dashboard in `tests/components/admin/AdminDashboardView.spec.ts`
-- [ ] Create `src/views/admin/AdminDashboardView.vue` — stats overview cards, recent activity
-- [ ] Write component tests for admin users in `tests/components/admin/AdminUsersView.spec.ts`
-- [ ] Create `src/views/admin/AdminUsersView.vue` — user list with search, role filter, action buttons
-- [ ] Write component tests for admin user detail in `tests/components/admin/AdminUserDetailView.spec.ts`
-- [ ] Create `src/views/admin/AdminUserDetailView.vue` — user detail, edit role, view profiles
-- [ ] Write component tests for admin missions in `tests/components/admin/AdminMissionsView.spec.ts`
-- [ ] Create `src/views/admin/AdminMissionsView.vue` — all missions list with filters
-- [ ] Write component tests for admin mission detail in `tests/components/admin/AdminMissionDetailView.spec.ts`
-- [ ] Create `src/views/admin/AdminMissionDetailView.vue` — mission detail with status override
-- [ ] Write component tests for admin payments in `tests/components/admin/AdminPaymentsView.spec.ts`
-- [ ] Create `src/views/admin/AdminPaymentsView.vue` — all payments list with filters
-- [ ] Write component tests for admin disputes in `tests/components/admin/AdminDisputesView.spec.ts`
-- [ ] Create `src/views/admin/AdminDisputesView.vue` — all disputes list with status filter
-- [ ] Write component tests for admin dispute detail in `tests/components/admin/AdminDisputeDetailView.spec.ts`
-- [ ] Create `src/views/admin/AdminDisputeDetailView.vue` — dispute detail with admin resolve
-- [ ] Write component tests for admin subscriptions in `tests/components/admin/AdminSubscriptionsView.spec.ts`
-- [ ] Create `src/views/admin/AdminSubscriptionsView.vue` — subscription plans CRUD
+- [ ] Write component tests for admin views (all `tests/components/admin/*.spec.ts`)
+- [x] Create `src/views/admin/AdminLayout.vue` — admin layout with admin-specific sidebar
+- [x] Create `src/views/admin/AdminSidebar.vue` — admin navigation sidebar
+- [x] Create `src/views/admin/AdminDashboardView.vue` — stats overview cards, recent activity
+- [x] Create `src/views/admin/AdminUsersView.vue` — user list with search, role filter, action buttons
+- [x] Create `src/views/admin/AdminUserDetailView.vue` — user detail, edit role, view profiles
+- [x] Create `src/views/admin/AdminMissionsView.vue` — all missions list with filters
+- [x] Create `src/views/admin/AdminMissionDetailView.vue` — mission detail with status override
+- [x] Create `src/views/admin/AdminPaymentsView.vue` — all payments list with filters
+- [x] Create `src/views/admin/AdminDisputesView.vue` — all disputes list with status filter
+- [x] Create `src/views/admin/AdminDisputeDetailView.vue` — dispute detail with admin resolve
+- [x] Create `src/views/admin/AdminSubscriptionsView.vue` — subscription plans CRUD
 
 ### 13e. Router & Navigation
 
 - [ ] Write tests for admin routes in `tests/router/router.spec.ts`
-- [ ] Update `src/router/index.ts` — replace single `/app/admin` with nested admin route group
+- [x] Update `src/router/index.ts` — replace single `/app/admin` with nested admin route group
 - [ ] Write tests for sidebar admin link in `tests/components/layout/Sidebar.spec.ts`
-- [ ] Update `src/components/layout/Sidebar.vue` — fix admin link to point to admin layout
+- [x] Update `src/components/layout/Sidebar.vue` — fix admin link to point to admin layout
 
 ### 13f. i18n
 
-- [ ] Add admin translation keys to `src/locales/en.json`
-- [ ] Add admin translation keys to `src/locales/fr.json`
-- [ ] Add admin translation keys to `src/locales/ar.json`
-- [ ] Run `pnpm i18n:sync` to validate translations
+- [x] Add admin translation keys to `src/locales/en.json` (104 keys)
+- [x] Add admin translation keys to `src/locales/fr.json` (104 keys)
+- [x] Add admin translation keys to `src/locales/ar.json` (104 keys)
+- [x] Run `pnpm i18n:sync` to validate translations
 
 ---
 
