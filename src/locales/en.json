@@ -971,6 +971,11 @@
         "cancelled": "Cancelled",
         "trialing": "Trialing",
         "paused": "Paused"
+      },
+      "role": {
+        "admin": "Admin",
+        "agent": "Agent",
+        "client": "Client"
       }
     },
     "emptyState": {

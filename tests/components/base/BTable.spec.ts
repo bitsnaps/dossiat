@@ -426,6 +426,33 @@ describe('BTable', () => {
     expect(wrapper.find('td').text()).toContain('$90,000')
   })
 
+  it('calls formatter with (value, row) — not (row)', () => {
+    const spy = vi.fn(() => 'formatted')
+    const cols: TableColumn[] = [
+      { key: 'name', label: 'Name', formatter: spy },
+    ]
+    mount(BTable, { props: { columns: cols, rows } })
+    expect(spy).toHaveBeenCalledTimes(rows.length)
+    // First call: value is 'Alice', row is the full row object
+    expect(spy.mock.calls[0][0]).toBe('Alice')
+    expect(spy.mock.calls[0][1]).toEqual(rows[0])
+    expect(spy.mock.calls[0][1].firstName).toBeUndefined() // rows don't have firstName
+    expect(spy.mock.calls[0][1].name).toBe('Alice')
+  })
+
+  it('formatter can access full row to compute derived values', () => {
+    const cols: TableColumn[] = [
+      {
+        key: 'name',
+        label: 'Full Name',
+        // Simulates pattern: key doesn't match data, formatter needs row
+        formatter: (_v: any, row: any) => `${row.name} (${row.role})`,
+      },
+    ]
+    const wrapper = mount(BTable, { props: { columns: cols, rows } })
+    expect(wrapper.find('tbody tr td').text()).toBe('Alice (Engineer)')
+  })
+
   // ---- Sticky ----
   it('applies sticky class', () => {
     const wrapper = mount(BTable, { props: { columns, rows, sticky: true } })

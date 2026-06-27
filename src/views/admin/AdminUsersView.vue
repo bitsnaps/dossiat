@@ -23,7 +23,7 @@ const { page, perPage, total, totalPages, goTo } = usePagination()
 
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'name', label: t('admin.users.name'), formatter: (row: any) => `${row.firstName} ${row.lastName}` },
+  { key: 'name', label: t('admin.users.name'), formatter: (_value: any, row: any) => `${row.firstName} ${row.lastName}` },
   { key: 'email', label: t('admin.users.email') },
   { key: 'role', label: t('admin.users.role') },
   { key: 'emailVerified', label: t('admin.users.verified') },
@@ -88,7 +88,7 @@ async function handleDeactivate(id: number) {
       :loading="adminStore.loading.users"
     >
       <template #cell-role="{ row }">
-        <StatusBadge :status="row.role" />
+        <StatusBadge :status="row.role" type="role" />
       </template>
       <template #cell-emailVerified="{ row }">
         <i :class="['bi', row.emailVerified ? 'bi-check-circle-fill text-success' : 'bi-x-circle text-muted']" />

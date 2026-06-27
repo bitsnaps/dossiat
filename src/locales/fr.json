@@ -367,6 +367,11 @@
         "past_due": "En retard",
         "paused": "En pause",
         "trialing": "Essai"
+      },
+      "role": {
+        "admin": "Admin",
+        "agent": "Agent",
+        "client": "Client"
       }
     }
   },

@@ -21,8 +21,8 @@ const columns = [
   { key: 'title', label: t('admin.missions.title') },
   { key: 'status', label: t('admin.missions.status') },
   { key: 'type', label: t('admin.missions.type') },
-  { key: 'agent', label: t('admin.missions.agent'), formatter: (row: any) => row.agent ? `${row.agent.firstName} ${row.agent.lastName}` : '-' },
-  { key: 'client', label: t('admin.missions.client'), formatter: (row: any) => row.client ? `${row.client.firstName} ${row.client.lastName}` : '-' },
+  { key: 'agent', label: t('admin.missions.agent'), formatter: (_value: any, row: any) => row.agent ? `${row.agent.firstName} ${row.agent.lastName}` : '-' },
+  { key: 'client', label: t('admin.missions.client'), formatter: (_value: any, row: any) => row.client ? `${row.client.firstName} ${row.client.lastName}` : '-' },
   { key: 'actions', label: '' },
 ]
 

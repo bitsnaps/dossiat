@@ -21,9 +21,9 @@ const columns = [
   { key: 'amount', label: t('admin.payments.amount') },
   { key: 'method', label: t('admin.payments.method') },
   { key: 'status', label: t('admin.payments.status') },
-  { key: 'payer', label: t('admin.payments.payer'), formatter: (row: any) => row.payer ? `${row.payer.firstName} ${row.payer.lastName}` : '-' },
-  { key: 'payee', label: t('admin.payments.payee'), formatter: (row: any) => row.payee ? `${row.payee.firstName} ${row.payee.lastName}` : '-' },
-  { key: 'mission', label: t('admin.payments.mission'), formatter: (row: any) => row.mission?.title || '-' },
+  { key: 'payer', label: t('admin.payments.payer'), formatter: (_value: any, row: any) => row.payer ? `${row.payer.firstName} ${row.payer.lastName}` : '-' },
+  { key: 'payee', label: t('admin.payments.payee'), formatter: (_value: any, row: any) => row.payee ? `${row.payee.firstName} ${row.payee.lastName}` : '-' },
+  { key: 'mission', label: t('admin.payments.mission'), formatter: (_value: any, row: any) => row.mission?.title || '-' },
 ]
 
 async function loadData() {

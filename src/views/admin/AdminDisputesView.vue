@@ -16,10 +16,10 @@ const { page, perPage, total, totalPages, goTo } = usePagination()
 
 const columns = [
   { key: 'id', label: 'ID' },
-  { key: 'reason', label: t('admin.disputes.reason'), formatter: (row: any) => row.reason?.substring(0, 60) + (row.reason?.length > 60 ? '...' : '') },
+  { key: 'reason', label: t('admin.disputes.reason'), formatter: (_value: any, row: any) => row.reason?.substring(0, 60) + (row.reason?.length > 60 ? '...' : '') },
   { key: 'status', label: t('admin.disputes.status') },
-  { key: 'mission', label: t('admin.disputes.mission'), formatter: (row: any) => row.mission?.title || '-' },
-  { key: 'initiator', label: t('admin.disputes.initiator'), formatter: (row: any) => row.initiator ? `${row.initiator.firstName} ${row.initiator.lastName}` : '-' },
+  { key: 'mission', label: t('admin.disputes.mission'), formatter: (_value: any, row: any) => row.mission?.title || '-' },
+  { key: 'initiator', label: t('admin.disputes.initiator'), formatter: (_value: any, row: any) => row.initiator ? `${row.initiator.firstName} ${row.initiator.lastName}` : '-' },
   { key: 'actions', label: '' },
 ]
 

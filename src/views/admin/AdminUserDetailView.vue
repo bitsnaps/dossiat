@@ -52,7 +52,7 @@ async function saveRole() {
           <h2>{{ adminStore.selectedUser.firstName }} {{ adminStore.selectedUser.lastName }}</h2>
           <p>{{ adminStore.selectedUser.email }}</p>
           <div class="ds-admin-detail__meta">
-            <StatusBadge :status="adminStore.selectedUser.role" />
+            <StatusBadge :status="adminStore.selectedUser.role" type="role" />
             <span v-if="adminStore.selectedUser.emailVerified" class="text-success">
               <i class="bi bi-check-circle" /> {{ t('admin.users.verified') }}
             </span>
