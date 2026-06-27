@@ -16,3 +16,9 @@
 [functions."scheduler"]
  schedule = "*/10 * * * *"
 
+# SPA fallback: serve index.html for all non-file/non-API routes
+[[redirects]]
+ from = "/*"
+ to = "/index.html"
+ status = 200
+
