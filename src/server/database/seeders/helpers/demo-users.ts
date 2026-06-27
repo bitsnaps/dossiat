@@ -79,6 +79,7 @@ export async function createDemoUsers(): Promise<{ agentId: number; clientId: nu
   const [agent] = await User.findOrCreate({
     where: { email: 'agent-demo@dossiat.com' },
     defaults: {
+      email: 'agent-demo@dossiat.com',
       passwordHash: await bcrypt.hash('Demo1234!', 10),
       firstName: 'Omar',
       lastName: 'Benali',
@@ -105,6 +106,7 @@ export async function createDemoUsers(): Promise<{ agentId: number; clientId: nu
   const [client] = await User.findOrCreate({
     where: { email: 'client-demo@dossiat.com' },
     defaults: {
+      email: 'client-demo@dossiat.com',
       passwordHash: await bcrypt.hash('Demo1234!', 10),
       firstName: 'Sophia',
       lastName: 'Martin',

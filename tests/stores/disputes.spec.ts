@@ -93,6 +93,7 @@ describe('Disputes Store', () => {
       store.currentDispute = {
         id: 1,
         missionId: 5,
+        initiatedBy: 1,
         reason: 'Not delivered',
         status: 'open',
         messages: [{ id: 1, disputeId: 1, senderId: 2, content: 'Hello' }],
@@ -111,6 +112,7 @@ describe('Disputes Store', () => {
       store.currentDispute = {
         id: 1,
         missionId: 5,
+        initiatedBy: 1,
         reason: 'Not delivered',
         status: 'open',
         messages: [],
@@ -130,6 +132,7 @@ describe('Disputes Store', () => {
       store.currentDispute = {
         id: 1,
         missionId: 5,
+        initiatedBy: 1,
         reason: 'Not delivered',
         status: 'open',
         resolution: null,
@@ -149,6 +152,7 @@ describe('Disputes Store', () => {
       store.currentDispute = {
         id: 1,
         missionId: 5,
+        initiatedBy: 1,
         reason: 'Not delivered',
         status: 'open',
         resolution: null,
@@ -169,6 +173,7 @@ describe('Disputes Store', () => {
       store.currentDispute = {
         id: 1,
         missionId: 5,
+        initiatedBy: 1,
         reason: 'Not delivered',
         status: 'open',
         messages: [],
@@ -186,6 +191,7 @@ describe('Disputes Store', () => {
       store.currentDispute = {
         id: 1,
         missionId: 5,
+        initiatedBy: 1,
         reason: 'Not delivered',
         status: 'open',
         messages: [],

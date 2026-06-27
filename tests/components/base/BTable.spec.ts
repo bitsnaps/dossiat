@@ -427,17 +427,17 @@ describe('BTable', () => {
   })
 
   it('calls formatter with (value, row) — not (row)', () => {
-    const spy = vi.fn(() => 'formatted')
+    const spy = vi.fn((_v: any, _r: any) => 'formatted')
     const cols: TableColumn[] = [
       { key: 'name', label: 'Name', formatter: spy },
     ]
     mount(BTable, { props: { columns: cols, rows } })
     expect(spy).toHaveBeenCalledTimes(rows.length)
     // First call: value is 'Alice', row is the full row object
-    expect(spy.mock.calls[0][0]).toBe('Alice')
-    expect(spy.mock.calls[0][1]).toEqual(rows[0])
-    expect(spy.mock.calls[0][1].firstName).toBeUndefined() // rows don't have firstName
-    expect(spy.mock.calls[0][1].name).toBe('Alice')
+    expect(spy.mock.calls[0]![0]).toBe('Alice')
+    expect(spy.mock.calls[0]![1]).toEqual(rows[0])
+    expect((spy.mock.calls[0]![1] as any).firstName).toBeUndefined() // rows don't have firstName
+    expect(spy.mock.calls[0]![1].name).toBe('Alice')
   })
 
   it('formatter can access full row to compute derived values', () => {

@@ -44,7 +44,7 @@ admin.get('/users', async (c) => {
 
 // ─── GET /api/admin/users/:id ───
 admin.get('/users/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
+  const id = parseInt(c.req.param('id')!)
   if (isNaN(id)) throw new AppError('Invalid user ID', 422)
 
   const user = await User.findByPk(id, {
@@ -68,7 +68,7 @@ admin.put('/users/:id',
     },
   }),
   async (c) => {
-    const id = parseInt(c.req.param('id'))
+    const id = parseInt(c.req.param('id')!)
     if (isNaN(id)) throw new AppError('Invalid user ID', 422)
 
     const user = await User.findByPk(id)
@@ -100,7 +100,7 @@ admin.put('/users/:id',
 
 // ─── DELETE /api/admin/users/:id ───
 admin.delete('/users/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
+  const id = parseInt(c.req.param('id')!)
   if (isNaN(id)) throw new AppError('Invalid user ID', 422)
 
   const user = await User.findByPk(id)
@@ -146,7 +146,7 @@ admin.get('/missions', async (c) => {
 
 // ─── GET /api/admin/missions/:id ───
 admin.get('/missions/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
+  const id = parseInt(c.req.param('id')!)
   if (isNaN(id)) throw new AppError('Invalid mission ID', 422)
 
   const mission = await Mission.findByPk(id, {
@@ -170,7 +170,7 @@ admin.put('/missions/:id/status',
     },
   }),
   async (c) => {
-    const id = parseInt(c.req.param('id'))
+    const id = parseInt(c.req.param('id')!)
     if (isNaN(id)) throw new AppError('Invalid mission ID', 422)
 
     const mission = await Mission.findByPk(id)
@@ -216,7 +216,7 @@ admin.get('/payments', async (c) => {
 
 // ─── GET /api/admin/payments/:id ───
 admin.get('/payments/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
+  const id = parseInt(c.req.param('id')!)
   if (isNaN(id)) throw new AppError('Invalid payment ID', 422)
 
   const payment = await Payment.findByPk(id, {
@@ -259,7 +259,7 @@ admin.get('/disputes', async (c) => {
 
 // ─── GET /api/admin/disputes/:id ───
 admin.get('/disputes/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
+  const id = parseInt(c.req.param('id')!)
   if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
 
   const { DisputeMessage } = await import('@/server/database/models')
@@ -285,7 +285,7 @@ admin.put('/disputes/:id/resolve',
     },
   }),
   async (c) => {
-    const id = parseInt(c.req.param('id'))
+    const id = parseInt(c.req.param('id')!)
     if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
 
     const dispute = await Dispute.findByPk(id)
@@ -345,7 +345,7 @@ admin.put('/subscription-plans/:id',
     },
   }),
   async (c) => {
-    const id = parseInt(c.req.param('id'))
+    const id = parseInt(c.req.param('id')!)
     if (isNaN(id)) throw new AppError('Invalid plan ID', 422)
 
     const plan = await SubscriptionPlan.findByPk(id)
@@ -359,7 +359,7 @@ admin.put('/subscription-plans/:id',
 )
 
 admin.delete('/subscription-plans/:id', async (c) => {
-  const id = parseInt(c.req.param('id'))
+  const id = parseInt(c.req.param('id')!)
   if (isNaN(id)) throw new AppError('Invalid plan ID', 422)
 
   const plan = await SubscriptionPlan.findByPk(id)

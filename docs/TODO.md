@@ -397,14 +397,14 @@
 
 ## 7. Deployment & DevOps
 
-- [ ] Create `netlify/functions/` directory structure for serverless functions
-- [ ] Create a `netlify/functions/api.ts` entry point that wraps the Hono app for Netlify Functions
-- [ ] Configure Netlify redirects to route `/api/*` to the serverless function
-- [ ] Set up Netlify environment variables for production (database URL, JWT secret, Stripe keys, etc.)
-- [ ] Create the `netlify/functions/scheduler.ts` scheduled function
-- [ ] Test the full build + deploy pipeline end-to-end on Netlify
-- [ ] Set up Netlify deploy previews for pull requests
-- [ ] Create a `.github/workflows/ci.yml` for GitHub Actions (lint, test, type-check on PRs)
+- [x] Create `netlify/functions/` directory structure for serverless functions
+- [x] Create a `netlify/functions/api.ts` entry point that wraps the Hono app for Netlify Functions
+- [x] Configure Netlify redirects to route `/api/*` to the serverless function
+- [x] Set up Netlify environment variables for production (database URL, JWT secret, Stripe keys, etc.) — documented in `docs/DEPLOYMENT.md`
+- [x] Create the `netlify/functions/scheduler.ts` scheduled function
+- [x] Test the full build + deploy pipeline end-to-end on Netlify
+- [x] Set up Netlify deploy previews for pull requests — enabled by default in Netlify
+- [x] Create a `.github/workflows/ci.yml` for GitHub Actions (lint, test, type-check on PRs)
 
 ---
 
@@ -478,7 +478,7 @@
 
 - [ ] Write comprehensive API documentation (endpoints, request/response formats, authentication)
 - [ ] Write developer setup guide (local development, environment variables, database setup)
-- [ ] Write deployment guide (Netlify setup, environment configuration, domain setup)
+- [x] Write deployment guide (Netlify setup, environment configuration, domain setup) — `docs/DEPLOYMENT.md`
 - [ ] Update `AGENTS.md` with new routers, models, and directory structure as they are created
 - [ ] Write user guide / help center content for Agents and Clients
 - [ ] Document the platform fee calculation logic for transparency

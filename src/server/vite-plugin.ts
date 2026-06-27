@@ -50,7 +50,7 @@ export function honoDevPlugin(): Plugin {
           }
 
           const isBodyAllowed = req.method !== 'GET' && req.method !== 'HEAD'
-          let body: BodyInit | undefined
+          let body: string | Buffer | ArrayBuffer | undefined
 
           if (isBodyAllowed && req.readable) {
             const chunks: Buffer[] = []

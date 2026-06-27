@@ -71,7 +71,7 @@ describe('Notifications Store', () => {
 
       const store = useNotificationsStore()
       await store.fetchNotifications()
-      await store.markAsRead('1')
+      await store.markAsRead(1)
 
       expect(store.notifications[0].readAt).toBeDefined()
     })

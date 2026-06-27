@@ -34,10 +34,10 @@ export const useNotificationsStore = defineStore('notifications', () => {
     }
   }
 
-  async function markAsRead(id: string) {
+  async function markAsRead(id: number) {
     try {
       await put(`/notifications/${id}/read`)
-      const notification = notifications.value.find((n) => n.id === Number(id))
+      const notification = notifications.value.find((n) => n.id === id)
       if (notification) {
         notification.readAt = new Date().toISOString()
       }

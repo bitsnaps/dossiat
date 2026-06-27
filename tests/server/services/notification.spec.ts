@@ -55,12 +55,12 @@ describe('Notification Service', () => {
       )
 
       expect(notification).toBeTruthy()
-      expect(notification.userId).toBe(testUserId)
-      expect(notification.type).toBe('mission.created')
-      expect(notification.title).toBe('New Mission')
-      expect(notification.body).toBe('You have a new mission assigned to you')
-      expect(notification.data).toEqual({ missionId: 42 })
-      expect(notification.readAt).toBeFalsy()
+      expect(notification!.userId).toBe(testUserId)
+      expect(notification!.type).toBe('mission.created')
+      expect(notification!.title).toBe('New Mission')
+      expect(notification!.body).toBe('You have a new mission assigned to you')
+      expect(notification!.data).toEqual({ missionId: 42 })
+      expect(notification!.readAt).toBeFalsy()
     })
 
     it('creates a notification without data field', async () => {
@@ -72,8 +72,8 @@ describe('Notification Service', () => {
       )
 
       expect(notification).toBeTruthy()
-      expect(notification.type).toBe('message.received')
-      expect(notification.data).toEqual({})
+      expect(notification!.type).toBe('message.received')
+      expect(notification!.data).toEqual({})
     })
 
     it('logs error and returns null when creation fails', async () => {
