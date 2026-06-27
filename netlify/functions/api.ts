@@ -1,18 +1,23 @@
-import type { Context } from '@netlify/functions'
-import app from '@/server/index'
+/**
+ * api.ts — Netlify Functions adapter
+ *
+ * This is the ONLY Netlify-specific file. It loads env vars and
+ * wraps the platform-agnostic Hono app from src/server/index.ts.
+ *
+ * IMPORTANT: Static imports are hoisted, so we use dynamic import()
+ * to guarantee that pg is available before Sequelize tries to load it.
+ */
+import 'dotenv/config'
+import { handle } from 'hono/netlify'
 
-export default async (context: Context) => {
-  const url = new URL(context.request.url)
-  const req = new Request(url.toString(), {
-    method: context.request.method,
-    headers: Object.fromEntries(context.request.headers.entries()),
-    body: context.request.method !== 'GET' && context.request.method !== 'HEAD'
-      ? await context.request.text()
-      : undefined,
-  })
+// Force esbuild to include pg in the bundle — Sequelize loads it dynamically
+import 'pg'
+import 'pg-hstore'
 
-  return app.fetch(req)
-}
+// Dynamic import ensures the app only loads AFTER pg is available
+const { default: app } = await import('@/server/index')
+
+export default handle(app)
 
 export const config = {
   path: '/api/*',

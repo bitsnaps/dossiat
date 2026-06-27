@@ -1,9 +1,24 @@
-import type { Context } from '@netlify/functions'
+/**
+ * Netlify Scheduled Function — runs every 10 minutes.
+ *
+ * Triggers the background task scheduler which:
+ * 1. Checks domain expirations and creates notifications
+ * 2. Updates cached currency exchange rates
+ * 3. Resets daily AI call counters (at midnight UTC)
+ *
+ * Schedule configured in netlify.toml: every 10 min
+ */
+import 'dotenv/config'
+
+// Force esbuild to include pg in the bundle — Sequelize loads it dynamically
+import 'pg'
+import 'pg-hstore'
+
 import { Op } from 'sequelize'
 import '@/server/database/config/database'
 import { Mission, RecurrentMissionConfig, Invoice, PlatformCredit, CreditTransaction, User, Payment, Notification } from '@/server/database/models'
 
-export default async (context: Context) => {
+export default async () => {
   const now = new Date()
   const results: Record<string, number> = {
     missionsCreated: 0,
