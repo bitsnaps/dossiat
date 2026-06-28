@@ -63,11 +63,11 @@ Configure these in **Netlify → Site settings → Environment variables**.
 |----------|-------------|---------|
 | `NODE_ENV` | Environment mode | `production` |
 | `DB_DIALECT` | Database dialect | `postgres` |
-| `DB_HOST` | Database host | `ep-cool-rain-123.us-east-2.aws.neon.tech` |
+| `DB_HOST` | Database host | `your-host.example.com` |
 | `DB_PORT` | Database port | `5432` |
-| `DB_NAME` | Database name | `dossiat` |
-| `DB_USER` | Database user | `neondb_owner` |
-| `DB_PASSWORD` | Database password | `***` |
+| `DB_NAME` | Database name | `your_database` |
+| `DB_USER` | Database user | `your_db_user` |
+| `DB_PASSWORD` | Database password | (your database password) |
 | `JWT_SECRET` | Access token signing secret | (random 64+ char string) |
 | `JWT_REFRESH_SECRET` | Refresh token signing secret | (random 64+ char string) |
 | `ENCRYPTION_KEY` | 32-char encryption key for sensitive data | (random 32 char string) |
