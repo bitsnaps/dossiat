@@ -33,12 +33,18 @@ module.exports = {
   },
   production: {
     dialect: 'postgres',
-    host: process.env.DB_HOST,
-    port: Number(process.env.DB_PORT) || 5432,
-    database: process.env.DB_NAME,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST || process.env.PGHOST,
+    port: Number(process.env.DB_PORT || process.env.PGPORT) || 5432,
+    database: process.env.DB_NAME || process.env.PGDATABASE,
+    username: process.env.DB_USER || process.env.PGUSER,
+    password: process.env.DB_PASSWORD || process.env.PGPASSWORD,
     logging: false,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
     migrationStorage: 'json',
     migrationStorageTableName: 'SequelizeMeta',
     modelsPath: path.resolve(__dirname, '..', 'models'),

@@ -50,3 +50,6 @@ demos/
 # Database
 dev.sqlite
 sequelize-meta.json
+
+# scripts
+.*.sh
