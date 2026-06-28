@@ -12,6 +12,7 @@ export class AppError extends Error {
 }
 
 export function errorHandler(err: Error, c: Context) {
+  console.error(`[API Error] ${err.message}`, err.stack)
   const status = (err as any).status || 500
   const message = status === 500 ? 'Internal server error' : err.message
   return errorResponse(c, message, status)
