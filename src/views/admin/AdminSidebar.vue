@@ -3,6 +3,16 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
+interface Props {
+  mobileOpen?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+  mobileOpen: false,
+})
+
+const emit = defineEmits<{ 'close-mobile': [] }>()
+
 const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
@@ -22,6 +32,10 @@ function isActive(path: string) {
   return route.path.startsWith(path)
 }
 
+function handleNavClick() {
+  emit('close-mobile')
+}
+
 async function handleLogout() {
   await authStore.logout()
   router.push('/')
@@ -29,9 +43,9 @@ async function handleLogout() {
 </script>
 
 <template>
-  <aside class="ds-sidebar ds-sidebar--admin">
+  <aside class="ds-sidebar" :class="{ 'ds-sidebar--mobile-open': mobileOpen }">
     <div class="ds-sidebar__brand">
-      <RouterLink to="/app/admin" class="ds-sidebar__brand-name">
+      <RouterLink to="/app/admin" class="ds-sidebar__brand-name" @click="handleNavClick">
         <i class="bi bi-shield-lock me-2" />
         {{ t('admin.sidebar.title') }}
       </RouterLink>
@@ -44,6 +58,7 @@ async function handleLogout() {
         :to="link.to"
         class="ds-sidebar__link"
         :class="{ 'ds-sidebar__link--active': isActive(link.to) }"
+        @click="handleNavClick"
       >
         <i :class="['bi', link.icon]" />
         <span class="ds-sidebar__link-label">{{ t(link.label) }}</span>
@@ -51,10 +66,6 @@ async function handleLogout() {
     </nav>
 
     <div class="ds-sidebar__footer">
-      <RouterLink to="/app/dashboard" class="ds-sidebar__link">
-        <i class="bi bi-arrow-left" />
-        <span class="ds-sidebar__link-label">{{ t('admin.sidebar.backToApp') }}</span>
-      </RouterLink>
       <RouterLink to="/" class="ds-sidebar__link ds-sidebar__link--logout" @click="handleLogout">
         <i class="bi bi-box-arrow-left" />
         <span class="ds-sidebar__link-label">{{ t('layout.topbar.logout') }}</span>

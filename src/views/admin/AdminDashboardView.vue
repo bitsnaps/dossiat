@@ -2,7 +2,6 @@
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAdminStore } from '@/stores/admin'
-import BCard from '@/components/base/BCard.vue'
 
 const { t } = useI18n()
 const adminStore = useAdminStore()
@@ -22,14 +21,17 @@ const statCards = [
 
 <template>
   <div class="ds-admin-dashboard">
-    <h1 class="ds-admin-dashboard__title">{{ t('admin.dashboard.title') }}</h1>
+    <div class="ds-admin-dashboard__header">
+      <h1 class="ds-admin-dashboard__title">{{ t('admin.dashboard.title') }}</h1>
+      <p class="ds-admin-dashboard__subtitle">{{ t('admin.dashboard.subtitle', { date: new Date().toLocaleDateString() }) }}</p>
+    </div>
 
     <div v-if="adminStore.loading.stats" class="ds-admin-dashboard__loading">
       <span class="ds-spinner" />
     </div>
 
     <div v-else class="ds-admin-dashboard__stats">
-      <BCard
+      <div
         v-for="card in statCards"
         :key="card.key"
         class="ds-admin-dashboard__stat-card"
@@ -43,7 +45,7 @@ const statCards = [
           </div>
           <div class="ds-admin-dashboard__stat-label">{{ t(`admin.dashboard.${card.key}`) }}</div>
         </div>
-      </BCard>
+      </div>
     </div>
   </div>
 </template>

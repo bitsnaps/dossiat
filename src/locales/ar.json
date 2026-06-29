@@ -2,6 +2,7 @@
   "admin": {
     "dashboard": {
       "openDisputes": "النزاعات المفتوحة",
+      "subtitle": "نظرة عامة ليوم {date}",
       "title": "لوحة تحكم الإدارة",
       "totalDisputes": "إجمالي النزاعات",
       "totalMissions": "إجمالي المهمات",

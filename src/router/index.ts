@@ -237,66 +237,68 @@ const router = createRouter({
           component: () => import('@/views/client/AgentDiscoveryView.vue'),
           meta: { requiresAuth: true, roles: ['client'], title: 'Discover Agents' },
         },
+      ],
+    },
+
+    /* ── Admin panel (own layout) ── */
+    {
+      path: '/app/admin',
+      component: () => import('@/views/admin/AdminLayout.vue'),
+      meta: { requiresAuth: true, roles: ['admin'] },
+      children: [
         {
-          path: 'admin',
-          component: () => import('@/views/admin/AdminLayout.vue'),
-          meta: { requiresAuth: true, roles: ['admin'] },
-          children: [
-            {
-              path: '',
-              name: 'admin',
-              component: () => import('@/views/admin/AdminDashboardView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Admin Dashboard' },
-            },
-            {
-              path: 'users',
-              name: 'admin-users',
-              component: () => import('@/views/admin/AdminUsersView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Users' },
-            },
-            {
-              path: 'users/:id',
-              name: 'admin-user-detail',
-              component: () => import('@/views/admin/AdminUserDetailView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'User Detail' },
-            },
-            {
-              path: 'missions',
-              name: 'admin-missions',
-              component: () => import('@/views/admin/AdminMissionsView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Missions' },
-            },
-            {
-              path: 'missions/:id',
-              name: 'admin-mission-detail',
-              component: () => import('@/views/admin/AdminMissionDetailView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Mission Detail' },
-            },
-            {
-              path: 'payments',
-              name: 'admin-payments',
-              component: () => import('@/views/admin/AdminPaymentsView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Payments' },
-            },
-            {
-              path: 'disputes',
-              name: 'admin-disputes',
-              component: () => import('@/views/admin/AdminDisputesView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Disputes' },
-            },
-            {
-              path: 'disputes/:id',
-              name: 'admin-dispute-detail',
-              component: () => import('@/views/admin/AdminDisputeDetailView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Dispute Detail' },
-            },
-            {
-              path: 'subscriptions',
-              name: 'admin-subscriptions',
-              component: () => import('@/views/admin/AdminSubscriptionsView.vue'),
-              meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Subscriptions' },
-            },
-          ],
+          path: '',
+          name: 'admin',
+          component: () => import('@/views/admin/AdminDashboardView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Admin Dashboard' },
+        },
+        {
+          path: 'users',
+          name: 'admin-users',
+          component: () => import('@/views/admin/AdminUsersView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Users' },
+        },
+        {
+          path: 'users/:id',
+          name: 'admin-user-detail',
+          component: () => import('@/views/admin/AdminUserDetailView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'User Detail' },
+        },
+        {
+          path: 'missions',
+          name: 'admin-missions',
+          component: () => import('@/views/admin/AdminMissionsView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Missions' },
+        },
+        {
+          path: 'missions/:id',
+          name: 'admin-mission-detail',
+          component: () => import('@/views/admin/AdminMissionDetailView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Mission Detail' },
+        },
+        {
+          path: 'payments',
+          name: 'admin-payments',
+          component: () => import('@/views/admin/AdminPaymentsView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Payments' },
+        },
+        {
+          path: 'disputes',
+          name: 'admin-disputes',
+          component: () => import('@/views/admin/AdminDisputesView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Disputes' },
+        },
+        {
+          path: 'disputes/:id',
+          name: 'admin-dispute-detail',
+          component: () => import('@/views/admin/AdminDisputeDetailView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Dispute Detail' },
+        },
+        {
+          path: 'subscriptions',
+          name: 'admin-subscriptions',
+          component: () => import('@/views/admin/AdminSubscriptionsView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Subscriptions' },
         },
       ],
     },
@@ -359,6 +361,12 @@ router.beforeEach(async (to, _from, next) => {
       NProgress.done()
       return next({ name: 'dashboard' })
     }
+  }
+
+  // Redirect admins to admin panel when they land on the regular dashboard
+  if (to.name === 'dashboard' && authStore.hasRole('admin')) {
+    NProgress.done()
+    return next({ name: 'admin' })
   }
 
   next()
