@@ -4,10 +4,12 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
 interface Props {
+  collapsed?: boolean
   mobileOpen?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
+  collapsed: false,
   mobileOpen: false,
 })
 
@@ -43,7 +45,7 @@ async function handleLogout() {
 </script>
 
 <template>
-  <aside class="ds-sidebar" :class="{ 'ds-sidebar--mobile-open': mobileOpen }">
+  <aside class="ds-sidebar" :class="{ 'ds-sidebar--collapsed': collapsed, 'ds-sidebar--mobile-open': mobileOpen }">
     <div class="ds-sidebar__brand">
       <RouterLink to="/app/admin" class="ds-sidebar__brand-name" @click="handleNavClick">
         <i class="bi bi-shield-lock me-2" />

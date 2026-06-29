@@ -1,12 +1,25 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import AdminSidebar from './AdminSidebar.vue'
 import TopNavbar from '@/components/layout/TopNavbar.vue'
 
 const sidebarOpen = ref(false)
+const sidebarCollapsed = ref(false)
+const isMobile = ref(window.innerWidth <= 768)
 
-function toggleMobileSidebar() {
-  sidebarOpen.value = !sidebarOpen.value
+function onResize() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+onMounted(() => window.addEventListener('resize', onResize))
+onBeforeUnmount(() => window.removeEventListener('resize', onResize))
+
+function handleToggleSidebar() {
+  if (isMobile.value) {
+    sidebarOpen.value = !sidebarOpen.value
+  } else {
+    sidebarCollapsed.value = !sidebarCollapsed.value
+  }
 }
 
 function closeMobileSidebar() {
@@ -23,10 +36,17 @@ function closeMobileSidebar() {
       @click="closeMobileSidebar"
     />
 
-    <AdminSidebar :mobile-open="sidebarOpen" @close-mobile="closeMobileSidebar" />
+    <AdminSidebar
+      :collapsed="sidebarCollapsed"
+      :mobile-open="sidebarOpen"
+      @close-mobile="closeMobileSidebar"
+    />
 
-    <div class="ds-app-layout__main">
-      <TopNavbar @toggle-sidebar="toggleMobileSidebar" />
+    <div
+      class="ds-app-layout__main"
+      :class="{ 'ds-app-layout__main--sidebar-collapsed': sidebarCollapsed }"
+    >
+      <TopNavbar @toggle-sidebar="handleToggleSidebar" />
 
       <main class="ds-app-layout__content">
         <RouterView />
