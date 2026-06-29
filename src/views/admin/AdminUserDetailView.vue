@@ -7,6 +7,7 @@ import BCard from '@/components/base/BCard.vue'
 import BSelect from '@/components/base/BSelect.vue'
 import BButton from '@/components/base/BButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { useToast } from '@/composables/useToast'
 
@@ -15,7 +16,7 @@ const route = useRoute()
 const router = useRouter()
 const adminStore = useAdminStore()
 const toast = useToast()
-const { showConfirm } = useConfirmDialog()
+const { isVisible: isConfirmVisible, title: confirmTitle, message: confirmMessage, showConfirm, confirm, cancel } = useConfirmDialog()
 
 const userId = computed(() => route.params.id as string)
 const editingRole = ref(false)
@@ -156,5 +157,13 @@ async function handleDelete() {
         </div>
       </BCard>
     </template>
+
+    <ConfirmDialog
+      :model-value="isConfirmVisible"
+      :title="confirmTitle"
+      :message="confirmMessage"
+      @confirm="confirm"
+      @cancel="cancel"
+    />
   </div>
 </template>

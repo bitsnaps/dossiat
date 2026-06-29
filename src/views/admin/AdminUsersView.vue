@@ -11,13 +11,14 @@ import BTable from '@/components/base/BTable.vue'
 import BModal from '@/components/base/BModal.vue'
 import BInput from '@/components/base/BInput.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
 import { useToast } from '@/composables/useToast'
 
 const { t } = useI18n()
 const adminStore = useAdminStore()
 const toast = useToast()
-const { showConfirm } = useConfirmDialog()
+const { isVisible: isConfirmVisible, title: confirmTitle, message: confirmMessage, showConfirm, confirm, cancel } = useConfirmDialog()
 
 const search = ref('')
 const roleFilter = ref('')
@@ -233,5 +234,13 @@ async function handleDelete(id: number) {
         </BButton>
       </template>
     </BModal>
+
+    <ConfirmDialog
+      :model-value="isConfirmVisible"
+      :title="confirmTitle"
+      :message="confirmMessage"
+      @confirm="confirm"
+      @cancel="cancel"
+    />
   </div>
 </template>
