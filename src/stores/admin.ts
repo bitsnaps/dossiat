@@ -156,6 +156,17 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  async function createUser(data: { email: string; firstName: string; lastName: string; role?: string; password: string }) {
+    try {
+      const response = await adminApi.createUser(data) as ApiResponse<AdminUser>
+      users.value.unshift(response.data!)
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to create user'
+      throw err
+    }
+  }
+
   async function updateUser(id: string, data: { role?: string; emailVerified?: boolean }) {
     try {
       const response = await adminApi.updateUser(id, data) as ApiResponse<AdminUser>
@@ -165,6 +176,32 @@ export const useAdminStore = defineStore('admin', () => {
       return response.data
     } catch (err: any) {
       error.value = err.response?.data?.error || err.message || 'Failed to update user'
+      throw err
+    }
+  }
+
+  async function deactivateUser(id: string) {
+    try {
+      const response = await adminApi.deactivateUser(id) as ApiResponse<AdminUser>
+      const idx = users.value.findIndex((u) => u.id === Number(id))
+      if (idx >= 0) users.value[idx] = response.data!
+      if (selectedUser.value?.id === Number(id)) selectedUser.value = response.data!
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to deactivate user'
+      throw err
+    }
+  }
+
+  async function activateUser(id: string) {
+    try {
+      const response = await adminApi.activateUser(id) as ApiResponse<AdminUser>
+      const idx = users.value.findIndex((u) => u.id === Number(id))
+      if (idx >= 0) users.value[idx] = response.data!
+      if (selectedUser.value?.id === Number(id)) selectedUser.value = response.data!
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to activate user'
       throw err
     }
   }
@@ -350,7 +387,7 @@ export const useAdminStore = defineStore('admin', () => {
     disputes, selectedDispute,
     plans, stats, loading, error, pagination,
     fetchStats,
-    fetchUsers, fetchUser, updateUser, deleteUser,
+    fetchUsers, fetchUser, createUser, updateUser, deactivateUser, activateUser, deleteUser,
     fetchMissions, fetchMission, updateMissionStatus,
     fetchPayments, fetchPayment,
     fetchDisputes, fetchDispute, resolveDispute,

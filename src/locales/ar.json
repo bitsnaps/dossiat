@@ -95,20 +95,40 @@
       "updated": "تم تحديث الخطة بنجاح"
     },
     "users": {
+      "accountActions": "إجراءات الحساب",
       "actions": "الإجراءات",
+      "activate": "تفعيل",
+      "activateConfirm": "هل أنت متأكد أنك تريد تفعيل هذا المستخدم؟",
+      "activateError": "فشل في تفعيل المستخدم",
+      "activated": "تم تفعيل المستخدم بنجاح",
       "allRoles": "جميع الأدوار",
       "back": "← العودة إلى المستخدمين",
       "cancel": "إلغاء",
       "changeRole": "تغيير الدور",
+      "create": "إنشاء",
+      "createError": "فشل في إنشاء المستخدم",
+      "createUser": "إنشاء مستخدم",
+      "created": "تم إنشاء المستخدم بنجاح",
+      "creating": "جارٍ الإنشاء...",
       "currentRole": "الدور الحالي",
       "deactivate": "تعطيل",
       "deactivateConfirm": "هل أنت متأكد أنك تريد تعطيل هذا المستخدم؟",
       "deactivateError": "فشل في تعطيل المستخدم",
       "deactivated": "تم تعطيل المستخدم بنجاح",
+      "delete": "حذف",
+      "deleteConfirm": "هل أنت متأكد أنك تريد حذف هذا المستخدم نهائياً؟ لا يمكن التراجع عن هذا الإجراء.",
+      "deleteError": "فشل في حذف المستخدم",
+      "deleted": "تم حذف المستخدم بنجاح",
       "email": "البريد الإلكتروني",
+      "firstName": "الاسم الأول",
+      "firstNamePlaceholder": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "lastNamePlaceholder": "اسم العائلة",
       "manageRole": "إدارة الدور",
       "name": "الاسم",
       "notVerified": "غير موثق",
+      "password": "كلمة المرور",
+      "passwordPlaceholder": "8 أحرف على الأقل",
       "role": "الدور",
       "save": "حفظ",
       "search": "بحث بالاسم أو البريد الإلكتروني...",
@@ -362,17 +382,17 @@
         "pending": "قيد الانتظار",
         "refunded": "مسترد"
       },
+      "role": {
+        "admin": "مدير",
+        "agent": "وكيل",
+        "client": "عميل"
+      },
       "subscription": {
         "active": "نشط",
         "cancelled": "ملغى",
         "past_due": "متأخر",
         "paused": "متوقف مؤقتاً",
         "trialing": "فترة تجريبية"
-      },
-      "role": {
-        "admin": "مدير",
-        "agent": "وكيل",
-        "client": "عميل"
       }
     }
   },

@@ -95,20 +95,40 @@
       "updated": "Plan mis à jour avec succès."
     },
     "users": {
+      "accountActions": "Actions du compte",
       "actions": "Actions",
+      "activate": "Activer",
+      "activateConfirm": "Êtes-vous sûr de vouloir activer cet utilisateur ?",
+      "activateError": "Échec de l'activation.",
+      "activated": "Utilisateur activé avec succès.",
       "allRoles": "Tous les rôles",
       "back": "← Retour aux utilisateurs",
       "cancel": "Annuler",
       "changeRole": "Changer le rôle",
+      "create": "Créer",
+      "createError": "Échec de la création de l'utilisateur.",
+      "createUser": "Créer un utilisateur",
+      "created": "Utilisateur créé avec succès.",
+      "creating": "Création...",
       "currentRole": "Rôle actuel",
       "deactivate": "Désactiver",
       "deactivateConfirm": "Êtes-vous sûr de vouloir désactiver cet utilisateur ?",
       "deactivateError": "Échec de la désactivation.",
       "deactivated": "Utilisateur désactivé avec succès.",
+      "delete": "Supprimer",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer définitivement cet utilisateur ? Cette action est irréversible.",
+      "deleteError": "Échec de la suppression.",
+      "deleted": "Utilisateur supprimé avec succès.",
       "email": "Email",
+      "firstName": "Prénom",
+      "firstNamePlaceholder": "Prénom",
+      "lastName": "Nom",
+      "lastNamePlaceholder": "Nom",
       "manageRole": "Gérer le rôle",
       "name": "Nom",
       "notVerified": "Non vérifié",
+      "password": "Mot de passe",
+      "passwordPlaceholder": "Min. 8 caractères",
       "role": "Rôle",
       "save": "Enregistrer",
       "search": "Rechercher par nom ou email...",
@@ -362,17 +382,17 @@
         "pending": "En attente",
         "refunded": "Remboursé"
       },
+      "role": {
+        "admin": "Admin",
+        "agent": "Agent",
+        "client": "Client"
+      },
       "subscription": {
         "active": "Actif",
         "cancelled": "Annulé",
         "past_due": "En retard",
         "paused": "En pause",
         "trialing": "Essai"
-      },
-      "role": {
-        "admin": "Admin",
-        "agent": "Agent",
-        "client": "Client"
       }
     }
   },

@@ -9,6 +9,7 @@ let agentToken: string
 let clientToken: string
 let adminId: number
 let agentId: number
+let agentEmail: string
 let clientId: number
 
 beforeAll(async () => {
@@ -47,6 +48,7 @@ beforeAll(async () => {
     emailVerified: true,
   })
   agentId = agent.id
+  agentEmail = agent.email
   agentToken = await generateAccessToken({ userId: agent.id, email: agent.email, role: 'agent' })
 
   // Create client directly
@@ -136,6 +138,90 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
   })
 
   // ─── User Management ───
+
+  describe('POST /api/admin/users', () => {
+    it('creates a new user', async () => {
+      const email = `new-user-${Date.now()}@test.com`
+      const res = await app.request('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          email,
+          firstName: 'New',
+          lastName: 'User',
+          role: 'client',
+          password: 'SecurePass123!',
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(201)
+      expect(body.success).toBe(true)
+      expect(body.data.email).toBe(email)
+      expect(body.data.firstName).toBe('New')
+      expect(body.data.lastName).toBe('User')
+      expect(body.data.role).toBe('client')
+      expect(body.data).not.toHaveProperty('passwordHash')
+      expect(body.data.emailVerified).toBe(false)
+    })
+
+    it('rejects creation without required fields', async () => {
+      const res = await app.request('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ email: 'test@test.com' }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('rejects creation with invalid role', async () => {
+      const res = await app.request('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          email: `invalid-role-${Date.now()}@test.com`,
+          firstName: 'Test',
+          lastName: 'User',
+          role: 'superadmin',
+          password: 'Pass123!',
+        }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('rejects creation with duplicate email', async () => {
+      const dupEmail = `dup-${Date.now()}@test.com`
+      // Create a user first
+      await app.request('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          email: dupEmail,
+          firstName: 'Dup',
+          lastName: 'First',
+          role: 'client',
+          password: 'Pass123!',
+        }),
+      })
+
+      // Try to create another with same email
+      const res = await app.request('/api/admin/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          email: dupEmail,
+          firstName: 'Dup',
+          lastName: 'Second',
+          role: 'client',
+          password: 'Pass123!',
+        }),
+      })
+
+      expect(res.status).toBeGreaterThanOrEqual(400)
+    })
+  })
 
   describe('GET /api/admin/users', () => {
     it('returns paginated user list', async () => {
@@ -268,20 +354,98 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
     })
   })
 
-  describe('DELETE /api/admin/users/:id', () => {
-    it('deactivates user account', async () => {
-      // Create a temporary user to delete
+  describe('PATCH /api/admin/users/:id/deactivate', () => {
+    it('soft-deactivates a user', async () => {
       const passwordHash = await bcrypt.hash('Temp123!', 12)
       const tempUser = await User.create({
-        email: `temp-delete-${Date.now()}@test.com`,
+        email: `temp-deactivate-${Date.now()}@test.com`,
         passwordHash,
         firstName: 'Temp',
-        lastName: 'Delete',
+        lastName: 'Deactivate',
         role: 'client',
         emailVerified: true,
       })
 
-      const res = await app.request(`/api/admin/users/${tempUser.id}`, {
+      const res = await app.request(`/api/admin/users/${tempUser.id}/deactivate`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.emailVerified).toBe(false)
+
+      // Verify in DB
+      const check = await User.findByPk(tempUser.id)
+      expect(check!.emailVerified).toBe(false)
+
+      await tempUser.destroy()
+    })
+
+    it('returns 404 for non-existent user', async () => {
+      const res = await app.request('/api/admin/users/999999/deactivate', {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
+  describe('PATCH /api/admin/users/:id/activate', () => {
+    it('reactivates a deactivated user', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-activate-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'Activate',
+        role: 'agent',
+        emailVerified: false,
+      })
+
+      const res = await app.request(`/api/admin/users/${tempUser.id}/activate`, {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.emailVerified).toBe(true)
+
+      // Verify in DB
+      const check = await User.findByPk(tempUser.id)
+      expect(check!.emailVerified).toBe(true)
+
+      await tempUser.destroy()
+    })
+
+    it('returns 404 for non-existent user', async () => {
+      const res = await app.request('/api/admin/users/999999/activate', {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
+  describe('DELETE /api/admin/users/:id', () => {
+    it('hard-deletes a user from the database', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-harddelete-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'HardDelete',
+        role: 'client',
+        emailVerified: true,
+      })
+      const tempId = tempUser.id
+
+      const res = await app.request(`/api/admin/users/${tempId}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${adminToken}` },
       })
@@ -290,15 +454,9 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
       expect(res.status).toBe(200)
       expect(body.success).toBe(true)
 
-      // Verify user is soft-deactivated
-      const checkRes = await app.request(`/api/admin/users/${tempUser.id}`, {
-        headers: { Authorization: `Bearer ${adminToken}` },
-      })
-      const checkBody = await checkRes.json()
-      // User should either be gone or marked inactive
-      if (checkRes.status === 200) {
-        expect(checkBody.data.emailVerified).toBe(false)
-      }
+      // Verify user no longer exists in DB
+      const check = await User.findByPk(tempId)
+      expect(check).toBeNull()
     })
 
     it('returns 404 for non-existent user', async () => {

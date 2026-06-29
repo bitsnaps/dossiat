@@ -5,7 +5,10 @@ vi.mock('@/services/admin', () => ({
   getStats: vi.fn(),
   getUsers: vi.fn(),
   getUser: vi.fn(),
+  createUser: vi.fn(),
   updateUser: vi.fn(),
+  deactivateUser: vi.fn(),
+  activateUser: vi.fn(),
   deleteUser: vi.fn(),
   getMissions: vi.fn(),
   getMission: vi.fn(),
@@ -27,7 +30,10 @@ import { useAdminStore } from '@/stores/admin'
 const mockGetStats = vi.mocked(adminService.getStats)
 const mockGetUsers = vi.mocked(adminService.getUsers)
 const mockGetUser = vi.mocked(adminService.getUser)
+const mockCreateUser = vi.mocked(adminService.createUser)
 const mockUpdateUser = vi.mocked(adminService.updateUser)
+const mockDeactivateUser = vi.mocked(adminService.deactivateUser)
+const mockActivateUser = vi.mocked(adminService.activateUser)
 const mockDeleteUser = vi.mocked(adminService.deleteUser)
 const mockGetMissions = vi.mocked(adminService.getMissions)
 const mockGetPayments = vi.mocked(adminService.getPayments)
@@ -111,6 +117,27 @@ describe('Admin Store', () => {
     })
   })
 
+  describe('createUser()', () => {
+    it('adds new user to store', async () => {
+      mockCreateUser.mockResolvedValueOnce({
+        data: { id: 3, firstName: 'New', lastName: 'User', role: 'client', emailVerified: false },
+      } as any)
+
+      const store = useAdminStore()
+      await store.createUser({ email: 'new@test.com', firstName: 'New', lastName: 'User', role: 'client', password: 'Pass123!' })
+
+      expect(store.users.length).toBe(1)
+      expect(store.users[0].firstName).toBe('New')
+    })
+
+    it('throws on failure', async () => {
+      mockCreateUser.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.createUser({ email: 'new@test.com', firstName: 'New', lastName: 'User', password: 'Pass123!' })).rejects.toThrow()
+    })
+  })
+
   describe('updateUser()', () => {
     it('updates user in store', async () => {
       mockGetUsers.mockResolvedValueOnce({
@@ -125,6 +152,56 @@ describe('Admin Store', () => {
       await store.updateUser('1', { role: 'agent' })
 
       expect(store.users[0].role).toBe('agent')
+    })
+  })
+
+  describe('deactivateUser()', () => {
+    it('sets user emailVerified to false in store', async () => {
+      mockGetUsers.mockResolvedValueOnce({
+        data: [{ id: 1, firstName: 'John', emailVerified: true }],
+      } as any)
+      mockDeactivateUser.mockResolvedValueOnce({
+        data: { id: 1, firstName: 'John', emailVerified: false },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchUsers()
+      expect(store.users[0].emailVerified).toBe(true)
+
+      await store.deactivateUser('1')
+      expect(store.users[0].emailVerified).toBe(false)
+    })
+
+    it('throws on failure', async () => {
+      mockDeactivateUser.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.deactivateUser('1')).rejects.toThrow()
+    })
+  })
+
+  describe('activateUser()', () => {
+    it('sets user emailVerified to true in store', async () => {
+      mockGetUsers.mockResolvedValueOnce({
+        data: [{ id: 1, firstName: 'John', emailVerified: false }],
+      } as any)
+      mockActivateUser.mockResolvedValueOnce({
+        data: { id: 1, firstName: 'John', emailVerified: true },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchUsers()
+      expect(store.users[0].emailVerified).toBe(false)
+
+      await store.activateUser('1')
+      expect(store.users[0].emailVerified).toBe(true)
+    })
+
+    it('throws on failure', async () => {
+      mockActivateUser.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.activateUser('1')).rejects.toThrow()
     })
   })
 

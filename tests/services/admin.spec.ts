@@ -4,15 +4,17 @@ vi.mock('@/services/api', () => ({
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
+  patch: vi.fn(),
   del: vi.fn(),
 }))
 
-import { get, post, put, del } from '@/services/api'
+import { get, post, put, patch, del } from '@/services/api'
 import * as admin from '@/services/admin'
 
 const mockGet = vi.mocked(get)
 const mockPost = vi.mocked(post)
 const mockPut = vi.mocked(put)
+const mockPatch = vi.mocked(patch)
 const mockDel = vi.mocked(del)
 
 describe('Admin Service', () => {
@@ -64,6 +66,18 @@ describe('Admin Service', () => {
     })
   })
 
+  describe('createUser()', () => {
+    it('calls POST /admin/users with data', async () => {
+      mockPost.mockResolvedValueOnce({ success: true, data: { id: 1, email: 'new@test.com' } } as any)
+
+      const data = { email: 'new@test.com', firstName: 'New', lastName: 'User', role: 'client', password: 'Pass123!' }
+      const result = await admin.createUser(data)
+
+      expect(mockPost).toHaveBeenCalledWith('/admin/users', data)
+      expect(result).toEqual({ success: true, data: { id: 1, email: 'new@test.com' } })
+    })
+  })
+
   describe('updateUser()', () => {
     it('calls PUT /admin/users/:id with data', async () => {
       mockPut.mockResolvedValueOnce({ success: true } as any)
@@ -72,6 +86,28 @@ describe('Admin Service', () => {
 
       expect(mockPut).toHaveBeenCalledWith('/admin/users/1', { role: 'agent', emailVerified: true })
       expect(result).toEqual({ success: true })
+    })
+  })
+
+  describe('deactivateUser()', () => {
+    it('calls PATCH /admin/users/:id/deactivate', async () => {
+      mockPatch.mockResolvedValueOnce({ success: true, data: { id: 1, emailVerified: false } } as any)
+
+      const result = await admin.deactivateUser('1')
+
+      expect(mockPatch).toHaveBeenCalledWith('/admin/users/1/deactivate')
+      expect(result).toEqual({ success: true, data: { id: 1, emailVerified: false } })
+    })
+  })
+
+  describe('activateUser()', () => {
+    it('calls PATCH /admin/users/:id/activate', async () => {
+      mockPatch.mockResolvedValueOnce({ success: true, data: { id: 1, emailVerified: true } } as any)
+
+      const result = await admin.activateUser('1')
+
+      expect(mockPatch).toHaveBeenCalledWith('/admin/users/1/activate')
+      expect(result).toEqual({ success: true, data: { id: 1, emailVerified: true } })
     })
   })
 

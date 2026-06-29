@@ -73,6 +73,10 @@ export function put<T>(url: string, data?: unknown, config?: AxiosRequestConfig)
   return api.put(url, data, config).then((res) => res.data)
 }
 
+export function patch<T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
+  return api.patch(url, data, config).then((res) => res.data)
+}
+
 export function del<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
   return api.delete(url, config).then((res) => res.data)
 }

@@ -60,6 +60,42 @@ admin.get('/users/:id', async (c) => {
   return successResponse(c, user)
 })
 
+// ─── POST /api/admin/users ───
+admin.post('/users',
+  validateRequest({
+    body: {
+      email: validators.required(),
+      firstName: validators.required(),
+      lastName: validators.required(),
+      role: validators.isIn(['agent', 'client', 'admin']),
+      password: validators.required(),
+    },
+  }),
+  async (c) => {
+    const { email, firstName, lastName, role, password } = await c.req.json()
+
+    // Check for duplicate email
+    const existing = await User.findOne({ where: { email } })
+    if (existing) throw new AppError('A user with this email already exists', 409)
+
+    const bcrypt = await import('bcryptjs')
+    const passwordHash = await bcrypt.hash(password, 12)
+
+    const user = await User.create({
+      email,
+      firstName,
+      lastName,
+      role: role || 'client',
+      passwordHash,
+      emailVerified: false,
+    })
+
+    const { passwordHash: _, ...userSafe } = user.toJSON() as any
+
+    return successResponse(c, userSafe, 'User created', 201)
+  }
+)
+
 // ─── PUT /api/admin/users/:id ───
 admin.put('/users/:id',
   validateRequest({
@@ -98,6 +134,34 @@ admin.put('/users/:id',
   }
 )
 
+// ─── PATCH /api/admin/users/:id/deactivate ───
+admin.patch('/users/:id/deactivate', async (c) => {
+  const id = parseInt(c.req.param('id')!)
+  if (isNaN(id)) throw new AppError('Invalid user ID', 422)
+
+  const user = await User.findByPk(id)
+  if (!user) throw new AppError('User not found', 404)
+
+  await user.update({ emailVerified: false })
+
+  const { passwordHash: _, ...userSafe } = user.toJSON() as any
+  return successResponse(c, userSafe, 'User deactivated')
+})
+
+// ─── PATCH /api/admin/users/:id/activate ───
+admin.patch('/users/:id/activate', async (c) => {
+  const id = parseInt(c.req.param('id')!)
+  if (isNaN(id)) throw new AppError('Invalid user ID', 422)
+
+  const user = await User.findByPk(id)
+  if (!user) throw new AppError('User not found', 404)
+
+  await user.update({ emailVerified: true })
+
+  const { passwordHash: _, ...userSafe } = user.toJSON() as any
+  return successResponse(c, userSafe, 'User activated')
+})
+
 // ─── DELETE /api/admin/users/:id ───
 admin.delete('/users/:id', async (c) => {
   const id = parseInt(c.req.param('id')!)
@@ -106,10 +170,9 @@ admin.delete('/users/:id', async (c) => {
   const user = await User.findByPk(id)
   if (!user) throw new AppError('User not found', 404)
 
-  // Soft-delete: deactivate by setting emailVerified to false and changing email
-  await user.update({ emailVerified: false })
+  await user.destroy()
 
-  return successResponse(c, { id, emailVerified: false }, 'User deactivated')
+  return successResponse(c, { id }, 'User deleted')
 })
 
 // ─── GET /api/admin/missions ───

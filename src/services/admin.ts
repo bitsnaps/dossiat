@@ -1,4 +1,4 @@
-import { get, post, put, del } from './api'
+import { get, post, put, patch, del } from './api'
 
 // ─── Stats ───
 
@@ -16,8 +16,20 @@ export function getUser(id: string) {
   return get(`/admin/users/${id}`)
 }
 
+export function createUser(data: { email: string; firstName: string; lastName: string; role?: string; password: string }) {
+  return post('/admin/users', data)
+}
+
 export function updateUser(id: string, data: { role?: string; emailVerified?: boolean }) {
   return put(`/admin/users/${id}`, data)
+}
+
+export function deactivateUser(id: string) {
+  return patch(`/admin/users/${id}/deactivate`)
+}
+
+export function activateUser(id: string) {
+  return patch(`/admin/users/${id}/activate`)
 }
 
 export function deleteUser(id: string) {
