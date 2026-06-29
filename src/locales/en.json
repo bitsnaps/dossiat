@@ -884,7 +884,6 @@
     "subtitle": "View and manage dispute reconciliation rooms.",
     "noDisputes": "No disputes yet.",
     "noDisputesHint": "If a mission has issues, you can initiate a dispute from the mission detail page.",
-    "initiate": "Initiate Dispute",
     "view": "View",
     "status": {
       "open": "Open",

@@ -52,7 +52,7 @@ function goToInitiate() {
         <p class="ds-dispute-list__subtitle">{{ t('disputes.subtitle') }}</p>
       </div>
       <BButton variant="accent" class="ds-dispute-list__initiate-btn" @click="goToInitiate">
-        {{ t('disputes.initiate') }}
+        {{ t('disputes.initiate.title') }}
       </BButton>
     </div>
 
