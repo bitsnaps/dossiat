@@ -41,8 +41,8 @@ type: project
 - **Fix:** Dropped `SequelizeMeta` table in Neon SQL console, then re-ran migrations
 
 ### 9. Netlify deploy blocked by secret scanner
-- **Root cause:** [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) contained example values (`neondb_owner`, Neon host pattern) that matched Netlify's secret detection patterns
-- **Fix:** Replaced all examples with generic placeholders (`your-host.example.com`, `your_db_user`, etc.)
+- **Root cause:** [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) contained example values that matched Netlify's secret detection patterns
+- **Fix:** Replaced all examples with generic placeholders.
 
 ## Files Modified
 
