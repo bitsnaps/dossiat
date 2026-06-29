@@ -4,10 +4,12 @@ import { User, RefreshToken, EmailVerificationToken, Notification } from '@/serv
 import bcrypt from 'bcryptjs'
 import crypto from 'node:crypto'
 import { generateRefreshToken } from '@/server/utils/jwt'
+import sequelize from '@/server/database/config/database'
 
 let testEmail = `auth-test-${Date.now()}@test.com`
 
 beforeAll(async () => {
+  await sequelize.sync()
   await Notification.destroy({ where: {} })
   await EmailVerificationToken.destroy({ where: {} })
   await RefreshToken.destroy({ where: {} })

@@ -159,7 +159,7 @@ RefreshToken.init(
     token: { type: DataTypes.STRING(512), allowNull: false, unique: true },
     expiresAt: { type: DataTypes.DATE, allowNull: false },
   },
-  { sequelize, tableName: 'refresh_tokens', modelName: 'RefreshToken' }
+  { sequelize, tableName: 'refresh_tokens', modelName: 'RefreshToken', updatedAt: false }
 )
 
 // ============================================================
@@ -194,7 +194,7 @@ PasswordResetToken.init(
     expiresAt: { type: DataTypes.DATE, allowNull: false },
     used: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   },
-  { sequelize, tableName: 'password_reset_tokens', modelName: 'PasswordResetToken' }
+  { sequelize, tableName: 'password_reset_tokens', modelName: 'PasswordResetToken', updatedAt: false }
 )
 
 // ============================================================
@@ -229,7 +229,7 @@ EmailVerificationToken.init(
     expiresAt: { type: DataTypes.DATE, allowNull: false },
     used: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
   },
-  { sequelize, tableName: 'email_verification_tokens', modelName: 'EmailVerificationToken' }
+  { sequelize, tableName: 'email_verification_tokens', modelName: 'EmailVerificationToken', updatedAt: false }
 )
 
 // ============================================================
@@ -387,7 +387,7 @@ MissionAttachment.init(
     fileType: { type: DataTypes.STRING, allowNull: false },
     fileSize: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { sequelize, tableName: 'mission_attachments', modelName: 'MissionAttachment' }
+  { sequelize, tableName: 'mission_attachments', modelName: 'MissionAttachment', updatedAt: false }
 )
 
 // ============================================================
@@ -450,7 +450,7 @@ Message.init(
     content: { type: DataTypes.TEXT, allowNull: false },
     readAt: { type: DataTypes.DATE, allowNull: true },
   },
-  { sequelize, tableName: 'messages', modelName: 'Message' }
+  { sequelize, tableName: 'messages', modelName: 'Message', updatedAt: false }
 )
 
 // ============================================================
@@ -486,7 +486,7 @@ MessageAttachment.init(
     fileType: { type: DataTypes.STRING, allowNull: false },
     fileSize: { type: DataTypes.INTEGER, allowNull: false },
   },
-  { sequelize, tableName: 'message_attachments', modelName: 'MessageAttachment' }
+  { sequelize, tableName: 'message_attachments', modelName: 'MessageAttachment', timestamps: false }
 )
 
 // ============================================================
@@ -570,6 +570,7 @@ Payment.init(
     sequelize,
     tableName: 'payments',
     modelName: 'Payment',
+    updatedAt: false,
     validate: {
       netAmountNotGreaterThanAmount() {
         if (this.netAmount != null && this.amount != null && Number(this.netAmount) > Number(this.amount)) {
@@ -609,7 +610,7 @@ PlatformCredit.init(
     balance: { type: DataTypes.DECIMAL(10, 2), allowNull: false, defaultValue: 0 },
     currency: { type: DataTypes.STRING(3), allowNull: false, defaultValue: 'USD' },
   },
-  { sequelize, tableName: 'platform_credits', modelName: 'PlatformCredit' }
+  { sequelize, tableName: 'platform_credits', modelName: 'PlatformCredit', createdAt: false }
 )
 
 // ============================================================
@@ -644,7 +645,7 @@ CreditTransaction.init(
     amount: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
     description: { type: DataTypes.STRING, allowNull: false },
   },
-  { sequelize, tableName: 'credit_transactions', modelName: 'CreditTransaction' }
+  { sequelize, tableName: 'credit_transactions', modelName: 'CreditTransaction', updatedAt: false }
 )
 
 // ============================================================
@@ -688,7 +689,7 @@ Invoice.init(
     status: { type: DataTypes.ENUM('draft', 'sent', 'paid'), allowNull: false, defaultValue: 'draft' },
     paidAt: { type: DataTypes.DATE, allowNull: true },
   },
-  { sequelize, tableName: 'invoices', modelName: 'Invoice' }
+  { sequelize, tableName: 'invoices', modelName: 'Invoice', updatedAt: false }
 )
 
 // ============================================================
@@ -818,7 +819,7 @@ SubscriptionInvoice.init(
     status: { type: DataTypes.ENUM('pending', 'paid', 'failed'), allowNull: false, defaultValue: 'pending' },
     paidAt: { type: DataTypes.DATE, allowNull: true },
   },
-  { sequelize, tableName: 'subscription_invoices', modelName: 'SubscriptionInvoice' }
+  { sequelize, tableName: 'subscription_invoices', modelName: 'SubscriptionInvoice', updatedAt: false }
 )
 
 // ============================================================
@@ -893,7 +894,7 @@ DisputeMessage.init(
     senderId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
     content: { type: DataTypes.TEXT, allowNull: false },
   },
-  { sequelize, tableName: 'dispute_messages', modelName: 'DisputeMessage' }
+  { sequelize, tableName: 'dispute_messages', modelName: 'DisputeMessage', updatedAt: false }
 )
 
 // ============================================================
@@ -934,7 +935,7 @@ Notification.init(
     data: { type: DataTypes.JSON, allowNull: false, defaultValue: {} },
     readAt: { type: DataTypes.DATE, allowNull: true },
   },
-  { sequelize, tableName: 'notifications', modelName: 'Notification' }
+  { sequelize, tableName: 'notifications', modelName: 'Notification', updatedAt: false }
 )
 
 // ============================================================
