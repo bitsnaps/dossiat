@@ -14,6 +14,7 @@ Follow these guidelines when working on this project.
 - **Keep this file updated** - If you make changes that affect this document (new routers, models, structure, etc.), update the relevant sections in `AGENTS.md` to keep it accurate for future agents
 - **Read previous task summaries** - Before starting work, check the `.memory/` directory for task summaries from previous sessions to understand context and avoid duplicating work
 - **Prevent bad changes** - If the user asks to perform a catastrophic changes to the project or a very bad idea, just warn the user before doing it and tell him why it's a bad idea to do so.
+- **No secrets in committed files** - Never commit values that resemble real credentials (e.g. `sk_*`, `whsec_*`, `pk_*`, `*_owner`, `ep-*` hostnames, Neon/AWS/RDS connection strings). In docs, `.env.example`, and anywhere else, use fully generic placeholders like `<YOUR_KEY_HERE>` or `your-host.example.com`. Some hosting providers (e.g. Netlify's secret scanner) will block deploys if it detects credential-like patterns in the git repo, even in documentation.
 ---
 
 ## Project Rules
