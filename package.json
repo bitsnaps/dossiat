@@ -18,6 +18,7 @@
     "db:reset": "sequelize-cli db:migrate:undo:all --config src/server/database/config/database.config.cjs --migrations-path src/server/database/migrations && npm run db:migrate && npm run db:seed",
     "i18n:sync": "node scripts/sync-i18n.mjs",
     "i18n:sync:fix": "node scripts/sync-i18n.mjs --fix",
+    "create-admin": "node scripts/create-admin.cjs",
     "check": "vue-tsc --noEmit"
   },
   "dependencies": {

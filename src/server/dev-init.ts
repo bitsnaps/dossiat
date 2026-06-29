@@ -2,6 +2,7 @@ import sequelize from './database/config/database'
 import './database/models' // registers all models
 import { User } from './database/models'
 import { createDemoUsers } from './database/seeders/helpers/demo-users'
+import { seedAdminFromEnv } from './utils/seed-admin'
 
 let initialized = false
 
@@ -18,4 +19,7 @@ export async function initDevDatabase() {
     await createDemoUsers()
     console.log('[dev-init] Demo users created')
   }
+
+  // Seed admin user from env vars (idempotent — skips if admin exists)
+  await seedAdminFromEnv()
 }
