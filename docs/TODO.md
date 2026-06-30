@@ -427,10 +427,10 @@
 
 ### 8c. Integration Tests
 
-- [ ] Write integration tests for authentication flow (register → verify → login → access protected route)
-- [ ] Write integration tests for mission lifecycle (create → agree → progress → complete → pay)
-- [ ] Write integration tests for dispute flow (initiate → message → resolve)
-- [ ] Write integration tests for subscription flow (subscribe → upgrade → cancel)
+- [x] Write integration tests for authentication flow (register → verify → login → access protected route)
+- [x] Write integration tests for mission lifecycle (create → agree → progress → complete → pay)
+- [x] Write integration tests for dispute flow (initiate → message → resolve)
+- [x] Write integration tests for subscription flow (subscribe → upgrade → cancel)
 
 ### 8d. Backend Tests
 
@@ -444,7 +444,7 @@
 - [x] Write unit tests for fee calculator and payment providers
 - [x] Write unit tests for admin service (`tests/services/admin.spec.ts` — 18 tests)
 - [x] Write unit tests for admin store (`tests/stores/admin.spec.ts` — 12 tests)
-- [ ] Set up test database (SQLite in-memory) for backend integration tests
+- [x] Set up test database (SQLite in-memory) for backend integration tests
 
 ---
 
