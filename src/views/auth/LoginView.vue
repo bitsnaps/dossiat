@@ -9,8 +9,8 @@ const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 
-const email = ref('')
-const password = ref('')
+const email = ref(import.meta.env.DEV ? (import.meta.env.VITE_ADMIN_EMAIL ?? '') : '')
+const password = ref(import.meta.env.DEV ? (import.meta.env.VITE_ADMIN_PASSWORD ?? '') : '')
 
 async function handleSubmit() {
   await authStore.login({ email: email.value, password: password.value })
