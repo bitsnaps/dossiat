@@ -16,7 +16,7 @@ const route = useRoute()
 const router = useRouter()
 const adminStore = useAdminStore()
 const toast = useToast()
-const { isVisible: isConfirmVisible, title: confirmTitle, message: confirmMessage, showConfirm, confirm, cancel } = useConfirmDialog()
+const { isVisible: isConfirmVisible, title: confirmTitle, message: confirmMessage, variant: confirmVariant, showConfirm, confirm, cancel } = useConfirmDialog()
 
 const userId = computed(() => route.params.id as string)
 const editingRole = ref(false)
@@ -37,7 +37,7 @@ async function saveRole() {
 }
 
 async function handleDeactivate() {
-  const confirmed = await showConfirm({ title: t('admin.users.deactivateConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.users.deactivateTitle'), message: t('admin.users.deactivateConfirm') })
   if (!confirmed) return
   try {
     await adminStore.deactivateUser(userId.value)
@@ -48,7 +48,7 @@ async function handleDeactivate() {
 }
 
 async function handleActivate() {
-  const confirmed = await showConfirm({ title: t('admin.users.activateConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.users.activateTitle'), message: t('admin.users.activateConfirm') })
   if (!confirmed) return
   try {
     await adminStore.activateUser(userId.value)
@@ -59,7 +59,7 @@ async function handleActivate() {
 }
 
 async function handleDelete() {
-  const confirmed = await showConfirm({ title: t('admin.users.deleteConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.users.deleteTitle'), message: t('admin.users.deleteConfirm'), variant: 'danger' })
   if (!confirmed) return
   try {
     await adminStore.deleteUser(userId.value)
@@ -162,6 +162,7 @@ async function handleDelete() {
       :model-value="isConfirmVisible"
       :title="confirmTitle"
       :message="confirmMessage"
+      :variant="confirmVariant"
       @confirm="confirm"
       @cancel="cancel"
     />

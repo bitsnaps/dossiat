@@ -24,12 +24,17 @@ function close() {
 <template>
   <div v-if="modelValue" class="ds-modal-overlay" @click.self="close">
     <div :class="['ds-modal-dialog', `ds-modal-${size}`]">
-      <div class="ds-modal-header">
+      <div v-if="title" class="ds-modal-header">
         <h3 class="ds-modal-title">{{ title }}</h3>
         <button class="ds-modal-close" @click="close">
           <i class="bi bi-x-lg" />
         </button>
       </div>
+      <template v-if="!title">
+        <button class="ds-modal-close ds-modal-close--top" @click="close">
+          <i class="bi bi-x-lg" />
+        </button>
+      </template>
       <div class="ds-modal-body">
         <slot />
       </div>

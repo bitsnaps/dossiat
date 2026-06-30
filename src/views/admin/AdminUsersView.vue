@@ -18,7 +18,7 @@ import { useToast } from '@/composables/useToast'
 const { t } = useI18n()
 const adminStore = useAdminStore()
 const toast = useToast()
-const { isVisible: isConfirmVisible, title: confirmTitle, message: confirmMessage, showConfirm, confirm, cancel } = useConfirmDialog()
+const { isVisible: isConfirmVisible, title: confirmTitle, message: confirmMessage, variant: confirmVariant, showConfirm, confirm, cancel } = useConfirmDialog()
 
 const search = ref('')
 const roleFilter = ref('')
@@ -83,7 +83,7 @@ async function handleCreate() {
 }
 
 async function handleDeactivate(id: number) {
-  const confirmed = await showConfirm({ title: t('admin.users.deactivateConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.users.deactivateTitle'), message: t('admin.users.deactivateConfirm') })
   if (!confirmed) return
   try {
     await adminStore.deactivateUser(id.toString())
@@ -95,7 +95,7 @@ async function handleDeactivate(id: number) {
 }
 
 async function handleActivate(id: number) {
-  const confirmed = await showConfirm({ title: t('admin.users.activateConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.users.activateTitle'), message: t('admin.users.activateConfirm') })
   if (!confirmed) return
   try {
     await adminStore.activateUser(id.toString())
@@ -107,7 +107,7 @@ async function handleActivate(id: number) {
 }
 
 async function handleDelete(id: number) {
-  const confirmed = await showConfirm({ title: t('admin.users.deleteConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.users.deleteTitle'), message: t('admin.users.deleteConfirm'), variant: 'danger' })
   if (!confirmed) return
   try {
     await adminStore.deleteUser(id.toString())
@@ -239,6 +239,7 @@ async function handleDelete(id: number) {
       :model-value="isConfirmVisible"
       :title="confirmTitle"
       :message="confirmMessage"
+      :variant="confirmVariant"
       @confirm="confirm"
       @cancel="cancel"
     />

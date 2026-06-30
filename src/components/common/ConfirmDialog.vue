@@ -36,8 +36,14 @@ function onCancel() {
 </script>
 
 <template>
-  <BModal :model-value="modelValue" :title="title" size="sm" @update:model-value="emit('update:modelValue', $event)">
-    <p v-if="message" style="color: var(--ds-text-muted); margin: 0; font-size: 0.875rem;">{{ message }}</p>
+  <BModal :model-value="modelValue" size="sm" @update:model-value="emit('update:modelValue', $event)">
+    <div class="ds-confirm-dialog">
+      <div v-if="variant === 'danger'" class="ds-confirm-dialog__icon">
+        <i class="bi bi-exclamation-triangle-fill" />
+      </div>
+      <h3 class="ds-confirm-dialog__title">{{ title }}</h3>
+      <p v-if="message" class="ds-confirm-dialog__message">{{ message }}</p>
+    </div>
     <template #footer>
       <BButton variant="ghost" @click="onCancel">
         {{ cancelLabel }}

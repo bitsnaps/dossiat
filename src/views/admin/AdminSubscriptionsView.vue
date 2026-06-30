@@ -61,7 +61,7 @@ async function handleUpdate() {
 }
 
 async function handleDeactivate(plan: any) {
-  const confirmed = await showConfirm({ title: t('admin.subscriptions.deactivateConfirm') })
+  const confirmed = await showConfirm({ title: t('admin.subscriptions.deactivateTitle'), message: t('admin.subscriptions.deactivateConfirm') })
   if (!confirmed) return
   try {
     await adminStore.deletePlan(plan.id.toString())

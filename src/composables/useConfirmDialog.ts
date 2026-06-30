@@ -5,6 +5,7 @@ interface ConfirmOptions {
   message?: string
   confirmLabel?: string
   cancelLabel?: string
+  variant?: 'danger' | 'accent'
 }
 
 export function useConfirmDialog() {
@@ -13,6 +14,7 @@ export function useConfirmDialog() {
   const message = ref('')
   const confirmLabel = ref('Confirm')
   const cancelLabel = ref('Cancel')
+  const variant = ref<'danger' | 'accent'>('accent')
 
   let resolvePromise: ((value: boolean) => void) | null = null
 
@@ -21,6 +23,7 @@ export function useConfirmDialog() {
     message.value = options.message ?? ''
     confirmLabel.value = options.confirmLabel ?? 'Confirm'
     cancelLabel.value = options.cancelLabel ?? 'Cancel'
+    variant.value = options.variant ?? 'accent'
     isVisible.value = true
 
     return new Promise<boolean>((resolve) => {
@@ -46,6 +49,7 @@ export function useConfirmDialog() {
     message,
     confirmLabel,
     cancelLabel,
+    variant,
     showConfirm,
     confirm,
     cancel,
