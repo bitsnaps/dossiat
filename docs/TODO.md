@@ -453,13 +453,13 @@
 - [x] Implement platform fee calculation: 1% of agent labor fee, minimum $1
 - [x] Implement fee calculation on net amount (total minus Stripe/PayPal gateway fees) when using online gateways
 - [x] Implement platform credit deduction for cash/off-platform missions
-- [ ] Implement progressive profile visibility (limited profile for unauthenticated visitors, full after registration)
-- [ ] Implement mission agreement workflow (both parties must check all boxes before mission starts)
-- [ ] Implement recurrent mission auto-generation with proper date scheduling
-- [ ] Implement seat limit enforcement per subscription tier
-- [ ] Implement recurring mission limit per tier (10/month for Small Business, unlimited for others)
+- [x] Implement progressive profile visibility (limited profile for unauthenticated visitors, full after registration)
+- [x] Implement mission agreement workflow (both parties must check all boxes before mission starts)
+- [x] Implement recurrent mission auto-generation with proper date scheduling
+- [x] Implement seat limit enforcement per subscription tier
+- [x] Implement recurring mission limit per tier (10/month for Small Business, unlimited for others)
 - [ ] Implement CSV bulk mission creation for Enterprise tier
-- [ ] Implement agent billing cycle and invoice generation
+- [x] Implement agent billing cycle and invoice generation
 
 ---
 

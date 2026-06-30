@@ -17,6 +17,8 @@ const authStore = useAuthStore()
 
 const slug = computed(() => route.params.slug as string)
 
+const isUnauthenticated = computed(() => !authStore.isAuthenticated)
+
 const isOwnProfile = computed(() => {
   if (!authStore.isAuthenticated || !authStore.user || !agentProfileStore.publicProfile) return false
   return authStore.user.id === agentProfileStore.publicProfile.user?.id
@@ -135,11 +137,21 @@ onUnmounted(() => {
         <InviteLinkShare :slug="ownInviteSlug" />
       </BCard>
 
-      <!-- CTA for visitors -->
+      <!-- CTA for authenticated visitors (non-owners) -->
       <div v-if="!isOwnProfile && authStore.isAuthenticated" class="ds-agent-profile__cta">
         <BButton variant="accent" size="lg" icon="bi-clipboard-plus">
           {{ t('agentProfile.view.startMission') }}
         </BButton>
+      </div>
+
+      <!-- CTA for unauthenticated visitors -->
+      <div v-if="isUnauthenticated" class="ds-agent-profile__cta">
+        <BCard variant="bordered" padding="md" class="ds-agent-profile__register-prompt">
+          <p class="ds-agent-profile__register-text">{{ t('agentProfile.view.registerToContact') }}</p>
+          <BButton variant="accent" to="/register">
+            {{ t('agentProfile.view.register') }}
+          </BButton>
+        </BCard>
       </div>
     </template>
   </div>

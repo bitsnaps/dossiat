@@ -8,6 +8,8 @@ import {
   updateMission as apiUpdateMission,
   deleteMission as apiDeleteMission,
   agreeMission as apiAgreeMission,
+  getAgreementStatus as apiGetAgreementStatus,
+  createBulkMissions as apiCreateBulkMissions,
   updateMissionStatus as apiUpdateMissionStatus,
   getAttachments as apiGetAttachments,
   uploadAttachment as apiUploadAttachment,
@@ -80,6 +82,7 @@ export const useMissionsStore = defineStore('missions', () => {
   const filters = ref<MissionFilters>({})
   const total = ref(0)
   const page = ref(1)
+  const agreementStatus = ref<{ agreedByAgent: boolean; agreedByClient: boolean; bothAgreed: boolean } | null>(null)
 
   const filteredMissions = computed(() => {
     return missions.value.filter((m) => {
@@ -186,6 +189,17 @@ export const useMissionsStore = defineStore('missions', () => {
     }
   }
 
+  async function fetchAgreementStatus(id: string) {
+    try {
+      const response = await apiGetAgreementStatus(id) as ApiResponse<{ agreedByAgent: boolean; agreedByClient: boolean; bothAgreed: boolean }>
+      agreementStatus.value = response.data!
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to fetch agreement status'
+      return null
+    }
+  }
+
   async function agreeMission(id: string) {
     loading.value = true
     error.value = null
@@ -199,6 +213,8 @@ export const useMissionsStore = defineStore('missions', () => {
       if (currentMission.value?.id === Number(id)) {
         currentMission.value = { ...currentMission.value, ...updated }
       }
+      // Refresh agreement status
+      await fetchAgreementStatus(id)
       return updated
     } catch (err: any) {
       error.value = err.response?.data?.error || err.message || 'Failed to agree mission'
@@ -271,6 +287,7 @@ export const useMissionsStore = defineStore('missions', () => {
     filters,
     total,
     page,
+    agreementStatus,
     filteredMissions,
     activeMissions,
     setFilter,
@@ -280,6 +297,7 @@ export const useMissionsStore = defineStore('missions', () => {
     createMission,
     updateMission,
     deleteMission,
+    fetchAgreementStatus,
     agreeMission,
     updateMissionStatus,
     fetchAttachments,

@@ -393,7 +393,9 @@
       "about": "About",
       "specialties": "Specialties",
       "notFound": "Agent not found.",
-      "backToHome": "← Back to home"
+      "backToHome": "← Back to home",
+      "registerToContact": "Register to contact this agent and start a mission.",
+      "register": "Register"
     },
     "settings": {
       "title": "Agent Settings",
@@ -571,7 +573,12 @@
       "decline": "Decline",
       "confirmDecline": "Are you sure you want to decline this mission?",
       "agreed": "Agreement confirmed.",
-      "notAgreed": "Please check all items to confirm agreement."
+      "recorded": "Your agreement has been recorded. Waiting for the other party.",
+      "alreadyAgreed": "You have already agreed.",
+      "waitingForOtherParty": "Waiting for the other party to agree.",
+      "notAgreed": "Please check all items to confirm agreement.",
+      "agentAgreed": "Agent",
+      "clientAgreed": "Client"
     },
     "timeline": {
       "created": "Created",

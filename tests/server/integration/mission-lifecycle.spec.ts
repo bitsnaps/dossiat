@@ -82,19 +82,19 @@ describe('Mission Lifecycle Integration', { timeout: 30_000 }, () => {
     const body = await res.json()
 
     expect(res.status).toBe(200)
-    expect(body.data.status).toBe('agreed')
+    expect(body.data.agreedByAgent).toBe(true)
+    expect(body.data.status).toBe('pending_agreement')
   })
 
   it('step 4: client agrees to mission', async () => {
-    // Re-fetch mission — agent agreed already set it to 'agreed'
-    // The current agree endpoint transitions pending_agreement → agreed
-    // Both agree is simplified to a single agree. Verify status is agreed.
-    const res = await app.request(`/api/missions/${missionId}`, {
+    const res = await app.request(`/api/missions/${missionId}/agree`, {
+      method: 'POST',
       headers: { Authorization: `Bearer ${clientToken}` },
     })
     const body = await res.json()
 
     expect(res.status).toBe(200)
+    expect(body.data.agreedByClient).toBe(true)
     expect(body.data.status).toBe('agreed')
   })
 

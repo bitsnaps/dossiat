@@ -87,7 +87,7 @@ users.put('/me/password',
   }
 )
 
-// GET /api/users/agents/:slug — public agent profile
+// GET /api/users/agents/:slug — public agent profile (progressive visibility)
 users.get('/agents/:slug', async (c) => {
   const slug = c.req.param('slug')
 
@@ -100,20 +100,31 @@ users.get('/agents/:slug', async (c) => {
 
   const auth = c.get('auth')
   const isOwnProfile = auth?.userId === profile.userId
+  const isAuthenticated = !!auth
 
+  // Progressive visibility: limit fields based on auth state
   const data: any = {
     id: profile.id,
     bio: profile.bio,
     specialties: profile.specialties,
     acceptedClientTypes: profile.acceptedClientTypes,
-    currency: profile.currency,
-    timezone: profile.timezone,
     profilePhotoUrl: profile.profilePhotoUrl,
-    user: profile.user,
+    user: {
+      id: profile.user.id,
+      firstName: profile.user.firstName,
+      lastName: profile.user.lastName,
+    },
   }
 
-  if (!auth || !isOwnProfile) {
-    delete data.currency
+  if (isAuthenticated) {
+    // Authenticated users see timezone
+    data.timezone = profile.timezone
+  }
+
+  if (isOwnProfile) {
+    // Owner sees everything including currency and email
+    data.currency = profile.currency
+    data.user.email = profile.user.email
   }
 
   return successResponse(c, data)

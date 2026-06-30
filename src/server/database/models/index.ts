@@ -249,13 +249,15 @@ interface MissionModel {
   currency: string
   agreedChecklist: string[]
   completedChecklist: string[]
+  agreedByAgent: boolean
+  agreedByClient: boolean
   startedAt: Date | null
   completedAt: Date | null
   createdAt?: Date
   updatedAt?: Date
 }
 
-interface MissionCreationAttributes extends Optional<MissionModel, 'id' | 'description' | 'agreedAmount' | 'agreedChecklist' | 'completedChecklist' | 'startedAt' | 'completedAt' | 'createdAt' | 'updatedAt'> {}
+interface MissionCreationAttributes extends Optional<MissionModel, 'id' | 'description' | 'agreedAmount' | 'agreedChecklist' | 'completedChecklist' | 'agreedByAgent' | 'agreedByClient' | 'startedAt' | 'completedAt' | 'createdAt' | 'updatedAt'> {}
 
 class Mission extends Model<MissionModel, MissionCreationAttributes> implements MissionModel {
   declare id: number
@@ -270,6 +272,8 @@ class Mission extends Model<MissionModel, MissionCreationAttributes> implements 
   declare currency: string
   declare agreedChecklist: string[]
   declare completedChecklist: string[]
+  declare agreedByAgent: boolean
+  declare agreedByClient: boolean
   declare startedAt: Date | null
   declare completedAt: Date | null
   declare readonly createdAt: Date
@@ -294,6 +298,8 @@ Mission.init(
     currency: { type: DataTypes.STRING(3), allowNull: false, defaultValue: 'USD' },
     agreedChecklist: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
     completedChecklist: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
+    agreedByAgent: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    agreedByClient: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
     startedAt: { type: DataTypes.DATE, allowNull: true },
     completedAt: { type: DataTypes.DATE, allowNull: true },
   },

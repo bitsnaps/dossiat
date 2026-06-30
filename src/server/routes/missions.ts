@@ -1,11 +1,13 @@
 import { Hono } from 'hono'
 import { Op } from 'sequelize'
-import { Mission, RecurrentMissionConfig, MissionAttachment, Conversation, User } from '@/server/database/models'
+import { Mission, RecurrentMissionConfig, MissionAttachment, Conversation, User, ClientProfile, Subscription, SubscriptionPlan } from '@/server/database/models'
 import { successResponse, paginatedResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
+import { roleGuard } from '@/server/middleware/roleGuard'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
 import { createNotification } from '@/server/services/notification'
+import { checkSeatLimit } from '@/server/services/subscriptionGuard'
 
 const missions = new Hono()
 
@@ -72,6 +74,12 @@ missions.post('/',
       throw new AppError('Only agents can create missions', 403)
     }
 
+    // Check seat limit for the client
+    const seatCheck = await checkSeatLimit(body.clientId)
+    if (!seatCheck.allowed) {
+      throw new AppError(`Client has reached the maximum of ${seatCheck.max} agent seats. Upgrade your plan to add more.`, 403)
+    }
+
     const mission = await Mission.create({
       agentId: auth.userId,
       clientId: body.clientId,
@@ -92,6 +100,73 @@ missions.post('/',
     createNotification(body.clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
 
     return successResponse(c, mission, 'Mission created', 201)
+  }
+)
+
+// POST /api/missions/bulk — Enterprise only
+missions.post('/bulk',
+  authenticate(),
+  async (c) => {
+    const auth = c.get('auth')
+    const { missions: missionData } = await c.req.json()
+
+    if (!Array.isArray(missionData) || missionData.length === 0) {
+      throw new AppError('missions must be a non-empty array', 422)
+    }
+
+    if (missionData.length > 100) {
+      throw new AppError('Maximum 100 missions per bulk request', 422)
+    }
+
+    // Check Enterprise tier
+    if (auth.role === 'client') {
+      const clientProfile = await ClientProfile.findOne({ where: { userId: auth.userId } })
+      if (!clientProfile) throw new AppError('Client profile not found', 404)
+
+      const subscription = await Subscription.findOne({
+        where: { clientId: clientProfile.id, status: 'active' },
+        include: [{ model: SubscriptionPlan, as: 'plan' }],
+      }) as any
+
+      const hasFeature = subscription?.plan?.features?.csv_import
+      if (!hasFeature) {
+        throw new AppError('Bulk mission creation requires Enterprise plan', 403)
+      }
+    }
+
+    // Validate each mission entry
+    for (const entry of missionData) {
+      if (!entry.title) throw new AppError('Each mission must have a title', 422)
+      if (!entry.clientId) throw new AppError('Each mission must have a clientId', 422)
+      if (!entry.pricingType) throw new AppError('Each mission must have a pricingType', 422)
+    }
+
+    const created: any[] = []
+
+    for (const entry of missionData) {
+      const clientId = auth.role === 'agent' ? entry.clientId : auth.userId
+      const agentId = auth.role === 'agent' ? auth.userId : entry.clientId
+
+      const mission = await Mission.create({
+        agentId,
+        clientId,
+        title: entry.title,
+        description: entry.description || null,
+        status: 'draft',
+        type: entry.type || 'one_time',
+        pricingType: entry.pricingType,
+        agreedAmount: entry.agreedAmount || null,
+        currency: entry.currency || 'USD',
+        agreedChecklist: entry.agreedChecklist || [],
+      })
+
+      await Conversation.create({ missionId: mission.id })
+      createNotification(clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
+
+      created.push(mission)
+    }
+
+    return successResponse(c, { count: created.length, missions: created }, `${created.length} missions created`, 201)
   }
 )
 
@@ -184,14 +259,56 @@ missions.post('/:id/agree', authenticate(), async (c) => {
     throw new AppError('Mission is not in pending_agreement status', 400)
   }
 
-  // Both parties must agree — for now, simplified to just update status
-  await mission.update({ status: 'agreed' })
+  if (auth.userId !== mission.agentId && auth.userId !== mission.clientId) {
+    throw new AppError('Only mission participants can agree', 403)
+  }
 
-  // Notify both parties
+  // Mark this party as agreed
+  const updates: any = {}
+  if (auth.userId === mission.agentId) {
+    if (mission.agreedByAgent) throw new AppError('Agent has already agreed', 400)
+    updates.agreedByAgent = true
+  } else {
+    if (mission.agreedByClient) throw new AppError('Client has already agreed', 400)
+    updates.agreedByClient = true
+  }
+
+  await mission.update(updates)
+
+  // Notify the other party
   const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
-  createNotification(otherUserId, 'mission.agreed', 'Mission Agreed', `Mission "${mission.title}" has been agreed upon`, { missionId: mission.id })
+  const partyLabel = auth.userId === mission.agentId ? 'Agent' : 'Client'
+  createNotification(otherUserId, 'mission.agreement_progress', 'Mission Agreement Update', `${partyLabel} has agreed to mission "${mission.title}"`, { missionId: mission.id })
 
-  return successResponse(c, mission, 'Mission agreed')
+  // Check if both parties have now agreed
+  const refreshed = await Mission.findByPk(id)
+  if (refreshed!.agreedByAgent && refreshed!.agreedByClient) {
+    await refreshed!.update({ status: 'agreed' })
+    // Notify both parties that the mission is fully agreed
+    createNotification(mission.agentId, 'mission.agreed', 'Mission Agreed', `Mission "${mission.title}" has been fully agreed upon`, { missionId: mission.id })
+    createNotification(mission.clientId, 'mission.agreed', 'Mission Agreed', `Mission "${mission.title}" has been fully agreed upon`, { missionId: mission.id })
+  }
+
+  return successResponse(c, refreshed, 'Agreement recorded')
+})
+
+// GET /api/missions/:id/agreement-status
+missions.get('/:id/agreement-status', authenticate(), async (c) => {
+  const auth = c.get('auth')
+  const id = parseInt(c.req.param('id')!)
+
+  const mission = await Mission.findByPk(id)
+  if (!mission) throw new AppError('Mission not found', 404)
+
+  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId && auth.role !== 'admin') {
+    throw new AppError('Access denied', 403)
+  }
+
+  return successResponse(c, {
+    agreedByAgent: mission.agreedByAgent,
+    agreedByClient: mission.agreedByClient,
+    bothAgreed: mission.agreedByAgent && mission.agreedByClient,
+  })
 })
 
 // PUT /api/missions/:id/status

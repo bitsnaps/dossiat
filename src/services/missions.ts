@@ -41,6 +41,14 @@ export function agreeMission(id: string) {
   return post(`/missions/${id}/agree`)
 }
 
+export function createBulkMissions(missions: CreateMissionData[]) {
+  return post('/missions/bulk', { missions })
+}
+
+export function getAgreementStatus(id: string) {
+  return get(`/missions/${id}/agreement-status`)
+}
+
 export function updateMissionStatus(id: string, status: string) {
   return put(`/missions/${id}/status`, { status })
 }

@@ -16,7 +16,9 @@ import 'pg-hstore'
 
 import { Op } from 'sequelize'
 import '@/server/database/config/database'
-import { Mission, RecurrentMissionConfig, Invoice, PlatformCredit, CreditTransaction, User, Payment, Notification } from '@/server/database/models'
+import { Mission, RecurrentMissionConfig, User, Notification, Conversation } from '@/server/database/models'
+import { calculateNextRun } from '@/server/utils/dateUtils'
+import { generateAgentInvoices } from '@/server/services/billing'
 
 export default async () => {
   const now = new Date()
@@ -52,6 +54,9 @@ export default async () => {
       currency: mission.currency,
       agreedChecklist: mission.agreedChecklist,
     })
+
+    // Create a conversation for the generated mission
+    await Conversation.create({ missionId: newMission.id })
 
     // Notify both parties about the new recurrent mission
     await Notification.create({
@@ -121,61 +126,15 @@ export default async () => {
   const billingCycleEnd = new Date(now.getFullYear(), now.getMonth(), 0)
   const billingCycleStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
 
-  const agents = await User.findAll({ where: { role: 'agent' } })
+  const invoiceResults = await generateAgentInvoices(billingCycleStart, billingCycleEnd)
 
-  for (const agent of agents) {
-    const existingInvoice = await Invoice.findOne({
-      where: {
-        agentId: agent.id,
-        periodStart: billingCycleStart,
-        periodEnd: billingCycleEnd,
-      },
-    })
-    if (existingInvoice) continue
-
-    const payments = await Payment.findAll({
-      where: {
-        payeeId: agent.id,
-        status: 'confirmed',
-        confirmedAt: { [Op.gte]: billingCycleStart, [Op.lte]: billingCycleEnd },
-      },
-    })
-
-    if (payments.length === 0) continue
-
-    const totalFees = payments.reduce((sum, p) => sum + Number(p.platformFee), 0)
-    if (totalFees <= 0) continue
-
-    const credit = await PlatformCredit.findOne({ where: { agentId: agent.id } })
-    let status: 'draft' | 'sent' | 'paid' = 'sent'
-
-    if (credit && Number(credit.balance) >= totalFees) {
-      await credit.update({ balance: Number(credit.balance) - totalFees })
-      await CreditTransaction.create({
-        creditId: credit.id,
-        type: 'deduction',
-        amount: totalFees,
-        description: `Auto-deducted for billing cycle ${billingCycleStart.toISOString().slice(0, 7)}`,
-      })
-      status = 'paid'
-    }
-
-    const invoice = await Invoice.create({
-      agentId: agent.id,
-      periodStart: billingCycleStart,
-      periodEnd: billingCycleEnd,
-      totalFees,
-      currency: 'USD',
-      status,
-      paidAt: status === 'paid' ? now : null,
-    })
-
+  for (const result of invoiceResults) {
     await Notification.create({
-      userId: agent.id,
+      userId: result.agentId,
       type: 'invoice.generated',
       title: 'Monthly Invoice Generated',
-      body: `Your invoice for ${billingCycleStart.toISOString().slice(0, 7)} is ready: $${totalFees.toFixed(2)}`,
-      data: { invoiceId: invoice.id, period: billingCycleStart.toISOString().slice(0, 7) },
+      body: `Your invoice for ${billingCycleStart.toISOString().slice(0, 7)} is ready: $${result.totalFees.toFixed(2)}`,
+      data: { invoiceId: result.invoiceId, period: billingCycleStart.toISOString().slice(0, 7) },
     })
 
     results.invoicesGenerated++
@@ -233,43 +192,4 @@ export default async () => {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
   })
-}
-
-function calculateNextRun(
-  frequency: string,
-  interval: number,
-  dayOfMonth?: number | null,
-  dayOfWeek?: number | null,
-): Date {
-  const now = new Date()
-  const next = new Date(now)
-
-  switch (frequency) {
-    case 'daily':
-      next.setDate(next.getDate() + interval)
-      break
-    case 'weekly':
-      if (dayOfWeek != null) {
-        const currentDay = next.getDay()
-        let daysUntil = dayOfWeek - currentDay
-        if (daysUntil <= 0) daysUntil += 7
-        next.setDate(next.getDate() + daysUntil + (interval - 1) * 7)
-      } else {
-        next.setDate(next.getDate() + interval * 7)
-      }
-      break
-    case 'monthly':
-      if (dayOfMonth != null) {
-        next.setDate(dayOfMonth)
-        if (next <= now) next.setMonth(next.getMonth() + interval)
-      } else {
-        next.setMonth(next.getMonth() + interval)
-      }
-      break
-    case 'annual':
-      next.setFullYear(next.getFullYear() + interval)
-      break
-  }
-
-  return next
 }

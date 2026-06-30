@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useToast } from '@/composables/useToast'
@@ -13,6 +14,7 @@ const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const missionsStore = useMissionsStore()
+const authStore = useAuthStore()
 const toast = useToast()
 
 const missionId = computed(() => route.params.id as string)
@@ -25,6 +27,7 @@ onMounted(async () => {
   if (!missionsStore.currentMission || missionsStore.currentMission.id !== Number(missionId.value)) {
     await missionsStore.fetchMission(missionId.value)
   }
+  await missionsStore.fetchAgreementStatus(missionId.value)
 })
 
 const mission = computed(() => missionsStore.currentMission)
@@ -68,7 +71,24 @@ const allChecked = computed(() => {
   return checklist.length > 0 && checklist.every((item) => checkedItems.value.includes(item))
 })
 
-const canSubmit = computed(() => allChecked.value && agreeChecked.value)
+const canSubmit = computed(() => allChecked.value && agreeChecked.value && !hasAlreadyAgreed)
+
+const agreement = computed(() => missionsStore.agreementStatus)
+
+const isAgent = computed(() => authStore.user?.role === 'agent')
+const isClient = computed(() => authStore.user?.role === 'client')
+const hasAlreadyAgreed = computed(() => {
+  if (!agreement.value) return false
+  if (isAgent.value) return agreement.value.agreedByAgent
+  if (isClient.value) return agreement.value.agreedByClient
+  return false
+})
+const otherPartyAgreed = computed(() => {
+  if (!agreement.value) return false
+  if (isAgent.value) return agreement.value.agreedByClient
+  if (isClient.value) return agreement.value.agreedByAgent
+  return false
+})
 
 function onUpdateChecklist(items: string[]) {
   checkedItems.value = items
@@ -79,8 +99,12 @@ async function handleAgree() {
   submitting.value = true
   try {
     await missionsStore.agreeMission(missionId.value)
-    await missionsStore.updateMissionStatus(missionId.value, 'agreed')
-    toast.success(t('missions.agreement.agreed'))
+    // Check if both parties have now agreed
+    if (agreement.value?.bothAgreed) {
+      toast.success(t('missions.agreement.agreed'))
+    } else {
+      toast.success(t('missions.agreement.recorded'))
+    }
     router.push(`/app/missions/${missionId.value}`)
   } catch {
     toast.error('Failed to confirm agreement')
@@ -165,12 +189,28 @@ async function handleDecline() {
             class="ds-mission-agreement__checkbox"
             :disabled="!allChecked"
           />
-          <span class="ds-mission-agreement__confirm-text">{{ t('missions.agreement.agreeConfirm') }}</span>
+          <span v-if="!hasAlreadyAgreed" class="ds-mission-agreement__confirm-text">{{ t('missions.agreement.agreeConfirm') }}</span>
+          <span v-else class="ds-mission-agreement__confirm-text">{{ t('missions.agreement.alreadyAgreed') }}</span>
         </label>
 
-        <p v-if="!allChecked && mission.agreedChecklist?.length" class="ds-mission-agreement__hint">
+        <p v-if="hasAlreadyAgreed" class="ds-mission-agreement__hint">
+          {{ t('missions.agreement.waitingForOtherParty') }}
+        </p>
+        <p v-else-if="!allChecked && mission.agreedChecklist?.length" class="ds-mission-agreement__hint">
           {{ t('missions.agreement.notAgreed') }}
         </p>
+
+        <!-- Agreement status indicator -->
+        <div v-if="agreement" class="ds-mission-agreement__status">
+          <div class="ds-mission-agreement__status-item">
+            <i :class="agreement.agreedByAgent ? 'bi bi-check-circle-fill ds-mission-agreement__status-icon--agreed' : 'bi bi-clock ds-mission-agreement__status-icon--pending'" />
+            <span>{{ t('missions.agreement.agentAgreed') }}</span>
+          </div>
+          <div class="ds-mission-agreement__status-item">
+            <i :class="agreement.agreedByClient ? 'bi bi-check-circle-fill ds-mission-agreement__status-icon--agreed' : 'bi bi-clock ds-mission-agreement__status-icon--pending'" />
+            <span>{{ t('missions.agreement.clientAgreed') }}</span>
+          </div>
+        </div>
 
         <!-- Actions -->
         <div class="ds-mission-agreement__actions">
@@ -314,6 +354,31 @@ async function handleDecline() {
   font-size: 0.8125rem;
   color: var(--ds-text-muted, #64748b);
   margin: 0.5rem 0 0;
+}
+
+.ds-mission-agreement__status {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  border: 1px solid var(--ds-border, #334155);
+  border-radius: 0.5rem;
+}
+
+.ds-mission-agreement__status-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--ds-text-muted, #64748b);
+}
+
+.ds-mission-agreement__status-icon--agreed {
+  color: var(--ds-success, #22c55e);
+}
+
+.ds-mission-agreement__status-icon--pending {
+  color: var(--ds-text-muted, #64748b);
 }
 
 .ds-mission-agreement__actions {

@@ -5,45 +5,8 @@ import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
-
-function calculateNextRun(
-  frequency: string,
-  interval: number,
-  dayOfMonth?: number,
-  dayOfWeek?: number,
-): Date {
-  const now = new Date()
-  const next = new Date(now)
-
-  switch (frequency) {
-    case 'daily':
-      next.setDate(next.getDate() + interval)
-      break
-    case 'weekly':
-      if (dayOfWeek !== undefined && dayOfWeek !== null) {
-        const currentDay = next.getDay()
-        let daysUntil = dayOfWeek - currentDay
-        if (daysUntil <= 0) daysUntil += 7
-        next.setDate(next.getDate() + daysUntil + (interval - 1) * 7)
-      } else {
-        next.setDate(next.getDate() + interval * 7)
-      }
-      break
-    case 'monthly':
-      if (dayOfMonth !== undefined && dayOfMonth !== null) {
-        next.setDate(dayOfMonth)
-        if (next <= now) next.setMonth(next.getMonth() + interval)
-      } else {
-        next.setMonth(next.getMonth() + interval)
-      }
-      break
-    case 'annual':
-      next.setFullYear(next.getFullYear() + interval)
-      break
-  }
-
-  return next
-}
+import { calculateNextRun } from '@/server/utils/dateUtils'
+import { checkRecurrentMissionLimit } from '@/server/services/subscriptionGuard'
 
 const recurrence = new Hono()
 

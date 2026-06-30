@@ -111,7 +111,7 @@ describe('Mission Routes', () => {
     expect(body.data.status).toBe('pending_agreement')
   })
 
-  it('POST /api/missions/:id/agree - agrees to mission', async () => {
+  it('POST /api/missions/:id/agree - agent agrees to mission', async () => {
     const res = await app.request(`/api/missions/${missionId}/agree`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${agentToken}` },
@@ -119,7 +119,34 @@ describe('Mission Routes', () => {
     const body = await res.json()
 
     expect(res.status).toBe(200)
+    expect(body.data.agreedByAgent).toBe(true)
+    expect(body.data.agreedByClient).toBe(false)
+    expect(body.data.status).toBe('pending_agreement')
+  })
+
+  it('POST /api/missions/:id/agree - client agrees to mission', async () => {
+    const res = await app.request(`/api/missions/${missionId}/agree`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${clientToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.agreedByAgent).toBe(true)
+    expect(body.data.agreedByClient).toBe(true)
     expect(body.data.status).toBe('agreed')
+  })
+
+  it('GET /api/missions/:id/agreement-status - returns agreement status', async () => {
+    const res = await app.request(`/api/missions/${missionId}/agreement-status`, {
+      headers: { Authorization: `Bearer ${agentToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.agreedByAgent).toBe(true)
+    expect(body.data.agreedByClient).toBe(true)
+    expect(body.data.bothAgreed).toBe(true)
   })
 
   it('PUT /api/missions/:id/status - starts mission', async () => {
