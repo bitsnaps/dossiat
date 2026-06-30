@@ -3,6 +3,7 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useDisputesStore } from '@/stores/disputes'
+import { formatDate } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -24,15 +25,6 @@ function statusVariant(status: string) {
     escalated: 'warning',
   }
   return map[status] || 'default'
-}
-
-function formatDate(dateStr: string | null | undefined) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 function viewDispute(id: number) {

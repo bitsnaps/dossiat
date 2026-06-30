@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { usePaymentsStore } from '@/stores/payments'
+import { formatDate } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -38,11 +39,6 @@ function transactionTypeBadge(type: string) {
 
 function transactionTypeLabel(type: string) {
   return t(`payments.credits.types.${type}`, type)
-}
-
-function formatDate(dateStr: string | undefined) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 async function handlePurchase() {

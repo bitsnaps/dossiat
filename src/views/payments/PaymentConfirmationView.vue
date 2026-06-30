@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePaymentsStore } from '@/stores/payments'
 import { useAuthStore } from '@/stores/auth'
+import { formatDate } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -44,11 +45,6 @@ function statusBadgeVariant(status: string) {
     awaitingPayee: 'info',
   }
   return map[status] || 'default'
-}
-
-function formatDate(dateStr: string | undefined) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 function formatAmount(amount: number | undefined, currency: string | undefined) {

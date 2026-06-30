@@ -2,6 +2,7 @@
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSubscriptionsStore } from '@/stores/subscriptions'
+import { formatDate } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -20,11 +21,6 @@ function statusBadgeVariant(status: string) {
     failed: 'danger',
   }
   return map[status] || 'default'
-}
-
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 function formatAmount(amount: number, currency: string) {

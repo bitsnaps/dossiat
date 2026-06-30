@@ -415,14 +415,14 @@
 - [x] Write unit tests for all Pinia stores (auth, missions, messages, etc.)
 - [x] Write unit tests for all composables
 - [x] Write unit tests for API service functions (mock axios)
-- [ ] Write unit tests for utility functions (fee calculation, currency formatting, date helpers)
+- [x] Write unit tests for utility functions (fee calculation, currency formatting, date helpers)
 
 ### 8b. Component Tests
 
 - [x] Write component tests for auth forms (login, register, forgot password)
 - [x] Write component tests for mission components (checklist, timeline, status badge)
-- [ ] Write component tests for messaging components (thread, composer, bubble)
-- [ ] Write component tests for payment components (confirmation, credit balance)
+- [x] Write component tests for messaging components (thread, composer, bubble)
+- [x] Write component tests for payment components (confirmation, credit balance)
 - [x] Write component tests for shared/common components
 
 ### 8c. Integration Tests

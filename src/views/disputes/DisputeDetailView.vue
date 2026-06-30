@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useDisputesStore } from '@/stores/disputes'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
+import { formatDateTime } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -44,17 +45,6 @@ function statusVariant(status: string) {
     escalated: 'warning',
   }
   return map[status] || 'default'
-}
-
-function formatDate(dateStr: string | null | undefined) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 
 function goBack() {
@@ -156,7 +146,7 @@ watch(() => dispute.value?.messages?.length, () => {
         <h3 class="ds-dispute-detail__section-title">{{ t('disputes.detail.resolution') }}</h3>
         <p class="ds-dispute-detail__resolution-text">{{ dispute.resolution }}</p>
         <span class="ds-dispute-detail__resolution-date" v-if="dispute.resolvedAt">
-          {{ t('disputes.detail.resolvedAt') }}: {{ formatDate(dispute.resolvedAt) }}
+          {{ t('disputes.detail.resolvedAt') }}: {{ formatDateTime(dispute.resolvedAt) }}
         </span>
       </BCard>
 

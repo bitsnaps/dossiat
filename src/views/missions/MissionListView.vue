@@ -3,6 +3,7 @@ import { onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useAuthStore } from '@/stores/auth'
+import { formatDate } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BButton from '@/components/base/BButton.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
@@ -17,11 +18,6 @@ const authStore = useAuthStore()
 onMounted(() => {
   missionsStore.fetchMissions()
 })
-
-function formatDate(dateStr: string | undefined) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
-}
 
 function formatPricingType(type: string) {
   const map: Record<string, string> = {

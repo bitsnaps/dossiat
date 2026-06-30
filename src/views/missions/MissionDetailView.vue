@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
+import { formatDateTime } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -54,17 +55,6 @@ function pricingLabel(type: string) {
     task_based: t('missions.detail.taskBased'),
   }
   return map[type] || type
-}
-
-function formatDate(dateStr: string | null | undefined) {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 
 const isAgent = computed(() => authStore.hasRole('agent'))
@@ -237,11 +227,11 @@ function goBack() {
         </BCard>
         <BCard variant="bordered" padding="md" class="ds-mission-detail__info-card">
           <span class="ds-mission-detail__info-label">{{ t('missions.detail.created') }}</span>
-          <span class="ds-mission-detail__info-value font-mono">{{ formatDate(mission.createdAt) }}</span>
+          <span class="ds-mission-detail__info-value font-mono">{{ formatDateTime(mission.createdAt) }}</span>
         </BCard>
         <BCard variant="bordered" padding="md" class="ds-mission-detail__info-card">
           <span class="ds-mission-detail__info-label">{{ t('missions.detail.started') }}</span>
-          <span class="ds-mission-detail__info-value font-mono">{{ formatDate(mission.startedAt) }}</span>
+          <span class="ds-mission-detail__info-value font-mono">{{ formatDateTime(mission.startedAt) }}</span>
         </BCard>
       </div>
 

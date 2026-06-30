@@ -3,6 +3,7 @@ import { onMounted, computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useSubscriptionsStore, type Plan } from '@/stores/subscriptions'
+import { formatDate } from '@/utils/formatters'
 import BCard from '@/components/base/BCard.vue'
 import BButton from '@/components/base/BButton.vue'
 import BAlert from '@/components/base/BAlert.vue'
@@ -52,10 +53,6 @@ function statusBadgeVariant(status: string) {
 
 function statusLabel(status: string) {
   return t(`subscriptions.manage.${status}`, status)
-}
-
-function formatDate(dateStr: string) {
-  return new Date(dateStr).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 
 async function handleChangePlan() {
