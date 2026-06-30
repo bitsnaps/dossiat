@@ -144,6 +144,40 @@ describe('Admin Service', () => {
     })
   })
 
+  describe('createMission()', () => {
+    it('calls POST /admin/missions with data', async () => {
+      mockPost.mockResolvedValueOnce({ success: true, data: { id: 1, title: 'New Mission' } } as any)
+
+      const data = { agentId: 1, clientId: 2, title: 'New Mission', type: 'one_time', pricingType: 'fixed' }
+      const result = await admin.createMission(data)
+
+      expect(mockPost).toHaveBeenCalledWith('/admin/missions', data)
+      expect(result).toEqual({ success: true, data: { id: 1, title: 'New Mission' } })
+    })
+  })
+
+  describe('updateMission()', () => {
+    it('calls PUT /admin/missions/:id with data', async () => {
+      mockPut.mockResolvedValueOnce({ success: true, data: { id: 1, title: 'Updated' } } as any)
+
+      const result = await admin.updateMission('1', { title: 'Updated', agreedAmount: 200 })
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/missions/1', { title: 'Updated', agreedAmount: 200 })
+      expect(result).toEqual({ success: true, data: { id: 1, title: 'Updated' } })
+    })
+  })
+
+  describe('deleteMission()', () => {
+    it('calls DELETE /admin/missions/:id', async () => {
+      mockDel.mockResolvedValueOnce({ success: true } as any)
+
+      const result = await admin.deleteMission('1')
+
+      expect(mockDel).toHaveBeenCalledWith('/admin/missions/1')
+      expect(result).toEqual({ success: true })
+    })
+  })
+
   describe('updateMissionStatus()', () => {
     it('calls PUT /admin/missions/:id/status', async () => {
       mockPut.mockResolvedValueOnce({ success: true } as any)

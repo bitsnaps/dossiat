@@ -218,7 +218,7 @@ export const useAdminStore = defineStore('admin', () => {
 
   // ─── Missions ───
 
-  async function fetchMissions(params?: { page?: number; limit?: number; status?: string; search?: string }) {
+  async function fetchMissions(params?: { page?: number; limit?: number; status?: string; search?: string; type?: string }) {
     setLoading('missions', true)
     error.value = null
     try {
@@ -244,6 +244,58 @@ export const useAdminStore = defineStore('admin', () => {
       error.value = err.response?.data?.error || err.message || 'Failed to fetch mission'
     } finally {
       setLoading('mission', false)
+    }
+  }
+
+  async function createMission(data: {
+    agentId: number
+    clientId: number
+    title: string
+    description?: string
+    type?: string
+    pricingType: string
+    agreedAmount?: number
+    currency?: string
+    agreedChecklist?: string[]
+  }) {
+    try {
+      const response = await adminApi.createMission(data) as ApiResponse<AdminMission>
+      missions.value.unshift(response.data!)
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to create mission'
+      throw err
+    }
+  }
+
+  async function updateMission(id: string, data: {
+    title?: string
+    description?: string
+    type?: string
+    pricingType?: string
+    agreedAmount?: number
+    currency?: string
+    agreedChecklist?: string[]
+  }) {
+    try {
+      const response = await adminApi.updateMission(id, data) as ApiResponse<AdminMission>
+      const idx = missions.value.findIndex((m) => m.id === Number(id))
+      if (idx >= 0) missions.value[idx] = response.data!
+      if (selectedMission.value?.id === Number(id)) selectedMission.value = response.data!
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to update mission'
+      throw err
+    }
+  }
+
+  async function deleteMission(id: string) {
+    try {
+      await adminApi.deleteMission(id)
+      missions.value = missions.value.filter((m) => m.id !== Number(id))
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to delete mission'
+      throw err
     }
   }
 
@@ -388,7 +440,7 @@ export const useAdminStore = defineStore('admin', () => {
     plans, stats, loading, error, pagination,
     fetchStats,
     fetchUsers, fetchUser, createUser, updateUser, deactivateUser, activateUser, deleteUser,
-    fetchMissions, fetchMission, updateMissionStatus,
+    fetchMissions, fetchMission, createMission, updateMission, deleteMission, updateMissionStatus,
     fetchPayments, fetchPayment,
     fetchDisputes, fetchDispute, resolveDispute,
     fetchPlans, createPlan, updatePlan, deletePlan,

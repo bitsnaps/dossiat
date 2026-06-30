@@ -469,6 +469,201 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
     })
   })
 
+  // ─── Mission CRUD ───
+
+  describe('POST /api/admin/missions', () => {
+    it('creates a new mission', async () => {
+      const res = await app.request('/api/admin/missions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          agentId,
+          clientId,
+          title: 'Admin Created Mission',
+          description: 'Created via admin panel',
+          type: 'one_time',
+          pricingType: 'fixed',
+          agreedAmount: 150.00,
+          currency: 'USD',
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(201)
+      expect(body.success).toBe(true)
+      expect(body.data.title).toBe('Admin Created Mission')
+      expect(body.data.agentId).toBe(agentId)
+      expect(body.data.clientId).toBe(clientId)
+      expect(body.data.status).toBe('draft')
+
+      // Cleanup
+      await Mission.destroy({ where: { id: body.data.id } })
+    })
+
+    it('creates mission with checklist', async () => {
+      const res = await app.request('/api/admin/missions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          agentId,
+          clientId,
+          title: 'Mission With Checklist',
+          type: 'one_time',
+          pricingType: 'task_based',
+          currency: 'EUR',
+          agreedChecklist: ['Task 1', 'Task 2', 'Task 3'],
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(201)
+      expect(body.success).toBe(true)
+      expect(body.data.agreedChecklist).toEqual(['Task 1', 'Task 2', 'Task 3'])
+
+      await Mission.destroy({ where: { id: body.data.id } })
+    })
+
+    it('rejects creation without required fields', async () => {
+      const res = await app.request('/api/admin/missions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ title: 'Missing Fields' }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('rejects creation with invalid agentId', async () => {
+      const res = await app.request('/api/admin/missions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          agentId: 999999,
+          clientId,
+          title: 'Bad Agent',
+          type: 'one_time',
+          pricingType: 'fixed',
+        }),
+      })
+
+      expect(res.status).toBe(400)
+    })
+
+    it('rejects creation with invalid type', async () => {
+      const res = await app.request('/api/admin/missions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          agentId,
+          clientId,
+          title: 'Bad Type',
+          type: 'weekly',
+          pricingType: 'fixed',
+        }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+  })
+
+  describe('PUT /api/admin/missions/:id', () => {
+    let testMissionId: number
+
+    beforeAll(async () => {
+      const mission = await Mission.create({
+        agentId,
+        clientId,
+        title: 'Mission To Update',
+        type: 'one_time',
+        pricingType: 'fixed',
+        currency: 'USD',
+        status: 'draft',
+      })
+      testMissionId = mission.id
+    })
+
+    afterAll(async () => {
+      if (testMissionId) {
+        await Mission.destroy({ where: { id: testMissionId } })
+      }
+    })
+
+    it('updates mission fields', async () => {
+      const res = await app.request(`/api/admin/missions/${testMissionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          title: 'Updated Mission Title',
+          description: 'Updated description',
+          agreedAmount: 250.00,
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.title).toBe('Updated Mission Title')
+      expect(body.data.description).toBe('Updated description')
+      expect(Number(body.data.agreedAmount)).toBe(250)
+    })
+
+    it('returns 404 for non-existent mission', async () => {
+      const res = await app.request('/api/admin/missions/999999', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ title: 'Nope' }),
+      })
+
+      expect(res.status).toBe(404)
+    })
+
+    it('rejects invalid type value', async () => {
+      const res = await app.request(`/api/admin/missions/${testMissionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ type: 'invalid' }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+  })
+
+  describe('DELETE /api/admin/missions/:id', () => {
+    it('deletes a mission', async () => {
+      const mission = await Mission.create({
+        agentId,
+        clientId,
+        title: 'Mission To Delete',
+        type: 'one_time',
+        pricingType: 'fixed',
+        currency: 'USD',
+        status: 'draft',
+      })
+
+      const res = await app.request(`/api/admin/missions/${mission.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+
+      // Verify mission no longer exists
+      const check = await Mission.findByPk(mission.id)
+      expect(check).toBeNull()
+    })
+
+    it('returns 404 for non-existent mission', async () => {
+      const res = await app.request('/api/admin/missions/999999', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
   // ─── Dispute Management ───
 
   describe('GET /api/admin/disputes', () => {

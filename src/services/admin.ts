@@ -46,6 +46,36 @@ export function getMission(id: string) {
   return get(`/admin/missions/${id}`)
 }
 
+export function createMission(data: {
+  agentId: number
+  clientId: number
+  title: string
+  description?: string
+  type?: string
+  pricingType: string
+  agreedAmount?: number
+  currency?: string
+  agreedChecklist?: string[]
+}) {
+  return post('/admin/missions', data)
+}
+
+export function updateMission(id: string, data: {
+  title?: string
+  description?: string
+  type?: string
+  pricingType?: string
+  agreedAmount?: number
+  currency?: string
+  agreedChecklist?: string[]
+}) {
+  return put(`/admin/missions/${id}`, data)
+}
+
+export function deleteMission(id: string) {
+  return del(`/admin/missions/${id}`)
+}
+
 export function updateMissionStatus(id: string, status: string) {
   return put(`/admin/missions/${id}/status`, { status })
 }

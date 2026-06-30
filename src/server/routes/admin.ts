@@ -225,6 +225,107 @@ admin.get('/missions/:id', async (c) => {
   return successResponse(c, mission)
 })
 
+// ─── POST /api/admin/missions ───
+admin.post('/missions',
+  validateRequest({
+    body: {
+      agentId: validators.required(),
+      clientId: validators.required(),
+      title: validators.required(),
+      type: validators.isIn(['one_time', 'recurrent']),
+      pricingType: validators.isIn(['fixed', 'hourly', 'task_based']),
+    },
+  }),
+  async (c) => {
+    const { agentId, clientId, title, description, type, pricingType, agreedAmount, currency, agreedChecklist } = await c.req.json()
+
+    // Verify agent exists and has agent role
+    const agent = await User.findByPk(agentId)
+    if (!agent || agent.role !== 'agent') throw new AppError('Invalid agent ID', 400)
+
+    // Verify client exists and has client role
+    const client = await User.findByPk(clientId)
+    if (!client || client.role !== 'client') throw new AppError('Invalid client ID', 400)
+
+    const mission = await Mission.create({
+      agentId,
+      clientId,
+      title,
+      description: description || null,
+      type: type || 'one_time',
+      pricingType,
+      agreedAmount: agreedAmount || null,
+      currency: currency || 'USD',
+      agreedChecklist: agreedChecklist || [],
+      status: 'draft',
+    })
+
+    const result = await Mission.findByPk(mission.id, {
+      include: [
+        { model: User, as: 'agent', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: User, as: 'client', attributes: ['id', 'firstName', 'lastName', 'email'] },
+      ],
+    })
+
+    return successResponse(c, result, 'Mission created', 201)
+  }
+)
+
+// ─── PUT /api/admin/missions/:id ───
+admin.put('/missions/:id',
+  validateRequest({
+    body: {
+      type: validators.isIn(['one_time', 'recurrent']),
+      pricingType: validators.isIn(['fixed', 'hourly', 'task_based']),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid mission ID', 422)
+
+    const mission = await Mission.findByPk(id)
+    if (!mission) throw new AppError('Mission not found', 404)
+
+    const body = await c.req.json()
+    const updates: any = {}
+    if (body.title !== undefined) updates.title = body.title
+    if (body.description !== undefined) updates.description = body.description
+    if (body.type !== undefined) updates.type = body.type
+    if (body.pricingType !== undefined) updates.pricingType = body.pricingType
+    if (body.agreedAmount !== undefined) updates.agreedAmount = body.agreedAmount
+    if (body.currency !== undefined) updates.currency = body.currency
+    if (body.agreedChecklist !== undefined) updates.agreedChecklist = body.agreedChecklist
+
+    if (Object.keys(updates).length === 0) {
+      throw new AppError('No valid fields to update', 422)
+    }
+
+    await mission.update(updates)
+
+    const updated = await Mission.findByPk(id, {
+      include: [
+        { model: User, as: 'agent', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: User, as: 'client', attributes: ['id', 'firstName', 'lastName', 'email'] },
+      ],
+    })
+
+    return successResponse(c, updated, 'Mission updated')
+  }
+)
+
+// ─── DELETE /api/admin/missions/:id ───
+admin.delete('/missions/:id', async (c) => {
+  const id = parseInt(c.req.param('id')!)
+  if (isNaN(id)) throw new AppError('Invalid mission ID', 422)
+
+  const mission = await Mission.findByPk(id)
+  if (!mission) throw new AppError('Mission not found', 404)
+
+  await mission.destroy()
+
+  return successResponse(c, { id }, 'Mission deleted')
+})
+
 // ─── PUT /api/admin/missions/:id/status ───
 admin.put('/missions/:id/status',
   validateRequest({

@@ -12,6 +12,9 @@ vi.mock('@/services/admin', () => ({
   deleteUser: vi.fn(),
   getMissions: vi.fn(),
   getMission: vi.fn(),
+  createMission: vi.fn(),
+  updateMission: vi.fn(),
+  deleteMission: vi.fn(),
   updateMissionStatus: vi.fn(),
   getPayments: vi.fn(),
   getPayment: vi.fn(),
@@ -36,6 +39,10 @@ const mockDeactivateUser = vi.mocked(adminService.deactivateUser)
 const mockActivateUser = vi.mocked(adminService.activateUser)
 const mockDeleteUser = vi.mocked(adminService.deleteUser)
 const mockGetMissions = vi.mocked(adminService.getMissions)
+const mockGetMission = vi.mocked(adminService.getMission)
+const mockCreateMission = vi.mocked(adminService.createMission)
+const mockUpdateMission = vi.mocked(adminService.updateMission)
+const mockDeleteMission = vi.mocked(adminService.deleteMission)
 const mockGetPayments = vi.mocked(adminService.getPayments)
 const mockGetDisputes = vi.mocked(adminService.getDisputes)
 const mockGetPlans = vi.mocked(adminService.getPlans)
@@ -232,6 +239,103 @@ describe('Admin Store', () => {
       await store.fetchMissions()
 
       expect(store.missions.length).toBe(1)
+    })
+  })
+
+  describe('fetchMission()', () => {
+    it('loads selected mission from API', async () => {
+      mockGetMission.mockResolvedValueOnce({
+        data: { id: 1, title: 'Detail', status: 'draft' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchMission('1')
+
+      expect(store.selectedMission).toEqual({ id: 1, title: 'Detail', status: 'draft' })
+    })
+  })
+
+  describe('createMission()', () => {
+    it('adds new mission to store', async () => {
+      mockCreateMission.mockResolvedValueOnce({
+        data: { id: 10, title: 'New Mission', status: 'draft' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.createMission({ agentId: 1, clientId: 2, title: 'New Mission', pricingType: 'fixed' })
+
+      expect(store.missions.length).toBe(1)
+      expect(store.missions[0].title).toBe('New Mission')
+    })
+
+    it('throws on failure', async () => {
+      mockCreateMission.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.createMission({ agentId: 1, clientId: 2, title: 'Fail', pricingType: 'fixed' })).rejects.toThrow()
+    })
+  })
+
+  describe('updateMission()', () => {
+    it('updates mission in store', async () => {
+      mockGetMissions.mockResolvedValueOnce({
+        data: [{ id: 1, title: 'Old Title', status: 'draft' }],
+      } as any)
+      mockUpdateMission.mockResolvedValueOnce({
+        data: { id: 1, title: 'New Title', status: 'draft' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchMissions()
+      await store.updateMission('1', { title: 'New Title' })
+
+      expect(store.missions[0].title).toBe('New Title')
+    })
+
+    it('updates selectedMission if viewing detail', async () => {
+      mockGetMission.mockResolvedValueOnce({
+        data: { id: 1, title: 'Old', status: 'draft' },
+      } as any)
+      mockUpdateMission.mockResolvedValueOnce({
+        data: { id: 1, title: 'Updated', status: 'draft' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchMission('1')
+      await store.updateMission('1', { title: 'Updated' })
+
+      expect(store.selectedMission!.title).toBe('Updated')
+    })
+
+    it('throws on failure', async () => {
+      mockUpdateMission.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.updateMission('1', { title: 'Fail' })).rejects.toThrow()
+    })
+  })
+
+  describe('deleteMission()', () => {
+    it('removes mission from store', async () => {
+      mockGetMissions.mockResolvedValueOnce({
+        data: [{ id: 1, title: 'Keep' }, { id: 2, title: 'Remove' }],
+      } as any)
+      mockDeleteMission.mockResolvedValueOnce({} as any)
+
+      const store = useAdminStore()
+      await store.fetchMissions()
+      expect(store.missions.length).toBe(2)
+
+      await store.deleteMission('2')
+      expect(store.missions.length).toBe(1)
+      expect(store.missions[0].id).toBe(1)
+    })
+
+    it('throws on failure', async () => {
+      mockDeleteMission.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.deleteMission('1')).rejects.toThrow()
     })
   })
 
