@@ -664,6 +664,311 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
     })
   })
 
+  // ─── Payment CRUD ───
+
+  let testPaymentMissionId: number
+
+  beforeAll(async () => {
+    // Create a test mission for payment tests
+    const mission = await Mission.create({
+      agentId,
+      clientId,
+      title: 'Payment Test Mission',
+      type: 'one_time',
+      pricingType: 'fixed',
+      agreedAmount: 500,
+      currency: 'USD',
+      status: 'in_progress',
+    })
+    testPaymentMissionId = mission.id
+  })
+
+  afterAll(async () => {
+    if (testPaymentMissionId) {
+      await Payment.destroy({ where: { missionId: testPaymentMissionId } })
+      await Mission.destroy({ where: { id: testPaymentMissionId } })
+    }
+  })
+
+  describe('POST /api/admin/payments', () => {
+    it('creates a payment with auto-calculated fees', async () => {
+      const res = await app.request('/api/admin/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          missionId: testPaymentMissionId,
+          payerId: clientId,
+          payeeId: agentId,
+          amount: 100,
+          method: 'cash',
+          currency: 'USD',
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(201)
+      expect(body.success).toBe(true)
+      expect(Number(body.data.amount)).toBe(100)
+      expect(body.data.method).toBe('cash')
+      expect(body.data.status).toBe('pending')
+      expect(body.data.payer.id).toBe(clientId)
+      expect(body.data.payee.id).toBe(agentId)
+      expect(body.data.mission.id).toBe(testPaymentMissionId)
+      // Cash has no gateway fee
+      expect(Number(body.data.gatewayFee)).toBe(0)
+      // Platform fee should be calculated (1% of amount, min $1)
+      expect(Number(body.data.platformFee)).toBeGreaterThanOrEqual(1)
+      expect(Number(body.data.netAmount)).toBeGreaterThanOrEqual(0)
+
+      // Cleanup
+      await Payment.destroy({ where: { id: body.data.id } })
+    })
+
+    it('calculates gateway fees for stripe method', async () => {
+      const res = await app.request('/api/admin/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          missionId: testPaymentMissionId,
+          payerId: clientId,
+          payeeId: agentId,
+          amount: 100,
+          method: 'stripe',
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(201)
+      expect(Number(body.data.gatewayFee)).toBeGreaterThan(0)
+      expect(Number(body.data.platformFee)).toBeGreaterThanOrEqual(1)
+      expect(Number(body.data.netAmount)).toBeLessThan(100)
+
+      await Payment.destroy({ where: { id: body.data.id } })
+    })
+
+    it('rejects creation without required fields', async () => {
+      const res = await app.request('/api/admin/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ amount: 100 }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('rejects creation with invalid method', async () => {
+      const res = await app.request('/api/admin/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          missionId: testPaymentMissionId,
+          payerId: clientId,
+          payeeId: agentId,
+          amount: 100,
+          method: 'bitcoin',
+        }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('rejects creation with non-existent mission', async () => {
+      const res = await app.request('/api/admin/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          missionId: 999999,
+          payerId: clientId,
+          payeeId: agentId,
+          amount: 100,
+          method: 'cash',
+        }),
+      })
+
+      expect(res.status).toBe(404)
+    })
+
+    it('rejects creation with non-existent payer', async () => {
+      const res = await app.request('/api/admin/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          missionId: testPaymentMissionId,
+          payerId: 999999,
+          payeeId: agentId,
+          amount: 100,
+          method: 'cash',
+        }),
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
+  describe('PUT /api/admin/payments/:id', () => {
+    let testPaymentId: number
+
+    beforeAll(async () => {
+      const payment = await Payment.create({
+        missionId: testPaymentMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 200,
+        currency: 'USD',
+        method: 'cash',
+        platformFee: 2,
+        gatewayFee: 0,
+        netAmount: 198,
+        status: 'pending',
+      })
+      testPaymentId = payment.id
+    })
+
+    afterAll(async () => {
+      if (testPaymentId) {
+        await Payment.destroy({ where: { id: testPaymentId } })
+      }
+    })
+
+    it('updates payment fields', async () => {
+      const res = await app.request(`/api/admin/payments/${testPaymentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({
+          amount: 300,
+          currency: 'EUR',
+        }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.currency).toBe('EUR')
+      expect(Number(body.data.amount)).toBe(300)
+    })
+
+    it('recalculates fees on amount change', async () => {
+      const res = await app.request(`/api/admin/payments/${testPaymentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ amount: 500, method: 'cash' }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(Number(body.data.gatewayFee)).toBe(0)
+      expect(Number(body.data.platformFee)).toBeGreaterThanOrEqual(1)
+    })
+
+    it('returns 404 for non-existent payment', async () => {
+      const res = await app.request('/api/admin/payments/999999', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ amount: 100 }),
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
+  describe('DELETE /api/admin/payments/:id', () => {
+    it('deletes a payment', async () => {
+      const payment = await Payment.create({
+        missionId: testPaymentMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 50,
+        currency: 'USD',
+        method: 'cash',
+        platformFee: 1,
+        gatewayFee: 0,
+        netAmount: 49,
+        status: 'pending',
+      })
+
+      const res = await app.request(`/api/admin/payments/${payment.id}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+
+      const check = await Payment.findByPk(payment.id)
+      expect(check).toBeNull()
+    })
+
+    it('returns 404 for non-existent payment', async () => {
+      const res = await app.request('/api/admin/payments/999999', {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
+  describe('PATCH /api/admin/payments/:id/status', () => {
+    let testStatusPaymentId: number
+
+    beforeAll(async () => {
+      const payment = await Payment.create({
+        missionId: testPaymentMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 75,
+        currency: 'USD',
+        method: 'bank_transfer',
+        platformFee: 1,
+        gatewayFee: 0,
+        netAmount: 74,
+        status: 'pending',
+      })
+      testStatusPaymentId = payment.id
+    })
+
+    afterAll(async () => {
+      if (testStatusPaymentId) {
+        await Payment.destroy({ where: { id: testStatusPaymentId } })
+      }
+    })
+
+    it('updates payment status', async () => {
+      const res = await app.request(`/api/admin/payments/${testStatusPaymentId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ status: 'confirmed' }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.status).toBe('confirmed')
+      expect(body.data.confirmedAt).not.toBeNull()
+    })
+
+    it('rejects invalid status', async () => {
+      const res = await app.request(`/api/admin/payments/${testStatusPaymentId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ status: 'cancelled' }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('returns 404 for non-existent payment', async () => {
+      const res = await app.request('/api/admin/payments/999999/status', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ status: 'confirmed' }),
+      })
+
+      expect(res.status).toBe(404)
+    })
+  })
+
   // ─── Dispute Management ───
 
   describe('GET /api/admin/disputes', () => {

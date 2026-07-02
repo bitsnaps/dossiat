@@ -539,7 +539,7 @@
 
 ### 13d. Frontend Admin Views
 
-- [ ] Write component tests for admin views (all `tests/components/admin/*.spec.ts`)
+- [x] Write component tests for admin views (all `tests/components/admin/*.spec.ts`)
 - [x] Create `src/views/admin/AdminLayout.vue` — admin layout with admin-specific sidebar
 - [x] Create `src/views/admin/AdminSidebar.vue` — admin navigation sidebar
 - [x] Create `src/views/admin/AdminDashboardView.vue` — stats overview cards, recent activity
@@ -547,16 +547,17 @@
 - [x] Create `src/views/admin/AdminUserDetailView.vue` — user detail, edit role, view profiles
 - [x] Create `src/views/admin/AdminMissionsView.vue` — all missions list with filters
 - [x] Create `src/views/admin/AdminMissionDetailView.vue` — mission detail with status override
-- [x] Create `src/views/admin/AdminPaymentsView.vue` — all payments list with filters
+- [x] Create `src/views/admin/AdminPaymentsView.vue` — all payments list with filters + CRUD UI
+- [x] Create `src/views/admin/AdminPaymentDetailView.vue` — payment detail with status management
 - [x] Create `src/views/admin/AdminDisputesView.vue` — all disputes list with status filter
 - [x] Create `src/views/admin/AdminDisputeDetailView.vue` — dispute detail with admin resolve
 - [x] Create `src/views/admin/AdminSubscriptionsView.vue` — subscription plans CRUD
 
 ### 13e. Router & Navigation
 
-- [ ] Write tests for admin routes in `tests/router/router.spec.ts`
+- [x] Write tests for admin routes in `tests/router/router.spec.ts`
 - [x] Update `src/router/index.ts` — replace single `/app/admin` with nested admin route group
-- [ ] Write tests for sidebar admin link in `tests/components/layout/Sidebar.spec.ts`
+- [x] Write tests for sidebar admin link in `tests/components/layout/Sidebar.spec.ts`
 - [x] Update `src/components/layout/Sidebar.vue` — fix admin link to point to admin layout
 
 ### 13f. i18n

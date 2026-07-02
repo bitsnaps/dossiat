@@ -18,6 +18,10 @@ vi.mock('@/services/admin', () => ({
   updateMissionStatus: vi.fn(),
   getPayments: vi.fn(),
   getPayment: vi.fn(),
+  createPayment: vi.fn(),
+  updatePayment: vi.fn(),
+  deletePayment: vi.fn(),
+  updatePaymentStatus: vi.fn(),
   getDisputes: vi.fn(),
   getDispute: vi.fn(),
   resolveDispute: vi.fn(),
@@ -44,6 +48,11 @@ const mockCreateMission = vi.mocked(adminService.createMission)
 const mockUpdateMission = vi.mocked(adminService.updateMission)
 const mockDeleteMission = vi.mocked(adminService.deleteMission)
 const mockGetPayments = vi.mocked(adminService.getPayments)
+const mockGetPayment = vi.mocked(adminService.getPayment)
+const mockCreatePayment = vi.mocked(adminService.createPayment)
+const mockUpdatePayment = vi.mocked(adminService.updatePayment)
+const mockDeletePayment = vi.mocked(adminService.deletePayment)
+const mockUpdatePaymentStatus = vi.mocked(adminService.updatePaymentStatus)
 const mockGetDisputes = vi.mocked(adminService.getDisputes)
 const mockGetPlans = vi.mocked(adminService.getPlans)
 const mockCreatePlan = vi.mocked(adminService.createPlan)
@@ -349,6 +358,127 @@ describe('Admin Store', () => {
       await store.fetchPayments()
 
       expect(store.payments.length).toBe(1)
+    })
+  })
+
+  describe('fetchPayment()', () => {
+    it('loads selected payment from API', async () => {
+      mockGetPayment.mockResolvedValueOnce({
+        data: { id: 1, amount: 100, method: 'stripe' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchPayment('1')
+
+      expect(store.selectedPayment).toEqual({ id: 1, amount: 100, method: 'stripe' })
+    })
+  })
+
+  describe('createPayment()', () => {
+    it('adds new payment to store', async () => {
+      mockCreatePayment.mockResolvedValueOnce({
+        data: { id: 10, amount: 200, method: 'cash' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.createPayment({ missionId: 1, payerId: 2, payeeId: 3, amount: 200, method: 'cash' })
+
+      expect(store.payments.length).toBe(1)
+      expect(store.payments[0].amount).toBe(200)
+    })
+
+    it('throws on failure', async () => {
+      mockCreatePayment.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.createPayment({ missionId: 1, payerId: 2, payeeId: 3, amount: 200, method: 'cash' })).rejects.toThrow()
+    })
+  })
+
+  describe('updatePayment()', () => {
+    it('updates payment in store', async () => {
+      mockGetPayments.mockResolvedValueOnce({
+        data: [{ id: 1, amount: 100, method: 'cash' }],
+      } as any)
+      mockUpdatePayment.mockResolvedValueOnce({
+        data: { id: 1, amount: 300, method: 'stripe' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchPayments()
+      await store.updatePayment('1', { amount: 300, method: 'stripe' })
+
+      expect(store.payments[0].amount).toBe(300)
+    })
+
+    it('updates selectedPayment if viewing detail', async () => {
+      mockGetPayment.mockResolvedValueOnce({
+        data: { id: 1, amount: 100, method: 'cash' },
+      } as any)
+      mockUpdatePayment.mockResolvedValueOnce({
+        data: { id: 1, amount: 500, method: 'cash' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchPayment('1')
+      await store.updatePayment('1', { amount: 500 })
+
+      expect(store.selectedPayment!.amount).toBe(500)
+    })
+
+    it('throws on failure', async () => {
+      mockUpdatePayment.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.updatePayment('1', { amount: 500 })).rejects.toThrow()
+    })
+  })
+
+  describe('deletePayment()', () => {
+    it('removes payment from store', async () => {
+      mockGetPayments.mockResolvedValueOnce({
+        data: [{ id: 1, amount: 100 }, { id: 2, amount: 200 }],
+      } as any)
+      mockDeletePayment.mockResolvedValueOnce({} as any)
+
+      const store = useAdminStore()
+      await store.fetchPayments()
+      expect(store.payments.length).toBe(2)
+
+      await store.deletePayment('1')
+      expect(store.payments.length).toBe(1)
+      expect(store.payments[0].id).toBe(2)
+    })
+
+    it('throws on failure', async () => {
+      mockDeletePayment.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.deletePayment('1')).rejects.toThrow()
+    })
+  })
+
+  describe('updatePaymentStatus()', () => {
+    it('updates status on selectedPayment', async () => {
+      mockGetPayment.mockResolvedValueOnce({
+        data: { id: 1, amount: 100, status: 'pending' },
+      } as any)
+      mockUpdatePaymentStatus.mockResolvedValueOnce({
+        data: { id: 1, amount: 100, status: 'confirmed' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchPayment('1')
+      await store.updatePaymentStatus('1', 'confirmed')
+
+      expect(store.selectedPayment!.status).toBe('confirmed')
+    })
+
+    it('throws on failure', async () => {
+      mockUpdatePaymentStatus.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.updatePaymentStatus('1', 'confirmed')).rejects.toThrow()
     })
   })
 

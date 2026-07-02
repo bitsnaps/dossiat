@@ -396,6 +396,154 @@ admin.get('/payments/:id', async (c) => {
   return successResponse(c, payment)
 })
 
+// ─── POST /api/admin/payments ───
+admin.post('/payments',
+  validateRequest({
+    body: {
+      missionId: validators.required(),
+      payerId: validators.required(),
+      payeeId: validators.required(),
+      amount: validators.required(),
+      method: validators.isIn(['cash', 'stripe', 'paypal', 'bank_transfer']),
+    },
+  }),
+  async (c) => {
+    const { missionId, payerId, payeeId, amount, method, currency, status } = await c.req.json()
+
+    // Validate mission exists
+    const mission = await Mission.findByPk(missionId)
+    if (!mission) throw new AppError('Mission not found', 404)
+
+    // Validate payer and payee exist
+    const payer = await User.findByPk(payerId)
+    if (!payer) throw new AppError('Payer not found', 404)
+
+    const payee = await User.findByPk(payeeId)
+    if (!payee) throw new AppError('Payee not found', 404)
+
+    // Auto-calculate fees
+    const { calculateAllFees } = await import('@/server/services/payment/feeCalculator')
+    const fees = calculateAllFees(amount, method)
+
+    const payment = await Payment.create({
+      missionId,
+      payerId,
+      payeeId,
+      amount,
+      currency: currency || 'USD',
+      method,
+      platformFee: fees.platformFee,
+      gatewayFee: fees.gatewayFee,
+      netAmount: fees.netAmount,
+      status: status || 'pending',
+    })
+
+    const result = await Payment.findByPk(payment.id, {
+      include: [
+        { model: User, as: 'payer', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: User, as: 'payee', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: Mission, as: 'mission', attributes: ['id', 'title'] },
+      ],
+    })
+
+    return successResponse(c, result, 'Payment created', 201)
+  }
+)
+
+// ─── PUT /api/admin/payments/:id ───
+admin.put('/payments/:id',
+  validateRequest({
+    body: {
+      method: validators.isIn(['cash', 'stripe', 'paypal', 'bank_transfer']),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid payment ID', 422)
+
+    const payment = await Payment.findByPk(id)
+    if (!payment) throw new AppError('Payment not found', 404)
+
+    const body = await c.req.json()
+    const updates: any = {}
+    if (body.amount !== undefined) updates.amount = body.amount
+    if (body.method !== undefined) updates.method = body.method
+    if (body.currency !== undefined) updates.currency = body.currency
+    if (body.status !== undefined) updates.status = body.status
+
+    // Recalculate fees if amount or method changed
+    if (body.amount !== undefined || body.method !== undefined) {
+      const newAmount = body.amount !== undefined ? body.amount : payment.amount
+      const newMethod = body.method !== undefined ? body.method : payment.method
+      const { calculateAllFees } = await import('@/server/services/payment/feeCalculator')
+      const fees = calculateAllFees(newAmount, newMethod)
+      updates.platformFee = fees.platformFee
+      updates.gatewayFee = fees.gatewayFee
+      updates.netAmount = fees.netAmount
+    }
+
+    if (Object.keys(updates).length === 0) {
+      throw new AppError('No valid fields to update', 422)
+    }
+
+    await payment.update(updates)
+
+    const updated = await Payment.findByPk(id, {
+      include: [
+        { model: User, as: 'payer', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: User, as: 'payee', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: Mission, as: 'mission', attributes: ['id', 'title'] },
+      ],
+    })
+
+    return successResponse(c, updated, 'Payment updated')
+  }
+)
+
+// ─── DELETE /api/admin/payments/:id ───
+admin.delete('/payments/:id', async (c) => {
+  const id = parseInt(c.req.param('id')!)
+  if (isNaN(id)) throw new AppError('Invalid payment ID', 422)
+
+  const payment = await Payment.findByPk(id)
+  if (!payment) throw new AppError('Payment not found', 404)
+
+  await payment.destroy()
+
+  return successResponse(c, { id }, 'Payment deleted')
+})
+
+// ─── PATCH /api/admin/payments/:id/status ───
+admin.patch('/payments/:id/status',
+  validateRequest({
+    body: {
+      status: validators.required(),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid payment ID', 422)
+
+    const payment = await Payment.findByPk(id)
+    if (!payment) throw new AppError('Payment not found', 404)
+
+    const { status } = await c.req.json()
+    const validStatuses = ['pending', 'confirmed', 'failed', 'refunded']
+    if (!validStatuses.includes(status)) {
+      throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 422)
+    }
+
+    const updates: any = { status }
+    if (status === 'confirmed') {
+      updates.confirmedAt = new Date()
+    }
+
+    await payment.update(updates)
+
+    return successResponse(c, payment, 'Payment status updated')
+  }
+)
+
 // ─── GET /api/admin/disputes ───
 admin.get('/disputes', async (c) => {
   const page = parseInt(c.req.query('page') || '1')

@@ -44,6 +44,7 @@ export interface AdminPayment {
   gatewayFee: number
   netAmount: number
   status: string
+  confirmedAt?: string
   payer?: { id: number; firstName: string; lastName: string; email: string }
   payee?: { id: number; firstName: string; lastName: string; email: string }
   mission?: { id: number; title: string }
@@ -341,6 +342,64 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  async function createPayment(data: {
+    missionId: number
+    payerId: number
+    payeeId: number
+    amount: number
+    method: string
+    currency?: string
+    status?: string
+  }) {
+    try {
+      const response = await adminApi.createPayment(data) as ApiResponse<AdminPayment>
+      payments.value.unshift(response.data!)
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to create payment'
+      throw err
+    }
+  }
+
+  async function updatePayment(id: string, data: {
+    amount?: number
+    method?: string
+    currency?: string
+    status?: string
+  }) {
+    try {
+      const response = await adminApi.updatePayment(id, data) as ApiResponse<AdminPayment>
+      const idx = payments.value.findIndex((p) => p.id === Number(id))
+      if (idx >= 0) payments.value[idx] = response.data!
+      if (selectedPayment.value?.id === Number(id)) selectedPayment.value = response.data!
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to update payment'
+      throw err
+    }
+  }
+
+  async function deletePayment(id: string) {
+    try {
+      await adminApi.deletePayment(id)
+      payments.value = payments.value.filter((p) => p.id !== Number(id))
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to delete payment'
+      throw err
+    }
+  }
+
+  async function updatePaymentStatus(id: string, status: string) {
+    try {
+      const response = await adminApi.updatePaymentStatus(id, status) as ApiResponse<AdminPayment>
+      selectedPayment.value = { ...selectedPayment.value!, ...response.data! }
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to update payment status'
+      throw err
+    }
+  }
+
   // ─── Disputes ───
 
   async function fetchDisputes(params?: { page?: number; limit?: number; status?: string }) {
@@ -441,7 +500,7 @@ export const useAdminStore = defineStore('admin', () => {
     fetchStats,
     fetchUsers, fetchUser, createUser, updateUser, deactivateUser, activateUser, deleteUser,
     fetchMissions, fetchMission, createMission, updateMission, deleteMission, updateMissionStatus,
-    fetchPayments, fetchPayment,
+    fetchPayments, fetchPayment, createPayment, updatePayment, deletePayment, updatePaymentStatus,
     fetchDisputes, fetchDispute, resolveDispute,
     fetchPlans, createPlan, updatePlan, deletePlan,
   }

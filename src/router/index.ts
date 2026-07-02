@@ -283,6 +283,12 @@ const router = createRouter({
           meta: { requiresAuth: true, roles: ['admin'], title: 'Manage Payments' },
         },
         {
+          path: 'payments/:id',
+          name: 'admin-payment-detail',
+          component: () => import('@/views/admin/AdminPaymentDetailView.vue'),
+          meta: { requiresAuth: true, roles: ['admin'], title: 'Payment Detail' },
+        },
+        {
           path: 'disputes',
           name: 'admin-disputes',
           component: () => import('@/views/admin/AdminDisputesView.vue'),

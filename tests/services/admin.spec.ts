@@ -210,6 +210,50 @@ describe('Admin Service', () => {
     })
   })
 
+  describe('createPayment()', () => {
+    it('calls POST /admin/payments with data', async () => {
+      mockPost.mockResolvedValueOnce({ success: true, data: { id: 1, amount: 100, method: 'cash' } } as any)
+
+      const data = { missionId: 1, payerId: 2, payeeId: 3, amount: 100, method: 'cash' }
+      const result = await admin.createPayment(data)
+
+      expect(mockPost).toHaveBeenCalledWith('/admin/payments', data)
+      expect(result).toEqual({ success: true, data: { id: 1, amount: 100, method: 'cash' } })
+    })
+  })
+
+  describe('updatePayment()', () => {
+    it('calls PUT /admin/payments/:id with data', async () => {
+      mockPut.mockResolvedValueOnce({ success: true, data: { id: 1, amount: 200 } } as any)
+
+      const result = await admin.updatePayment('1', { amount: 200, method: 'stripe' })
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/payments/1', { amount: 200, method: 'stripe' })
+      expect(result).toEqual({ success: true, data: { id: 1, amount: 200 } })
+    })
+  })
+
+  describe('deletePayment()', () => {
+    it('calls DELETE /admin/payments/:id', async () => {
+      mockDel.mockResolvedValueOnce({ success: true } as any)
+
+      const result = await admin.deletePayment('1')
+
+      expect(mockDel).toHaveBeenCalledWith('/admin/payments/1')
+      expect(result).toEqual({ success: true })
+    })
+  })
+
+  describe('updatePaymentStatus()', () => {
+    it('calls PATCH /admin/payments/:id/status', async () => {
+      mockPatch.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.updatePaymentStatus('1', 'confirmed')
+
+      expect(mockPatch).toHaveBeenCalledWith('/admin/payments/1/status', { status: 'confirmed' })
+    })
+  })
+
   // ─── Disputes ───
 
   describe('getDisputes()', () => {

@@ -90,6 +90,35 @@ export function getPayment(id: string) {
   return get(`/admin/payments/${id}`)
 }
 
+export function createPayment(data: {
+  missionId: number
+  payerId: number
+  payeeId: number
+  amount: number
+  method: string
+  currency?: string
+  status?: string
+}) {
+  return post('/admin/payments', data)
+}
+
+export function updatePayment(id: string, data: {
+  amount?: number
+  method?: string
+  currency?: string
+  status?: string
+}) {
+  return put(`/admin/payments/${id}`, data)
+}
+
+export function deletePayment(id: string) {
+  return del(`/admin/payments/${id}`)
+}
+
+export function updatePaymentStatus(id: string, status: string) {
+  return patch(`/admin/payments/${id}/status`, { status })
+}
+
 // ─── Disputes ───
 
 export function getDisputes(params?: { page?: number; limit?: number; status?: string }) {
