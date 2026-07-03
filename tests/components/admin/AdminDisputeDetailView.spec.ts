@@ -24,7 +24,6 @@ const router = createRouter({
     { path: '/app/admin/disputes', name: 'admin-disputes', component: { template: '<div />' } },
     { path: '/app/admin/disputes/:id', name: 'admin-dispute-detail', component: { template: '<div />' } },
   ],
-  initialHistory: '/app/admin/disputes/1',
 })
 
 function mountView() {
