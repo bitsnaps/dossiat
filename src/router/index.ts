@@ -361,8 +361,14 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   // Role-based access control
+  // Admin routes always use real role (admin must always access admin panel)
+  // Other routes use effective role (respects viewAsRole)
   if (requiredRoles && authStore.user) {
-    const hasRequiredRole = requiredRoles.some((role) => authStore.hasRole(role))
+    const isAdminRoute = requiredRoles.includes('admin')
+    const checkRole = (role: string) => isAdminRoute
+      ? authStore.hasRealRole(role)
+      : authStore.hasRole(role)
+    const hasRequiredRole = requiredRoles.some((role) => checkRole(role))
     if (!hasRequiredRole) {
       NProgress.done()
       return next({ name: 'dashboard' })
@@ -370,6 +376,7 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   // Redirect admins to admin panel when they land on the regular dashboard
+  // hasRole('admin') uses effectiveRole, so it returns false when viewing as agent/client
   if (to.name === 'dashboard' && authStore.hasRole('admin')) {
     NProgress.done()
     return next({ name: 'admin' })

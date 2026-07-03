@@ -1,10 +1,16 @@
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import { useUiStore } from '@/stores/ui'
+import { useAuthStore } from '@/stores/auth'
 import Sidebar from './Sidebar.vue'
 import TopNavbar from './TopNavbar.vue'
 
+const { t } = useI18n()
+const router = useRouter()
 const uiStore = useUiStore()
+const authStore = useAuthStore()
 const isMobile = ref(window.innerWidth <= 768)
 
 function onResize() {
@@ -20,6 +26,11 @@ function handleToggleSidebar() {
   } else {
     uiStore.toggleSidebar()
   }
+}
+
+function backToAdmin() {
+  authStore.clearViewAsRole()
+  router.push({ name: 'admin' })
 }
 </script>
 
@@ -43,6 +54,15 @@ function handleToggleSidebar() {
       class="ds-app-layout__main"
       :class="{ 'ds-app-layout__main--sidebar-collapsed': uiStore.sidebarCollapsed }"
     >
+      <!-- View As banner for admins acting as another role -->
+      <div v-if="authStore.isViewingAs" class="ds-view-as-banner">
+        <i class="bi bi-eye" />
+        <span>{{ t('layout.viewAsBanner', { role: t(`common.status.role.${authStore.viewAsRole}`) }) }}</span>
+        <button class="ds-view-as-banner__back" @click="backToAdmin">
+          {{ t('layout.topbar.admin') }}
+        </button>
+      </div>
+
       <TopNavbar @toggle-sidebar="handleToggleSidebar" />
 
       <main class="ds-app-layout__content">

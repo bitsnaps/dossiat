@@ -139,6 +139,8 @@
     },
     "sidebar": {
       "backToApp": "العودة إلى التطبيق",
+      "viewAsAgent": "عرض كوكيل",
+      "viewAsClient": "عرض كعميل",
       "dashboard": "لوحة التحكم",
       "disputes": "النزاعات",
       "missions": "المهمات",
@@ -713,8 +715,14 @@
       "notifications": "الإشعارات",
       "profile": "الملف الشخصي",
       "search": "بحث في المهمات، الرسائل…",
-      "settings": "الإعدادات"
-    }
+      "settings": "الإعدادات",
+      "viewAs": "عرض كـ",
+      "viewAsAdmin": "مدير",
+      "viewAsAgent": "وكيل",
+      "viewAsClient": "عميل",
+      "admin": "الإدارة"
+    },
+    "viewAsBanner": "تمثيل كـ {role} — التغييرات تؤثر على ما تراه"
   },
   "messages": {
     "composerPlaceholder": "اكتب رسالة...",

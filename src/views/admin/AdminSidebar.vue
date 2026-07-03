@@ -38,6 +38,16 @@ function handleNavClick() {
   emit('close-mobile')
 }
 
+function viewAsAgent() {
+  authStore.setViewAsRole('agent')
+  router.push('/app/dashboard')
+}
+
+function viewAsClient() {
+  authStore.setViewAsRole('client')
+  router.push('/app/dashboard')
+}
+
 async function handleLogout() {
   await authStore.logout()
   router.push('/')
@@ -68,6 +78,14 @@ async function handleLogout() {
     </nav>
 
     <div class="ds-sidebar__footer">
+      <RouterLink to="/" class="ds-sidebar__link" @click="viewAsAgent">
+        <i class="bi bi-person" />
+        <span class="ds-sidebar__link-label">{{ t('admin.sidebar.viewAsAgent') }}</span>
+      </RouterLink>
+      <RouterLink to="/" class="ds-sidebar__link" @click="viewAsClient">
+        <i class="bi bi-person-badge" />
+        <span class="ds-sidebar__link-label">{{ t('admin.sidebar.viewAsClient') }}</span>
+      </RouterLink>
       <RouterLink to="/" class="ds-sidebar__link ds-sidebar__link--logout" @click="handleLogout">
         <i class="bi bi-box-arrow-left" />
         <span class="ds-sidebar__link-label">{{ t('layout.topbar.logout') }}</span>

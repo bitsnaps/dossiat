@@ -2311,3 +2311,50 @@ html[dir="rtl"] .bi-chevron-double-right { transform: scaleX(-1); }
 .ds-topnavbar__user-menu-item--danger:hover {
   background: rgba(255, 122, 89, 0.08);
 }
+.ds-topnavbar__user-menu-item--active {
+  color: var(--ds-accent);
+}
+.ds-topnavbar__user-menu-item--active i {
+  color: var(--ds-accent);
+}
+.ds-topnavbar__user-menu-section-title {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ds-text-muted);
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+
+/* ============================================================
+   View As Banner
+   ============================================================ */
+.ds-view-as-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(200, 255, 0, 0.08);
+  border-bottom: 1px solid rgba(200, 255, 0, 0.2);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ds-accent);
+}
+.ds-view-as-banner i {
+  font-size: 1rem;
+}
+.ds-view-as-banner__back {
+  background: rgba(200, 255, 0, 0.15);
+  border: 1px solid rgba(200, 255, 0, 0.3);
+  color: var(--ds-accent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ds-view-as-banner__back:hover {
+  background: rgba(200, 255, 0, 0.25);
+}

@@ -3,6 +3,7 @@ import type { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } fr
 
 const TOKEN_KEY = 'dossiat_access_token'
 const REFRESH_TOKEN_KEY = 'dossiat_refresh_token'
+const VIEW_AS_ROLE_KEY = 'dossiat_view_as_role'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -11,13 +12,20 @@ const api = axios.create({
   },
 })
 
-// Request interceptor — attach Authorization header
+// Request interceptor — attach Authorization header and X-View-As-Role header
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem(TOKEN_KEY)
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`
     }
+
+    // Send X-View-As-Role header when admin is viewing as another role
+    const viewAsRole = localStorage.getItem(VIEW_AS_ROLE_KEY)
+    if (viewAsRole && viewAsRole !== 'admin' && config.headers) {
+      config.headers['X-View-As-Role'] = viewAsRole
+    }
+
     return config
   },
   (error) => Promise.reject(error),

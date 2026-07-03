@@ -303,8 +303,14 @@
       "notifications": "Notifications",
       "profile": "Profile",
       "settings": "Settings",
-      "logout": "Sign out"
+      "logout": "Sign out",
+      "viewAs": "View As",
+      "viewAsAdmin": "Admin",
+      "viewAsAgent": "Agent",
+      "viewAsClient": "Client",
+      "admin": "Admin"
     },
+    "viewAsBanner": "Viewing as {role} — Changes affect what you see",
     "notifications": {
       "title": "Notifications",
       "markAllRead": "Mark all read",
@@ -1079,7 +1085,9 @@
       "payments": "Payments",
       "disputes": "Disputes",
       "subscriptions": "Subscriptions",
-      "backToApp": "Back to App"
+      "backToApp": "Back to App",
+      "viewAsAgent": "View as Agent",
+      "viewAsClient": "View as Client"
     },
     "dashboard": {
       "title": "Admin Dashboard",

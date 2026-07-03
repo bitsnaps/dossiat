@@ -231,4 +231,88 @@ describe('Auth Store', () => {
       expect(store.hasRole('agent')).toBe(false)
     })
   })
+
+  describe('viewAsRole (admin impersonation)', () => {
+    async function loginAsAdmin() {
+      mockLogin.mockResolvedValueOnce({
+        data: { user: { id: 1, role: 'admin' }, accessToken: 'at', refreshToken: 'rt' },
+      } as any)
+      const store = useAuthStore()
+      await store.login({ email: 'admin@test.com', password: 'pass' })
+      return store
+    }
+
+    it('defaults viewAsRole to admin', async () => {
+      const store = await loginAsAdmin()
+      expect(store.viewAsRole).toBe('admin')
+    })
+
+    it('effectiveRole returns user role when viewAsRole is admin', async () => {
+      const store = await loginAsAdmin()
+      expect(store.effectiveRole).toBe('admin')
+    })
+
+    it('effectiveRole returns viewAsRole when admin switches', async () => {
+      const store = await loginAsAdmin()
+      store.setViewAsRole('agent')
+      expect(store.effectiveRole).toBe('agent')
+      expect(store.hasRole('agent')).toBe(true)
+      expect(store.hasRole('admin')).toBe(false)
+    })
+
+    it('isViewingAs is true when admin views as another role', async () => {
+      const store = await loginAsAdmin()
+      expect(store.isViewingAs).toBe(false)
+      store.setViewAsRole('agent')
+      expect(store.isViewingAs).toBe(true)
+    })
+
+    it('isViewingAs is false for non-admin users even with viewAsRole set', async () => {
+      mockLogin.mockResolvedValueOnce({
+        data: { user: { id: 2, role: 'agent' }, accessToken: 'at', refreshToken: 'rt' },
+      } as any)
+      const store = useAuthStore()
+      await store.login({ email: 'agent@test.com', password: 'pass' })
+      store.setViewAsRole('client')
+      expect(store.isViewingAs).toBe(false)
+      expect(store.effectiveRole).toBe('agent')
+    })
+
+    it('persists viewAsRole to localStorage', async () => {
+      const store = await loginAsAdmin()
+      store.setViewAsRole('client')
+      expect(localStorage.getItem('dossiat_view_as_role')).toBe('client')
+    })
+
+    it('clearViewAsRole resets to admin', async () => {
+      const store = await loginAsAdmin()
+      store.setViewAsRole('agent')
+      expect(store.viewAsRole).toBe('agent')
+      store.clearViewAsRole()
+      expect(store.viewAsRole).toBe('admin')
+      expect(localStorage.getItem('dossiat_view_as_role')).toBeNull()
+    })
+
+    it('logout clears viewAsRole', async () => {
+      const store = await loginAsAdmin()
+      store.setViewAsRole('agent')
+      mockLogout.mockResolvedValueOnce({} as any)
+      await store.logout()
+      expect(store.viewAsRole).toBe('admin')
+      expect(localStorage.getItem('dossiat_view_as_role')).toBeNull()
+    })
+
+    it('hasRealRole checks actual user role regardless of viewAsRole', async () => {
+      const store = await loginAsAdmin()
+      store.setViewAsRole('agent')
+      expect(store.hasRealRole('admin')).toBe(true)
+      expect(store.hasRealRole('agent')).toBe(false)
+    })
+
+    it('restores viewAsRole from localStorage on init', () => {
+      localStorage.setItem('dossiat_view_as_role', 'client')
+      const store = useAuthStore()
+      expect(store.viewAsRole).toBe('client')
+    })
+  })
 })

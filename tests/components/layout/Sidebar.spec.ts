@@ -9,6 +9,7 @@ vi.mock('@/stores/auth', () => ({
     user: { id: 1, role: 'agent' },
     isAuthenticated: true,
     hasRole: vi.fn((role: string) => role === 'agent'),
+    hasRealRole: vi.fn((role: string) => role === 'agent'),
   })),
 }))
 

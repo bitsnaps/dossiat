@@ -14,6 +14,8 @@ declare module 'hono' {
   }
 }
 
+const VALID_VIEW_AS_ROLES = ['agent', 'client'] as const
+
 export function authenticate() {
   const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret')
 
@@ -26,11 +28,21 @@ export function authenticate() {
     const token = authHeader.slice(7)
     try {
       const { payload } = await jwtVerify(token, secret)
-      c.set('auth', {
+      const authPayload: AuthPayload = {
         userId: payload.userId as number,
         email: payload.email as string,
         role: payload.role as 'agent' | 'client' | 'admin',
-      })
+      }
+
+      // Allow admin users to "view as" another role via X-View-As-Role header
+      if (authPayload.role === 'admin') {
+        const viewAsRole = c.req.header('X-View-As-Role')
+        if (viewAsRole && (VALID_VIEW_AS_ROLES as readonly string[]).includes(viewAsRole)) {
+          authPayload.role = viewAsRole as AuthPayload['role']
+        }
+      }
+
+      c.set('auth', authPayload)
       await next()
     } catch {
       return errorResponse(c, 'Invalid or expired token', 401)

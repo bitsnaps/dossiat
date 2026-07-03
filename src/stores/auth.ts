@@ -6,13 +6,16 @@ import { getMe } from '@/services/users'
 
 const ACCESS_TOKEN_KEY = 'dossiat_access_token'
 const REFRESH_TOKEN_KEY = 'dossiat_refresh_token'
+const VIEW_AS_ROLE_KEY = 'dossiat_view_as_role'
+
+type UserRole = 'agent' | 'client' | 'admin'
 
 interface User {
   id: number
   email: string
   firstName: string
   lastName: string
-  role: 'agent' | 'client' | 'admin'
+  role: UserRole
   emailVerified?: boolean
 }
 
@@ -33,11 +36,40 @@ export const useAuthStore = defineStore('auth', () => {
   const refreshTokenValue = ref<string | null>(null)
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const viewAsRole = ref<UserRole>((localStorage.getItem(VIEW_AS_ROLE_KEY) as UserRole) || 'admin')
 
   const isAuthenticated = computed(() => !!accessToken.value)
 
+  /** The effective role: uses viewAsRole for admins, actual role otherwise */
+  const effectiveRole = computed<UserRole>(() => {
+    if (user.value?.role === 'admin' && viewAsRole.value && viewAsRole.value !== 'admin') {
+      return viewAsRole.value
+    }
+    return user.value?.role ?? 'admin'
+  })
+
+  /** True when admin is viewing as agent or client */
+  const isViewingAs = computed(() => {
+    return user.value?.role === 'admin' && effectiveRole.value !== 'admin'
+  })
+
   function hasRole(role: string): boolean {
+    return effectiveRole.value === role
+  }
+
+  /** Check the user's real role (ignores viewAsRole) */
+  function hasRealRole(role: string): boolean {
     return user.value?.role === role
+  }
+
+  function setViewAsRole(role: UserRole) {
+    viewAsRole.value = role
+    localStorage.setItem(VIEW_AS_ROLE_KEY, role)
+  }
+
+  function clearViewAsRole() {
+    viewAsRole.value = 'admin'
+    localStorage.removeItem(VIEW_AS_ROLE_KEY)
   }
 
   function setTokens(access: string, refresh: string) {
@@ -52,6 +84,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = null
     refreshTokenValue.value = null
     error.value = null
+    clearViewAsRole()
     localStorage.removeItem(ACCESS_TOKEN_KEY)
     localStorage.removeItem(REFRESH_TOKEN_KEY)
   }
@@ -138,8 +171,14 @@ export const useAuthStore = defineStore('auth', () => {
     refreshTokenValue,
     loading,
     error,
+    viewAsRole,
+    effectiveRole,
     isAuthenticated,
+    isViewingAs,
     hasRole,
+    hasRealRole,
+    setViewAsRole,
+    clearViewAsRole,
     login,
     register,
     logout,

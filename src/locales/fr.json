@@ -139,6 +139,8 @@
     },
     "sidebar": {
       "backToApp": "Retour à l'app",
+      "viewAsAgent": "Voir en tant qu'Agent",
+      "viewAsClient": "Voir en tant que Client",
       "dashboard": "Tableau de bord",
       "disputes": "Litiges",
       "missions": "Missions",
@@ -713,8 +715,14 @@
       "notifications": "Notifications",
       "profile": "Profil",
       "search": "Rechercher missions, messages…",
-      "settings": "Paramètres"
-    }
+      "settings": "Paramètres",
+      "viewAs": "Voir en tant que",
+      "viewAsAdmin": "Admin",
+      "viewAsAgent": "Agent",
+      "viewAsClient": "Client",
+      "admin": "Admin"
+    },
+    "viewAsBanner": "Affichage en tant que {role} — Les changements affectent ce que vous voyez"
   },
   "messages": {
     "composerPlaceholder": "Écrivez un message...",

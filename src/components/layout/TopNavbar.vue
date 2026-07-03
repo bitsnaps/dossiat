@@ -9,6 +9,8 @@ import { useMessagePolling } from '@/composables/useMessagePolling'
 import NotificationDropdown from './NotificationDropdown.vue'
 import BAvatar from '@/components/base/BAvatar.vue'
 
+type UserRole = 'admin' | 'agent' | 'client'
+
 const { t } = useI18n()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -30,8 +32,14 @@ const userName = computed(() => {
 
 const userRole = computed(() => {
   if (!authStore.user) return ''
-  return t(`layout.topbar.${authStore.user.role}`)
+  return t(`common.status.role.${authStore.effectiveRole}`)
 })
+
+const viewAsOptions = computed(() => [
+  { value: 'admin' as UserRole, label: t('layout.topbar.viewAsAdmin') },
+  { value: 'agent' as UserRole, label: t('layout.topbar.viewAsAgent') },
+  { value: 'client' as UserRole, label: t('layout.topbar.viewAsClient') },
+])
 
 function toggleNotifications() {
   showNotifications.value = !showNotifications.value
@@ -61,6 +69,16 @@ async function handleLogout() {
 function goToSettings() {
   showUserMenu.value = false
   router.push('/app/settings')
+}
+
+function switchViewAs(role: UserRole) {
+  authStore.setViewAsRole(role)
+  showUserMenu.value = false
+  if (role === 'admin') {
+    router.push({ name: 'admin' })
+  } else {
+    router.push({ name: 'dashboard' })
+  }
 }
 
 function onOutsideClick(e: MouseEvent) {
@@ -138,6 +156,21 @@ onBeforeUnmount(() => document.removeEventListener('click', onOutsideClick))
             <i class="bi bi-gear" />
             <span>{{ t('layout.topbar.settings') }}</span>
           </button>
+          <!-- View As section — only for admin users -->
+          <template v-if="authStore.hasRealRole('admin')">
+            <div class="ds-topnavbar__user-menu-divider" />
+            <div class="ds-topnavbar__user-menu-section-title">{{ t('layout.topbar.viewAs') }}</div>
+            <button
+              v-for="opt in viewAsOptions"
+              :key="opt.value"
+              class="ds-topnavbar__user-menu-item"
+              :class="{ 'ds-topnavbar__user-menu-item--active': authStore.viewAsRole === opt.value }"
+              @click="switchViewAs(opt.value)"
+            >
+              <i :class="['bi', authStore.viewAsRole === opt.value ? 'bi-check-circle-fill' : 'bi-circle']" />
+              <span>{{ opt.label }}</span>
+            </button>
+          </template>
           <div class="ds-topnavbar__user-menu-divider" />
           <button class="ds-topnavbar__user-menu-item ds-topnavbar__user-menu-item--danger" @click="handleLogout">
             <i class="bi bi-box-arrow-left" />

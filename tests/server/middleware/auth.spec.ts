@@ -69,6 +69,114 @@ describe('auth middleware', () => {
     })
   })
 
+  describe('authenticate with X-View-As-Role', () => {
+    it('allows admin to view as agent via header', async () => {
+      const app = new Hono()
+      app.use('*', authenticate())
+      app.get('/protected', (c) => {
+        const auth = c.get('auth')
+        return c.json({ auth })
+      })
+
+      const token = await createToken({ userId: 1, email: 'admin@test.com', role: 'admin' })
+      const res = await app.request('/protected', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-View-As-Role': 'agent',
+        },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.auth.role).toBe('agent')
+    })
+
+    it('allows admin to view as client via header', async () => {
+      const app = new Hono()
+      app.use('*', authenticate())
+      app.get('/protected', (c) => {
+        const auth = c.get('auth')
+        return c.json({ auth })
+      })
+
+      const token = await createToken({ userId: 1, email: 'admin@test.com', role: 'admin' })
+      const res = await app.request('/protected', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-View-As-Role': 'client',
+        },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.auth.role).toBe('client')
+    })
+
+    it('ignores X-View-As-Role for non-admin users', async () => {
+      const app = new Hono()
+      app.use('*', authenticate())
+      app.get('/protected', (c) => {
+        const auth = c.get('auth')
+        return c.json({ auth })
+      })
+
+      const token = await createToken({ userId: 2, email: 'agent@test.com', role: 'agent' })
+      const res = await app.request('/protected', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-View-As-Role': 'client',
+        },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.auth.role).toBe('agent')
+    })
+
+    it('ignores invalid view-as roles', async () => {
+      const app = new Hono()
+      app.use('*', authenticate())
+      app.get('/protected', (c) => {
+        const auth = c.get('auth')
+        return c.json({ auth })
+      })
+
+      const token = await createToken({ userId: 1, email: 'admin@test.com', role: 'admin' })
+      const res = await app.request('/protected', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-View-As-Role': 'superadmin',
+        },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.auth.role).toBe('admin')
+    })
+
+    it('preserves userId and email when overriding role', async () => {
+      const app = new Hono()
+      app.use('*', authenticate())
+      app.get('/protected', (c) => {
+        const auth = c.get('auth')
+        return c.json({ auth })
+      })
+
+      const token = await createToken({ userId: 1, email: 'admin@test.com', role: 'admin' })
+      const res = await app.request('/protected', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'X-View-As-Role': 'agent',
+        },
+      })
+      const body = await res.json()
+
+      expect(body.auth.userId).toBe(1)
+      expect(body.auth.email).toBe('admin@test.com')
+      expect(body.auth.role).toBe('agent')
+    })
+  })
+
   describe('optionalAuth', () => {
     it('passes through without token', async () => {
       const app = new Hono()

@@ -37,11 +37,15 @@ const financeLinks = [
 const systemLinks = [
   { to: '/app/disputes', icon: 'bi-flag', label: 'layout.sidebar.disputes' },
   { to: '/app/settings', icon: 'bi-gear', label: 'layout.sidebar.settings' },
-  { to: '/app/admin', icon: 'bi-shield-lock', label: 'layout.sidebar.admin', roles: ['admin'] },
+  { to: '/app/admin', icon: 'bi-shield-lock', label: 'layout.sidebar.admin', roles: ['admin'], realRoleOnly: true },
 ]
 
-function isVisible(link: { roles?: string[] }) {
+function isVisible(link: { roles?: string[]; realRoleOnly?: boolean }) {
   if (!link.roles) return true
+  // Admin-only links always check real role so admins see them even when viewing as another role
+  if (link.realRoleOnly) {
+    return link.roles.some((role) => authStore.hasRealRole(role))
+  }
   return link.roles.some((role) => authStore.hasRole(role))
 }
 
@@ -70,17 +74,18 @@ async function handleLogout() {
 
     <nav class="ds-sidebar__nav">
       <div class="ds-sidebar__section-title">{{ t('layout.sidebar.sectionMain') }}</div>
-      <RouterLink
-        v-for="link in agentLinks"
-        :key="link.to"
-        :to="link.to"
-        class="ds-sidebar__link"
-        :class="{ 'ds-sidebar__link--active': isActive(link.to) }"
-        @click="handleNavClick"
-      >
-        <i :class="['bi', link.icon]" />
-        <span class="ds-sidebar__link-label">{{ t(link.label) }}</span>
-      </RouterLink>
+      <template v-for="link in agentLinks" :key="link.to">
+        <RouterLink
+          v-if="isVisible(link)"
+          :to="link.to"
+          class="ds-sidebar__link"
+          :class="{ 'ds-sidebar__link--active': isActive(link.to) }"
+          @click="handleNavClick"
+        >
+          <i :class="['bi', link.icon]" />
+          <span class="ds-sidebar__link-label">{{ t(link.label) }}</span>
+        </RouterLink>
+      </template>
 
       <div class="ds-sidebar__section-title">{{ t('layout.sidebar.sectionFinance') }}</div>
       <template v-for="link in financeLinks" :key="link.to">
