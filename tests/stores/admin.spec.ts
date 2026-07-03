@@ -24,7 +24,13 @@ vi.mock('@/services/admin', () => ({
   updatePaymentStatus: vi.fn(),
   getDisputes: vi.fn(),
   getDispute: vi.fn(),
+  createDispute: vi.fn(),
+  updateDispute: vi.fn(),
+  deleteDispute: vi.fn(),
   resolveDispute: vi.fn(),
+  escalateDispute: vi.fn(),
+  updateDisputeStatus: vi.fn(),
+  sendDisputeMessage: vi.fn(),
   getPlans: vi.fn(),
   createPlan: vi.fn(),
   updatePlan: vi.fn(),
@@ -54,6 +60,14 @@ const mockUpdatePayment = vi.mocked(adminService.updatePayment)
 const mockDeletePayment = vi.mocked(adminService.deletePayment)
 const mockUpdatePaymentStatus = vi.mocked(adminService.updatePaymentStatus)
 const mockGetDisputes = vi.mocked(adminService.getDisputes)
+const mockGetDispute = vi.mocked(adminService.getDispute)
+const mockCreateDispute = vi.mocked(adminService.createDispute)
+const mockUpdateDispute = vi.mocked(adminService.updateDispute)
+const mockDeleteDispute = vi.mocked(adminService.deleteDispute)
+const mockResolveDispute = vi.mocked(adminService.resolveDispute)
+const mockEscalateDispute = vi.mocked(adminService.escalateDispute)
+const mockUpdateDisputeStatus = vi.mocked(adminService.updateDisputeStatus)
+const mockSendDisputeMessage = vi.mocked(adminService.sendDisputeMessage)
 const mockGetPlans = vi.mocked(adminService.getPlans)
 const mockCreatePlan = vi.mocked(adminService.createPlan)
 
@@ -492,6 +506,218 @@ describe('Admin Store', () => {
       await store.fetchDisputes()
 
       expect(store.disputes.length).toBe(1)
+    })
+
+    it('sets error on failure', async () => {
+      mockGetDisputes.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await store.fetchDisputes()
+
+      expect(store.error).toBe('Failed')
+    })
+  })
+
+  describe('fetchDispute()', () => {
+    it('loads selected dispute from API', async () => {
+      mockGetDispute.mockResolvedValueOnce({
+        data: { id: 1, reason: 'Test dispute', status: 'open' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDispute('1')
+
+      expect(store.selectedDispute).toEqual({ id: 1, reason: 'Test dispute', status: 'open' })
+    })
+
+    it('sets error on failure', async () => {
+      mockGetDispute.mockRejectedValueOnce({ response: { data: { error: 'Not found' } } })
+
+      const store = useAdminStore()
+      await store.fetchDispute('999')
+
+      expect(store.error).toBe('Not found')
+    })
+  })
+
+  describe('createDispute()', () => {
+    it('adds new dispute to store', async () => {
+      mockCreateDispute.mockResolvedValueOnce({
+        data: { id: 10, missionId: 1, reason: 'Issue', status: 'open' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.createDispute({ missionId: 1, initiatedBy: 1, reason: 'Issue' })
+
+      expect(store.disputes.length).toBe(1)
+      expect(store.disputes[0].reason).toBe('Issue')
+    })
+
+    it('throws on failure', async () => {
+      mockCreateDispute.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.createDispute({ missionId: 1, initiatedBy: 1, reason: 'Issue' })).rejects.toThrow()
+    })
+  })
+
+  describe('updateDispute()', () => {
+    it('updates dispute in store', async () => {
+      mockGetDisputes.mockResolvedValueOnce({
+        data: [{ id: 1, reason: 'Old reason', status: 'open' }],
+      } as any)
+      mockUpdateDispute.mockResolvedValueOnce({
+        data: { id: 1, reason: 'Updated reason', status: 'open' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDisputes()
+      await store.updateDispute('1', { reason: 'Updated reason' })
+
+      expect(store.disputes[0].reason).toBe('Updated reason')
+    })
+
+    it('updates selectedDispute if viewing detail', async () => {
+      mockGetDispute.mockResolvedValueOnce({
+        data: { id: 1, reason: 'Old', status: 'open' },
+      } as any)
+      mockUpdateDispute.mockResolvedValueOnce({
+        data: { id: 1, reason: 'Updated', status: 'open' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDispute('1')
+      await store.updateDispute('1', { reason: 'Updated' })
+
+      expect(store.selectedDispute!.reason).toBe('Updated')
+    })
+
+    it('throws on failure', async () => {
+      mockUpdateDispute.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.updateDispute('1', { reason: 'Fail' })).rejects.toThrow()
+    })
+  })
+
+  describe('deleteDispute()', () => {
+    it('removes dispute from store', async () => {
+      mockGetDisputes.mockResolvedValueOnce({
+        data: [{ id: 1, reason: 'Keep' }, { id: 2, reason: 'Remove' }],
+      } as any)
+      mockDeleteDispute.mockResolvedValueOnce({} as any)
+
+      const store = useAdminStore()
+      await store.fetchDisputes()
+      expect(store.disputes.length).toBe(2)
+
+      await store.deleteDispute('2')
+      expect(store.disputes.length).toBe(1)
+      expect(store.disputes[0].id).toBe(1)
+    })
+
+    it('throws on failure', async () => {
+      mockDeleteDispute.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.deleteDispute('1')).rejects.toThrow()
+    })
+  })
+
+  describe('resolveDispute()', () => {
+    it('updates dispute status to resolved', async () => {
+      mockGetDispute.mockResolvedValueOnce({
+        data: { id: 1, status: 'open' },
+      } as any)
+      mockResolveDispute.mockResolvedValueOnce({
+        data: { id: 1, status: 'resolved' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDispute('1')
+      await store.resolveDispute('1', 'Resolved')
+
+      expect(store.selectedDispute!.status).toBe('resolved')
+    })
+
+    it('throws on failure', async () => {
+      mockResolveDispute.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.resolveDispute('1', 'Done')).rejects.toThrow()
+    })
+  })
+
+  describe('escalateDispute()', () => {
+    it('updates dispute status to escalated', async () => {
+      mockGetDispute.mockResolvedValueOnce({
+        data: { id: 1, status: 'open' },
+      } as any)
+      mockEscalateDispute.mockResolvedValueOnce({
+        data: { id: 1, status: 'escalated' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDispute('1')
+      await store.escalateDispute('1')
+
+      expect(store.selectedDispute!.status).toBe('escalated')
+    })
+
+    it('throws on failure', async () => {
+      mockEscalateDispute.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.escalateDispute('1')).rejects.toThrow()
+    })
+  })
+
+  describe('updateDisputeStatus()', () => {
+    it('updates dispute status', async () => {
+      mockGetDispute.mockResolvedValueOnce({
+        data: { id: 1, status: 'open' },
+      } as any)
+      mockUpdateDisputeStatus.mockResolvedValueOnce({
+        data: { id: 1, status: 'reconciling' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDispute('1')
+      await store.updateDisputeStatus('1', 'reconciling')
+
+      expect(store.selectedDispute!.status).toBe('reconciling')
+    })
+
+    it('throws on failure', async () => {
+      mockUpdateDisputeStatus.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.updateDisputeStatus('1', 'reconciling')).rejects.toThrow()
+    })
+  })
+
+  describe('sendDisputeMessage()', () => {
+    it('appends message to selectedDispute', async () => {
+      mockGetDispute.mockResolvedValueOnce({
+        data: { id: 1, status: 'open', messages: [] },
+      } as any)
+      mockSendDisputeMessage.mockResolvedValueOnce({
+        data: { id: 1, content: 'Hello' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchDispute('1')
+      await store.sendDisputeMessage('1', 'Hello')
+
+      expect(store.selectedDispute!.messages).toHaveLength(1)
+      expect(store.selectedDispute!.messages![0].content).toBe('Hello')
+    })
+
+    it('throws on failure', async () => {
+      mockSendDisputeMessage.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.sendDisputeMessage('1', 'Hello')).rejects.toThrow()
     })
   })
 

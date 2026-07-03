@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
 import app from '@/server/index'
-import { User, AgentProfile, ClientProfile, Mission, Dispute, Payment, Notification, EmailVerificationToken, PasswordResetToken, RefreshToken } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, Mission, Dispute, DisputeMessage, Payment, Notification, EmailVerificationToken, PasswordResetToken, RefreshToken } from '@/server/database/models'
 import { generateAccessToken } from '@/server/utils/jwt'
 import bcrypt from 'bcryptjs'
 
@@ -993,6 +993,409 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
       expect(res.status).toBe(200)
       body.data.forEach((dispute: any) => {
         expect(dispute.status).toBe('open')
+      })
+    })
+  })
+
+  // ─── Dispute CRUD ───
+
+  describe('Dispute CRUD', () => {
+    let testDisputeMissionId: number
+    let testDisputeId: number
+
+    beforeAll(async () => {
+      // Create a test mission for dispute tests
+      const mission = await Mission.create({
+        agentId,
+        clientId,
+        title: 'Dispute Test Mission',
+        type: 'one_time',
+        pricingType: 'fixed',
+        agreedAmount: 200,
+        currency: 'USD',
+        status: 'in_progress',
+      })
+      testDisputeMissionId = mission.id
+
+      // Create a test dispute
+      const dispute = await Dispute.create({
+        missionId: testDisputeMissionId,
+        initiatedBy: clientId,
+        reason: 'Work quality not as agreed',
+        status: 'open',
+      })
+      testDisputeId = dispute.id
+    })
+
+    afterAll(async () => {
+      await DisputeMessage.destroy({ where: { disputeId: testDisputeId } })
+      if (testDisputeId) {
+        await Dispute.destroy({ where: { id: testDisputeId } })
+      }
+      if (testDisputeMissionId) {
+        await Mission.destroy({ where: { id: testDisputeMissionId } })
+      }
+    })
+
+    // ─── GET /api/admin/disputes/:id ───
+
+    describe('GET /api/admin/disputes/:id', () => {
+      it('returns dispute detail with messages and mission context', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}`, {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.success).toBe(true)
+        expect(body.data.id).toBe(testDisputeId)
+        expect(body.data.reason).toBe('Work quality not as agreed')
+        expect(body.data.status).toBe('open')
+        expect(body.data.mission).toBeDefined()
+        expect(body.data.mission.id).toBe(testDisputeMissionId)
+        expect(body.data.initiator).toBeDefined()
+        expect(body.data.messages).toBeDefined()
+        expect(Array.isArray(body.data.messages)).toBe(true)
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999', {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+
+        expect(res.status).toBe(404)
+      })
+
+      it('returns 422 for invalid ID', async () => {
+        const res = await app.request('/api/admin/disputes/abc', {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+
+        expect(res.status).toBe(422)
+      })
+    })
+
+    // ─── POST /api/admin/disputes ───
+
+    describe('POST /api/admin/disputes', () => {
+      it('creates dispute with valid data', async () => {
+        const res = await app.request('/api/admin/disputes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            missionId: testDisputeMissionId,
+            initiatedBy: agentId,
+            reason: 'Payment not received',
+          }),
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(201)
+        expect(body.success).toBe(true)
+        expect(body.data.reason).toBe('Payment not received')
+        expect(body.data.status).toBe('open')
+        expect(body.data.mission.id).toBe(testDisputeMissionId)
+        expect(body.data.initiator.id).toBe(agentId)
+        expect(body.data.messages).toEqual([])
+
+        // Cleanup
+        await Dispute.destroy({ where: { id: body.data.id } })
+      })
+
+      it('returns 422 without required fields', async () => {
+        const res = await app.request('/api/admin/disputes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            missionId: testDisputeMissionId,
+            initiatedBy: agentId,
+          }),
+        })
+
+        expect(res.status).toBe(422)
+      })
+
+      it('returns 404 with non-existent missionId', async () => {
+        const res = await app.request('/api/admin/disputes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            missionId: 999999,
+            initiatedBy: agentId,
+            reason: 'Test reason',
+          }),
+        })
+
+        expect(res.status).toBe(404)
+      })
+
+      it('returns 404 with non-existent initiatedBy', async () => {
+        const res = await app.request('/api/admin/disputes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            missionId: testDisputeMissionId,
+            initiatedBy: 999999,
+            reason: 'Test reason',
+          }),
+        })
+
+        expect(res.status).toBe(404)
+      })
+    })
+
+    // ─── PUT /api/admin/disputes/:id ───
+
+    describe('PUT /api/admin/disputes/:id', () => {
+      it('updates dispute reason', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            reason: 'Updated reason: quality is worse than expected',
+          }),
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.success).toBe(true)
+        expect(body.data.reason).toBe('Updated reason: quality is worse than expected')
+
+        // Restore original reason for other tests
+        await Dispute.update({ reason: 'Work quality not as agreed' }, { where: { id: testDisputeId } })
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ reason: 'Test' }),
+        })
+
+        expect(res.status).toBe(404)
+      })
+
+      it('returns 422 when no valid fields provided', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({}),
+        })
+
+        expect(res.status).toBe(422)
+      })
+    })
+
+    // ─── DELETE /api/admin/disputes/:id ───
+
+    describe('DELETE /api/admin/disputes/:id', () => {
+      it('deletes dispute', async () => {
+        const dispute = await Dispute.create({
+          missionId: testDisputeMissionId,
+          initiatedBy: clientId,
+          reason: 'Dispute to delete',
+          status: 'open',
+        })
+
+        const res = await app.request(`/api/admin/disputes/${dispute.id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.success).toBe(true)
+
+        // Verify dispute no longer exists
+        const check = await Dispute.findByPk(dispute.id)
+        expect(check).toBeNull()
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999', {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+
+        expect(res.status).toBe(404)
+      })
+    })
+
+    // ─── PUT /api/admin/disputes/:id/resolve ───
+
+    describe('PUT /api/admin/disputes/:id/resolve', () => {
+      it('resolves dispute with resolution note', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/resolve`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            resolution: 'Issue resolved: partial refund issued',
+          }),
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.success).toBe(true)
+        expect(body.data.status).toBe('resolved')
+        expect(body.data.resolution).toBe('Issue resolved: partial refund issued')
+        expect(body.data.resolvedAt).not.toBeNull()
+
+        // Restore to open for other tests
+        await Dispute.update({ status: 'open', resolution: null, resolvedAt: null }, { where: { id: testDisputeId } })
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999/resolve', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ resolution: 'Test' }),
+        })
+
+        expect(res.status).toBe(404)
+      })
+
+      it('returns 422 without resolution', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/resolve`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({}),
+        })
+
+        expect(res.status).toBe(422)
+      })
+    })
+
+    // ─── PUT /api/admin/disputes/:id/escalate ───
+
+    describe('PUT /api/admin/disputes/:id/escalate', () => {
+      it('escalates dispute', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/escalate`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.success).toBe(true)
+        expect(body.data.status).toBe('escalated')
+
+        // Restore to open for other tests
+        await Dispute.update({ status: 'open' }, { where: { id: testDisputeId } })
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999/escalate', {
+          method: 'PUT',
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+
+        expect(res.status).toBe(404)
+      })
+    })
+
+    // ─── PATCH /api/admin/disputes/:id/status ───
+
+    describe('PATCH /api/admin/disputes/:id/status', () => {
+      it('updates dispute status to reconciling', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ status: 'reconciling' }),
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.success).toBe(true)
+        expect(body.data.status).toBe('reconciling')
+
+        // Restore to open for other tests
+        await Dispute.update({ status: 'open' }, { where: { id: testDisputeId } })
+      })
+
+      it('returns 422 for invalid status', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/status`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ status: 'invalid_status' }),
+        })
+
+        expect(res.status).toBe(422)
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999/status', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ status: 'reconciling' }),
+        })
+
+        expect(res.status).toBe(404)
+      })
+    })
+
+    // ─── POST /api/admin/disputes/:id/messages ───
+
+    describe('POST /api/admin/disputes/:id/messages', () => {
+      let createdMessageId: number
+
+      it('sends message in dispute room', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({
+            content: 'We are reviewing this case.',
+          }),
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(201)
+        expect(body.success).toBe(true)
+        expect(body.data.content).toBe('We are reviewing this case.')
+        expect(body.data.disputeId).toBe(testDisputeId)
+        expect(body.data.senderId).toBe(adminId)
+        expect(body.data.sender).toBeDefined()
+        expect(body.data.sender.id).toBe(adminId)
+        expect(body.data.sender.firstName).toBe('Admin')
+
+        createdMessageId = body.data.id
+      })
+
+      it('message persists and is returned in dispute detail', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}`, {
+          headers: { Authorization: `Bearer ${adminToken}` },
+        })
+        const body = await res.json()
+
+        expect(res.status).toBe(200)
+        expect(body.data.messages.length).toBeGreaterThanOrEqual(1)
+        const msg = body.data.messages.find((m: any) => m.id === createdMessageId)
+        expect(msg).toBeDefined()
+        expect(msg.content).toBe('We are reviewing this case.')
+
+        // Cleanup
+        if (createdMessageId) {
+          await DisputeMessage.destroy({ where: { id: createdMessageId } })
+        }
+      })
+
+      it('returns 422 without content', async () => {
+        const res = await app.request(`/api/admin/disputes/${testDisputeId}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({}),
+        })
+
+        expect(res.status).toBe(422)
+      })
+
+      it('returns 404 for non-existent dispute', async () => {
+        const res = await app.request('/api/admin/disputes/999999/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+          body: JSON.stringify({ content: 'Test' }),
+        })
+
+        expect(res.status).toBe(404)
       })
     })
   })

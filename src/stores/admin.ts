@@ -402,7 +402,7 @@ export const useAdminStore = defineStore('admin', () => {
 
   // ─── Disputes ───
 
-  async function fetchDisputes(params?: { page?: number; limit?: number; status?: string }) {
+  async function fetchDisputes(params?: { page?: number; limit?: number; status?: string; search?: string }) {
     setLoading('disputes', true)
     error.value = null
     try {
@@ -431,6 +431,40 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
+  async function createDispute(data: { missionId: number; initiatedBy: number; reason: string }) {
+    try {
+      const response = await adminApi.createDispute(data) as ApiResponse<AdminDispute>
+      disputes.value.unshift(response.data!)
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to create dispute'
+      throw err
+    }
+  }
+
+  async function updateDispute(id: string, data: { reason?: string; status?: string; resolution?: string }) {
+    try {
+      const response = await adminApi.updateDispute(id, data) as ApiResponse<AdminDispute>
+      const idx = disputes.value.findIndex((d) => d.id === Number(id))
+      if (idx >= 0) disputes.value[idx] = response.data!
+      if (selectedDispute.value?.id === Number(id)) selectedDispute.value = response.data!
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to update dispute'
+      throw err
+    }
+  }
+
+  async function deleteDispute(id: string) {
+    try {
+      await adminApi.deleteDispute(id)
+      disputes.value = disputes.value.filter((d) => d.id !== Number(id))
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to delete dispute'
+      throw err
+    }
+  }
+
   async function resolveDispute(id: string, resolution: string) {
     try {
       const response = await adminApi.resolveDispute(id, resolution) as ApiResponse<AdminDispute>
@@ -438,6 +472,41 @@ export const useAdminStore = defineStore('admin', () => {
       return response.data
     } catch (err: any) {
       error.value = err.response?.data?.error || err.message || 'Failed to resolve dispute'
+      throw err
+    }
+  }
+
+  async function escalateDispute(id: string) {
+    try {
+      const response = await adminApi.escalateDispute(id) as ApiResponse<AdminDispute>
+      selectedDispute.value = { ...selectedDispute.value!, ...response.data! }
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to escalate dispute'
+      throw err
+    }
+  }
+
+  async function updateDisputeStatus(id: string, status: string) {
+    try {
+      const response = await adminApi.updateDisputeStatus(id, status) as ApiResponse<AdminDispute>
+      selectedDispute.value = { ...selectedDispute.value!, ...response.data! }
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to update dispute status'
+      throw err
+    }
+  }
+
+  async function sendDisputeMessage(id: string, content: string) {
+    try {
+      const response = await adminApi.sendDisputeMessage(id, content) as ApiResponse<any>
+      if (selectedDispute.value?.id === Number(id)) {
+        selectedDispute.value.messages = [...(selectedDispute.value.messages || []), response.data!]
+      }
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to send message'
       throw err
     }
   }
@@ -501,7 +570,7 @@ export const useAdminStore = defineStore('admin', () => {
     fetchUsers, fetchUser, createUser, updateUser, deactivateUser, activateUser, deleteUser,
     fetchMissions, fetchMission, createMission, updateMission, deleteMission, updateMissionStatus,
     fetchPayments, fetchPayment, createPayment, updatePayment, deletePayment, updatePaymentStatus,
-    fetchDisputes, fetchDispute, resolveDispute,
+    fetchDisputes, fetchDispute, createDispute, updateDispute, deleteDispute, resolveDispute, escalateDispute, updateDisputeStatus, sendDisputeMessage,
     fetchPlans, createPlan, updatePlan, deletePlan,
   }
 })

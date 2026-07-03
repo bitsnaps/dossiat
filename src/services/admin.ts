@@ -121,7 +121,7 @@ export function updatePaymentStatus(id: string, status: string) {
 
 // ─── Disputes ───
 
-export function getDisputes(params?: { page?: number; limit?: number; status?: string }) {
+export function getDisputes(params?: { page?: number; limit?: number; status?: string; search?: string }) {
   return get('/admin/disputes', { params })
 }
 
@@ -129,8 +129,32 @@ export function getDispute(id: string) {
   return get(`/admin/disputes/${id}`)
 }
 
+export function createDispute(data: { missionId: number; initiatedBy: number; reason: string }) {
+  return post('/admin/disputes', data)
+}
+
+export function updateDispute(id: string, data: { reason?: string; status?: string; resolution?: string }) {
+  return put(`/admin/disputes/${id}`, data)
+}
+
+export function deleteDispute(id: string) {
+  return del(`/admin/disputes/${id}`)
+}
+
 export function resolveDispute(id: string, resolution: string) {
   return put(`/admin/disputes/${id}/resolve`, { resolution })
+}
+
+export function escalateDispute(id: string) {
+  return put(`/admin/disputes/${id}/escalate`)
+}
+
+export function updateDisputeStatus(id: string, status: string) {
+  return patch(`/admin/disputes/${id}/status`, { status })
+}
+
+export function sendDisputeMessage(id: string, content: string) {
+  return post(`/admin/disputes/${id}/messages`, { content })
 }
 
 // ─── Subscription Plans ───

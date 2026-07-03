@@ -276,6 +276,40 @@ describe('Admin Service', () => {
     })
   })
 
+  describe('createDispute()', () => {
+    it('calls POST /admin/disputes with data', async () => {
+      mockPost.mockResolvedValueOnce({ success: true, data: { id: 1, reason: 'Issue' } } as any)
+
+      const data = { missionId: 1, initiatedBy: 2, reason: 'Issue' }
+      const result = await admin.createDispute(data)
+
+      expect(mockPost).toHaveBeenCalledWith('/admin/disputes', data)
+      expect(result).toEqual({ success: true, data: { id: 1, reason: 'Issue' } })
+    })
+  })
+
+  describe('updateDispute()', () => {
+    it('calls PUT /admin/disputes/:id with data', async () => {
+      mockPut.mockResolvedValueOnce({ success: true, data: { id: 1, reason: 'Updated' } } as any)
+
+      const result = await admin.updateDispute('1', { reason: 'Updated' })
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/disputes/1', { reason: 'Updated' })
+      expect(result).toEqual({ success: true, data: { id: 1, reason: 'Updated' } })
+    })
+  })
+
+  describe('deleteDispute()', () => {
+    it('calls DELETE /admin/disputes/:id', async () => {
+      mockDel.mockResolvedValueOnce({ success: true } as any)
+
+      const result = await admin.deleteDispute('1')
+
+      expect(mockDel).toHaveBeenCalledWith('/admin/disputes/1')
+      expect(result).toEqual({ success: true })
+    })
+  })
+
   describe('resolveDispute()', () => {
     it('calls PUT /admin/disputes/:id/resolve', async () => {
       mockPut.mockResolvedValueOnce({ success: true } as any)
@@ -283,6 +317,36 @@ describe('Admin Service', () => {
       await admin.resolveDispute('1', 'Issue resolved by admin')
 
       expect(mockPut).toHaveBeenCalledWith('/admin/disputes/1/resolve', { resolution: 'Issue resolved by admin' })
+    })
+  })
+
+  describe('escalateDispute()', () => {
+    it('calls PUT /admin/disputes/:id/escalate', async () => {
+      mockPut.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.escalateDispute('1')
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/disputes/1/escalate')
+    })
+  })
+
+  describe('updateDisputeStatus()', () => {
+    it('calls PATCH /admin/disputes/:id/status', async () => {
+      mockPatch.mockResolvedValueOnce({ success: true } as any)
+
+      await admin.updateDisputeStatus('1', 'reconciling')
+
+      expect(mockPatch).toHaveBeenCalledWith('/admin/disputes/1/status', { status: 'reconciling' })
+    })
+  })
+
+  describe('sendDisputeMessage()', () => {
+    it('calls POST /admin/disputes/:id/messages', async () => {
+      mockPost.mockResolvedValueOnce({ success: true, data: { id: 1, content: 'Hello' } } as any)
+
+      await admin.sendDisputeMessage('1', 'Hello')
+
+      expect(mockPost).toHaveBeenCalledWith('/admin/disputes/1/messages', { content: 'Hello' })
     })
   })
 

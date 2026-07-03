@@ -5,7 +5,7 @@ import BBadge from '@/components/base/BBadge.vue'
 
 interface Props {
   status: string
-  type?: 'mission' | 'payment' | 'subscription' | 'role'
+  type?: 'mission' | 'payment' | 'subscription' | 'role' | 'dispute'
   size?: 'sm' | 'md'
 }
 
@@ -49,11 +49,19 @@ const roleVariantMap: Record<string, string> = {
   client: 'success',
 }
 
+const disputeVariantMap: Record<string, string> = {
+  open: 'info',
+  reconciling: 'warning',
+  resolved: 'success',
+  escalated: 'danger',
+}
+
 const variantMap: Record<string, Record<string, string>> = {
   mission: missionVariantMap,
   payment: paymentVariantMap,
   subscription: subscriptionVariantMap,
   role: roleVariantMap,
+  dispute: disputeVariantMap,
 }
 
 const variant = computed(() => {

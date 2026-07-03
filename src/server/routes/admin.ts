@@ -550,10 +550,16 @@ admin.get('/disputes', async (c) => {
   const limit = parseInt(c.req.query('limit') || '20')
   const offset = (page - 1) * limit
   const status = c.req.query('status') || ''
+  const search = c.req.query('search') || ''
 
   const where: any = {}
   if (status) {
     where.status = status
+  }
+  if (search) {
+    where[Op.or] = [
+      { reason: { [Op.like]: `%${search}%` } },
+    ]
   }
 
   const { count, rows } = await Dispute.findAndCountAll({
@@ -589,6 +595,102 @@ admin.get('/disputes/:id', async (c) => {
   return successResponse(c, dispute)
 })
 
+// ─── POST /api/admin/disputes ───
+admin.post('/disputes',
+  validateRequest({
+    body: {
+      missionId: validators.required(),
+      initiatedBy: validators.required(),
+      reason: validators.required(),
+    },
+  }),
+  async (c) => {
+    const { missionId, initiatedBy, reason } = await c.req.json()
+
+    const mission = await Mission.findByPk(missionId)
+    if (!mission) throw new AppError('Mission not found', 404)
+
+    const initiator = await User.findByPk(initiatedBy)
+    if (!initiator) throw new AppError('Initiator user not found', 404)
+
+    const dispute = await Dispute.create({
+      missionId,
+      initiatedBy,
+      reason,
+      status: 'open',
+    })
+
+    const { DisputeMessage } = await import('@/server/database/models')
+
+    const result = await Dispute.findByPk(dispute.id, {
+      include: [
+        { model: Mission, as: 'mission', attributes: ['id', 'title'] },
+        { model: User, as: 'initiator', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: DisputeMessage, as: 'messages', include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'email'] }] },
+      ],
+    })
+
+    return successResponse(c, result, 'Dispute created', 201)
+  }
+)
+
+// ─── PUT /api/admin/disputes/:id ───
+admin.put('/disputes/:id',
+  validateRequest({
+    body: {
+      status: validators.isIn(['open', 'reconciling', 'resolved', 'escalated']),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
+
+    const dispute = await Dispute.findByPk(id)
+    if (!dispute) throw new AppError('Dispute not found', 404)
+
+    const body = await c.req.json()
+    const updates: any = {}
+    if (body.reason !== undefined) updates.reason = body.reason
+    if (body.status !== undefined) updates.status = body.status
+    if (body.resolution !== undefined) updates.resolution = body.resolution
+
+    if (Object.keys(updates).length === 0) {
+      throw new AppError('No valid fields to update', 422)
+    }
+
+    if (body.status === 'resolved') {
+      updates.resolvedAt = new Date()
+    }
+
+    await dispute.update(updates)
+
+    const { DisputeMessage } = await import('@/server/database/models')
+
+    const updated = await Dispute.findByPk(id, {
+      include: [
+        { model: Mission, as: 'mission', attributes: ['id', 'title', 'status', 'agentId', 'clientId'] },
+        { model: User, as: 'initiator', attributes: ['id', 'firstName', 'lastName', 'email'] },
+        { model: DisputeMessage, as: 'messages', include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'email'] }] },
+      ],
+    })
+
+    return successResponse(c, updated, 'Dispute updated')
+  }
+)
+
+// ─── DELETE /api/admin/disputes/:id ───
+admin.delete('/disputes/:id', async (c) => {
+  const id = parseInt(c.req.param('id')!)
+  if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
+
+  const dispute = await Dispute.findByPk(id)
+  if (!dispute) throw new AppError('Dispute not found', 404)
+
+  await dispute.destroy()
+
+  return successResponse(c, { id }, 'Dispute deleted')
+})
+
 // ─── PUT /api/admin/disputes/:id/resolve ───
 admin.put('/disputes/:id/resolve',
   validateRequest({
@@ -612,6 +714,86 @@ admin.put('/disputes/:id/resolve',
     })
 
     return successResponse(c, dispute, 'Dispute resolved')
+  }
+)
+
+// ─── PUT /api/admin/disputes/:id/escalate ───
+admin.put('/disputes/:id/escalate', async (c) => {
+  const id = parseInt(c.req.param('id')!)
+  if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
+
+  const dispute = await Dispute.findByPk(id)
+  if (!dispute) throw new AppError('Dispute not found', 404)
+
+  await dispute.update({ status: 'escalated' })
+
+  return successResponse(c, dispute, 'Dispute escalated')
+})
+
+// ─── PATCH /api/admin/disputes/:id/status ───
+admin.patch('/disputes/:id/status',
+  validateRequest({
+    body: {
+      status: validators.required(),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
+
+    const dispute = await Dispute.findByPk(id)
+    if (!dispute) throw new AppError('Dispute not found', 404)
+
+    const { status } = await c.req.json()
+    const validStatuses = ['open', 'reconciling', 'resolved', 'escalated']
+    if (!validStatuses.includes(status)) {
+      throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 422)
+    }
+
+    const updates: any = { status }
+    if (status === 'resolved') {
+      updates.resolvedAt = new Date()
+    }
+
+    await dispute.update(updates)
+
+    return successResponse(c, dispute, 'Dispute status updated')
+  }
+)
+
+// ─── POST /api/admin/disputes/:id/messages ───
+admin.post('/disputes/:id/messages',
+  validateRequest({
+    body: {
+      content: validators.required(),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid dispute ID', 422)
+
+    const dispute = await Dispute.findByPk(id)
+    if (!dispute) throw new AppError('Dispute not found', 404)
+
+    const { content } = await c.req.json()
+
+    // Get the admin user from the auth context
+    const authUser = (c as any).get('auth')
+    if (!authUser) throw new AppError('Unauthorized', 401)
+
+    const { DisputeMessage } = await import('@/server/database/models')
+
+    const message = await DisputeMessage.create({
+      disputeId: id,
+      senderId: authUser.userId,
+      content,
+    })
+
+    const result = await DisputeMessage.findByPk(message.id, {
+      include: [{ model: User, as: 'sender', attributes: ['id', 'firstName', 'lastName', 'email'] }],
+    })
+
+    return successResponse(c, result, 'Message sent', 201)
   }
 )
 
