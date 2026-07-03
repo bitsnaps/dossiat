@@ -10,6 +10,20 @@ export async function initDevDatabase() {
   if (initialized) return
   initialized = true
 
+  // Clean up stale backup tables left over from previous failed sync({ alter: true }) attempts.
+  // SQLite's ALTER TABLE workaround creates *_backup tables; if a prior run crashed mid-alter
+  // those tables persist and cause UNIQUE constraint errors on the next sync.
+  const dialect = sequelize.getDialect()
+  if (dialect === 'sqlite') {
+    const [backupTables] = await sequelize.query(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%_backup'"
+    )
+    for (const row of backupTables as any[]) {
+      await sequelize.query(`DROP TABLE IF EXISTS "${row.name}"`)
+      console.log(`[dev-init] Dropped stale backup table: ${row.name}`)
+    }
+  }
+
   // Create tables if they don't exist (safe for SQLite dev)
   await sequelize.sync({ alter: true })
 
