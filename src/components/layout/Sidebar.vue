@@ -23,6 +23,7 @@ const emit = defineEmits<{ toggle: []; 'close-mobile': [] }>()
 const agentLinks = [
   { to: '/app/dashboard', icon: 'bi-grid-1x2', label: 'layout.sidebar.dashboard' },
   { to: '/app/missions', icon: 'bi-clipboard-check', label: 'layout.sidebar.missions' },
+  { to: '/app/missions/bulk', icon: 'bi-file-earmark-spreadsheet', label: 'layout.sidebar.bulkMissions', roles: ['client'] },
   { to: '/app/messages', icon: 'bi-chat-dots', label: 'layout.sidebar.messages' },
   { to: '/app/discover', icon: 'bi-people', label: 'layout.sidebar.discover', roles: ['client'] },
 ]

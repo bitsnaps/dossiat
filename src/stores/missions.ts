@@ -279,6 +279,24 @@ export const useMissionsStore = defineStore('missions', () => {
     }
   }
 
+  async function createBulkMissions(data: CreateMissionData[]) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await apiCreateBulkMissions(data) as ApiResponse<{ count: number; missions: Mission[] }>
+      const created = response.data!.missions || []
+      if (created.length) {
+        missions.value = [...created, ...missions.value]
+      }
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to create missions in bulk'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     missions,
     currentMission,
@@ -302,5 +320,6 @@ export const useMissionsStore = defineStore('missions', () => {
     updateMissionStatus,
     fetchAttachments,
     uploadAttachment,
+    createBulkMissions,
   }
 })
