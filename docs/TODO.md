@@ -510,7 +510,8 @@
 - [x] Write tests for admin user management routes in `tests/server/routes/admin.spec.ts` (19 tests)
 - [x] Enhance `GET /api/admin/users` — add search, role filter, and pagination params
 - [x] Create `GET /api/admin/users/:id` — get user detail with associated profiles
-- [x] Create `PUT /api/admin/users/:id` — update user role, emailVerified status
+- [x] Create `PUT /api/admin/users/:id` — update user role, emailVerified status, firstName, lastName, email
+- [x] Create `PATCH /api/admin/users/:id/reset-password` — admin reset user password (invalidates refresh tokens)
 - [x] Create `DELETE /api/admin/users/:id` — deactivate user account
 - [x] Create `GET /api/admin/missions` — list all missions with filters (status, date range, search)
 - [x] Create `GET /api/admin/missions/:id` — get mission detail with participants and payments

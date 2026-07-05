@@ -44,6 +44,23 @@ const newUser = ref({
   password: '',
 })
 
+// ─── Edit User Modal ───
+const showEditModal = ref(false)
+const updating = ref(false)
+const editingId = ref<number | null>(null)
+const editForm = ref({
+  firstName: '',
+  lastName: '',
+  email: '',
+  role: 'client',
+})
+
+// ─── Reset Password Modal ───
+const showResetModal = ref(false)
+const resetting = ref(false)
+const resettingId = ref<number | null>(null)
+const resetForm = ref({ newPassword: '', confirmPassword: '' })
+
 async function loadData() {
   await adminStore.fetchUsers({ page: page.value, limit: perPage.value, search: search.value || undefined, role: roleFilter.value || undefined })
   total.value = adminStore.pagination.users?.total || 0
@@ -79,6 +96,68 @@ async function handleCreate() {
     toast.error(t('admin.users.createError'))
   } finally {
     creating.value = false
+  }
+}
+
+function openEditModal(row: any) {
+  editingId.value = row.id
+  editForm.value = {
+    firstName: row.firstName,
+    lastName: row.lastName,
+    email: row.email,
+    role: row.role,
+  }
+  showEditModal.value = true
+}
+
+async function handleEditSave() {
+  if (!editingId.value) return
+  if (!editForm.value.firstName || !editForm.value.lastName || !editForm.value.email) {
+    toast.error(t('admin.users.updateError'))
+    return
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.value.email)) {
+    toast.error(t('admin.users.emailInvalid'))
+    return
+  }
+  updating.value = true
+  try {
+    await adminStore.updateUser(String(editingId.value), { ...editForm.value })
+    toast.success(t('admin.users.updated'))
+    showEditModal.value = false
+    await loadData()
+  } catch {
+    toast.error(t('admin.users.updateError'))
+  } finally {
+    updating.value = false
+  }
+}
+
+function openResetModal(row: any) {
+  resettingId.value = row.id
+  resetForm.value = { newPassword: '', confirmPassword: '' }
+  showResetModal.value = true
+}
+
+async function handleResetPassword() {
+  if (!resettingId.value) return
+  if (resetForm.value.newPassword.length < 8) {
+    toast.error(t('admin.users.passwordMinLength'))
+    return
+  }
+  if (resetForm.value.newPassword !== resetForm.value.confirmPassword) {
+    toast.error(t('admin.users.passwordMismatch'))
+    return
+  }
+  resetting.value = true
+  try {
+    await adminStore.resetUserPassword(String(resettingId.value), resetForm.value.newPassword)
+    toast.success(t('admin.users.passwordReset'))
+    showResetModal.value = false
+  } catch {
+    toast.error(t('admin.users.passwordResetError'))
+  } finally {
+    resetting.value = false
   }
 }
 
@@ -159,6 +238,20 @@ async function handleDelete(id: number) {
             {{ t('admin.users.view') }}
           </RouterLink>
           <BButton
+            size="sm"
+            variant="outline"
+            @click="openEditModal(row)"
+          >
+            {{ t('admin.users.edit') }}
+          </BButton>
+          <BButton
+            size="sm"
+            variant="outline"
+            @click="openResetModal(row)"
+          >
+            {{ t('admin.users.resetPassword') }}
+          </BButton>
+          <BButton
             v-if="row.emailVerified"
             size="sm"
             variant="danger"
@@ -230,6 +323,66 @@ async function handleDelete(id: number) {
           {{ creating ? t('admin.users.creating') : t('admin.users.create') }}
         </BButton>
         <BButton outline @click="showCreateModal = false">
+          {{ t('admin.users.cancel') }}
+        </BButton>
+      </template>
+    </BModal>
+
+    <!-- Edit User Modal -->
+    <BModal v-model="showEditModal" :title="t('admin.users.editUser')">
+      <div class="ds-form">
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.firstName') }}</label>
+          <BInput v-model="editForm.firstName" :placeholder="t('admin.users.firstNamePlaceholder')" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.lastName') }}</label>
+          <BInput v-model="editForm.lastName" :placeholder="t('admin.users.lastNamePlaceholder')" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.email') }}</label>
+          <BInput v-model="editForm.email" type="email" placeholder="user@example.com" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.role') }}</label>
+          <BSelect
+            v-model="editForm.role"
+            :options="[
+              { value: 'agent', label: 'Agent' },
+              { value: 'client', label: 'Client' },
+              { value: 'admin', label: 'Admin' },
+            ]"
+          />
+        </div>
+      </div>
+      <template #footer>
+        <BButton variant="accent" :disabled="updating" @click="handleEditSave">
+          {{ updating ? t('admin.users.updating') : t('admin.users.save') }}
+        </BButton>
+        <BButton outline @click="showEditModal = false">
+          {{ t('admin.users.cancel') }}
+        </BButton>
+      </template>
+    </BModal>
+
+    <!-- Reset Password Modal -->
+    <BModal v-model="showResetModal" :title="t('admin.users.resetPasswordTitle')">
+      <p class="ds-admin-detail__hint">{{ t('admin.users.resetPasswordHint') }}</p>
+      <div class="ds-form">
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.newPassword') }}</label>
+          <BInput v-model="resetForm.newPassword" type="password" :placeholder="t('admin.users.passwordPlaceholder')" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.confirmPassword') }}</label>
+          <BInput v-model="resetForm.confirmPassword" type="password" :placeholder="t('admin.users.passwordPlaceholder')" />
+        </div>
+      </div>
+      <template #footer>
+        <BButton variant="accent" :disabled="resetting" @click="handleResetPassword">
+          {{ resetting ? t('admin.users.resetting') : t('admin.users.resetPassword') }}
+        </BButton>
+        <BButton outline @click="showResetModal = false">
           {{ t('admin.users.cancel') }}
         </BButton>
       </template>

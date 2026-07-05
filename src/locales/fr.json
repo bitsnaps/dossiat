@@ -219,7 +219,24 @@
       "updated": "Utilisateur mis à jour avec succès.",
       "userDetail": "Détail utilisateur",
       "verified": "Vérifié",
-      "view": "Voir"
+      "view": "Voir",
+      "editUser": "Modifier l'utilisateur",
+      "edit": "Modifier",
+      "editProfile": "Modifier le profil",
+      "editProfileHint": "Mettre à jour les informations personnelles de l'utilisateur.",
+      "resetPassword": "Réinitialiser le mot de passe",
+      "resetPasswordTitle": "Réinitialiser le mot de passe",
+      "resetPasswordHint": "Définissez un nouveau mot de passe pour cet utilisateur. Il devra se reconnecter.",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "passwordMinLength": "Le mot de passe doit contenir au moins 8 caractères.",
+      "passwordMismatch": "Les mots de passe ne correspondent pas.",
+      "resetting": "Réinitialisation...",
+      "updating": "Mise à jour...",
+      "passwordReset": "Mot de passe réinitialisé avec succès.",
+      "passwordResetError": "Échec de la réinitialisation du mot de passe.",
+      "emailInvalid": "Format d'email invalide.",
+      "emailTaken": "Un utilisateur avec cet email existe déjà."
     }
   },
   "agentDiscovery": {

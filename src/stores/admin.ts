@@ -168,7 +168,13 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  async function updateUser(id: string, data: { role?: string; emailVerified?: boolean }) {
+  async function updateUser(id: string, data: {
+    firstName?: string
+    lastName?: string
+    email?: string
+    role?: string
+    emailVerified?: boolean
+  }) {
     try {
       const response = await adminApi.updateUser(id, data) as ApiResponse<AdminUser>
       selectedUser.value = response.data!
@@ -177,6 +183,16 @@ export const useAdminStore = defineStore('admin', () => {
       return response.data
     } catch (err: any) {
       error.value = err.response?.data?.error || err.message || 'Failed to update user'
+      throw err
+    }
+  }
+
+  async function resetUserPassword(id: string, password: string) {
+    try {
+      const response = await adminApi.resetUserPassword(id, password) as ApiResponse<{ id: number }>
+      return response.data
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to reset password'
       throw err
     }
   }
@@ -567,7 +583,7 @@ export const useAdminStore = defineStore('admin', () => {
     disputes, selectedDispute,
     plans, stats, loading, error, pagination,
     fetchStats,
-    fetchUsers, fetchUser, createUser, updateUser, deactivateUser, activateUser, deleteUser,
+    fetchUsers, fetchUser, createUser, updateUser, resetUserPassword, deactivateUser, activateUser, deleteUser,
     fetchMissions, fetchMission, createMission, updateMission, deleteMission, updateMissionStatus,
     fetchPayments, fetchPayment, createPayment, updatePayment, deletePayment, updatePaymentStatus,
     fetchDisputes, fetchDispute, createDispute, updateDispute, deleteDispute, resolveDispute, escalateDispute, updateDisputeStatus, sendDisputeMessage,

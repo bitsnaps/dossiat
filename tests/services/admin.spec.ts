@@ -87,6 +87,26 @@ describe('Admin Service', () => {
       expect(mockPut).toHaveBeenCalledWith('/admin/users/1', { role: 'agent', emailVerified: true })
       expect(result).toEqual({ success: true })
     })
+
+    it('sends firstName, lastName and email in payload', async () => {
+      mockPut.mockResolvedValueOnce({ success: true } as any)
+
+      const payload = { firstName: 'New', lastName: 'Name', email: 'new@test.com' }
+      await admin.updateUser('1', payload)
+
+      expect(mockPut).toHaveBeenCalledWith('/admin/users/1', payload)
+    })
+  })
+
+  describe('resetUserPassword()', () => {
+    it('calls PATCH /admin/users/:id/reset-password with password', async () => {
+      mockPatch.mockResolvedValueOnce({ success: true, data: { id: 1 } } as any)
+
+      const result = await admin.resetUserPassword('1', 'NewPass456!')
+
+      expect(mockPatch).toHaveBeenCalledWith('/admin/users/1/reset-password', { password: 'NewPass456!' })
+      expect(result).toEqual({ success: true, data: { id: 1 } })
+    })
   })
 
   describe('deactivateUser()', () => {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { Op } from 'sequelize'
-import { User, AgentProfile, ClientProfile, Mission, Dispute, Payment, SubscriptionPlan } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, Mission, Dispute, Payment, SubscriptionPlan, RefreshToken } from '@/server/database/models'
 import { successResponse, paginatedResponse, errorResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { adminOnly } from '@/server/middleware/roleGuard'
@@ -100,7 +100,11 @@ admin.post('/users',
 admin.put('/users/:id',
   validateRequest({
     body: {
+      firstName: validators.minLength(1),
+      lastName: validators.minLength(1),
+      email: validators.email(),
       role: validators.isIn(['agent', 'client', 'admin']),
+      emailVerified: validators.isBoolean(),
     },
   }),
   async (c) => {
@@ -113,8 +117,24 @@ admin.put('/users/:id',
     const updates: any = {}
     const body = await c.req.json()
 
+    if (body.firstName !== undefined) updates.firstName = body.firstName
+    if (body.lastName !== undefined) updates.lastName = body.lastName
     if (body.role !== undefined) updates.role = body.role
     if (body.emailVerified !== undefined) updates.emailVerified = body.emailVerified
+
+    if (body.email !== undefined) {
+      const normalizedEmail = String(body.email).toLowerCase()
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)) {
+        throw new AppError('Invalid email format', 422)
+      }
+      const existing = await User.findOne({
+        where: { email: normalizedEmail, id: { [Op.ne]: id } },
+      })
+      if (existing) {
+        throw new AppError('A user with this email already exists', 409)
+      }
+      updates.email = normalizedEmail
+    }
 
     if (Object.keys(updates).length === 0) {
       throw new AppError('No valid fields to update', 422)
@@ -131,6 +151,36 @@ admin.put('/users/:id',
     })
 
     return successResponse(c, updated, 'User updated')
+  }
+)
+
+// ─── PATCH /api/admin/users/:id/reset-password ───
+admin.patch('/users/:id/reset-password',
+  validateRequest({
+    body: {
+      password: validators.required(),
+    },
+  }),
+  async (c) => {
+    const id = parseInt(c.req.param('id')!)
+    if (isNaN(id)) throw new AppError('Invalid user ID', 422)
+
+    const user = await User.findByPk(id)
+    if (!user) throw new AppError('User not found', 404)
+
+    const { password } = await c.req.json()
+    if (typeof password !== 'string' || password.length < 8) {
+      throw new AppError('Password must be at least 8 characters', 422)
+    }
+
+    const bcrypt = await import('bcryptjs')
+    const passwordHash = await bcrypt.hash(password, 12)
+    await user.update({ passwordHash })
+
+    // Invalidate existing refresh tokens to force re-login
+    await RefreshToken.destroy({ where: { userId: id } })
+
+    return successResponse(c, { id }, 'Password reset successfully')
   }
 )
 

@@ -352,6 +352,198 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
 
       expect(res.status).toBe(404)
     })
+
+    it('updates firstName and lastName', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-name-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'OldFirst',
+        lastName: 'OldLast',
+        role: 'client',
+        emailVerified: false,
+      })
+
+      const res = await app.request(`/api/admin/users/${tempUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ firstName: 'NewFirst', lastName: 'NewLast' }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.firstName).toBe('NewFirst')
+      expect(body.data.lastName).toBe('NewLast')
+
+      await tempUser.destroy()
+    })
+
+    it('updates email and lowercases it', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-email-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'Email',
+        role: 'client',
+        emailVerified: false,
+      })
+
+      const newEmail = `UPDATED-${Date.now()}@test.com`
+      const res = await app.request(`/api/admin/users/${tempUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ email: newEmail }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.email).toBe(newEmail.toLowerCase())
+
+      await tempUser.destroy()
+    })
+
+    it('rejects invalid email format', async () => {
+      const res = await app.request(`/api/admin/users/${agentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ email: 'not-an-email' }),
+      })
+
+      expect(res.status).toBe(422)
+    })
+
+    it('rejects duplicate email', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-dup-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'Dup',
+        role: 'client',
+        emailVerified: false,
+      })
+
+      // Try to set email to the agent's email (already taken)
+      const res = await app.request(`/api/admin/users/${tempUser.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ email: agentEmail }),
+      })
+
+      expect(res.status).toBe(409)
+
+      await tempUser.destroy()
+    })
+
+    it('rejects empty update body', async () => {
+      const res = await app.request(`/api/admin/users/${agentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({}),
+      })
+
+      expect(res.status).toBe(422)
+    })
+  })
+
+  describe('PATCH /api/admin/users/:id/reset-password', () => {
+    it('resets the password and allows login with new password', async () => {
+      const passwordHash = await bcrypt.hash('OldPass123!', 12)
+      const tempUser = await User.create({
+        email: `temp-reset-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'Reset',
+        role: 'client',
+        emailVerified: true,
+      })
+
+      const res = await app.request(`/api/admin/users/${tempUser.id}/reset-password`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ password: 'NewPass456!' }),
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data).not.toHaveProperty('passwordHash')
+
+      // Verify the new password works
+      const updated = await User.findByPk(tempUser.id)
+      const valid = await bcrypt.compare('NewPass456!', updated!.passwordHash)
+      expect(valid).toBe(true)
+
+      await tempUser.destroy()
+    })
+
+    it('rejects password shorter than 8 chars', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-short-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'Short',
+        role: 'client',
+        emailVerified: true,
+      })
+
+      const res = await app.request(`/api/admin/users/${tempUser.id}/reset-password`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ password: 'short' }),
+      })
+
+      expect(res.status).toBe(422)
+
+      await tempUser.destroy()
+    })
+
+    it('returns 404 for non-existent user', async () => {
+      const res = await app.request('/api/admin/users/999999/reset-password', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ password: 'NewPass456!' }),
+      })
+
+      expect(res.status).toBe(404)
+    })
+
+    it('invalidates existing refresh tokens', async () => {
+      const passwordHash = await bcrypt.hash('Temp123!', 12)
+      const tempUser = await User.create({
+        email: `temp-tokens-${Date.now()}@test.com`,
+        passwordHash,
+        firstName: 'Temp',
+        lastName: 'Tokens',
+        role: 'client',
+        emailVerified: true,
+      })
+
+      // Create a refresh token for the user
+      await RefreshToken.create({
+        userId: tempUser.id,
+        token: 'existing-token-to-invalidate',
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      })
+
+      const res = await app.request(`/api/admin/users/${tempUser.id}/reset-password`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${adminToken}` },
+        body: JSON.stringify({ password: 'NewPass456!' }),
+      })
+
+      expect(res.status).toBe(200)
+
+      // Verify the refresh token was destroyed
+      const remaining = await RefreshToken.findOne({ where: { userId: tempUser.id } })
+      expect(remaining).toBeNull()
+
+      await tempUser.destroy()
+    })
   })
 
   describe('PATCH /api/admin/users/:id/deactivate', () => {

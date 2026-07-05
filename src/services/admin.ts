@@ -20,8 +20,18 @@ export function createUser(data: { email: string; firstName: string; lastName: s
   return post('/admin/users', data)
 }
 
-export function updateUser(id: string, data: { role?: string; emailVerified?: boolean }) {
+export function updateUser(id: string, data: {
+  firstName?: string
+  lastName?: string
+  email?: string
+  role?: string
+  emailVerified?: boolean
+}) {
   return put(`/admin/users/${id}`, data)
+}
+
+export function resetUserPassword(id: string, password: string) {
+  return patch(`/admin/users/${id}/reset-password`, { password })
 }
 
 export function deactivateUser(id: string) {

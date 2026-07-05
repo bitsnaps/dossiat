@@ -6,6 +6,8 @@ import { useAdminStore } from '@/stores/admin'
 import BCard from '@/components/base/BCard.vue'
 import BSelect from '@/components/base/BSelect.vue'
 import BButton from '@/components/base/BButton.vue'
+import BModal from '@/components/base/BModal.vue'
+import BInput from '@/components/base/BInput.vue'
 import StatusBadge from '@/components/common/StatusBadge.vue'
 import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 import { useConfirmDialog } from '@/composables/useConfirmDialog'
@@ -22,15 +24,87 @@ const userId = computed(() => route.params.id as string)
 const editingRole = ref(false)
 const selectedRole = ref('')
 
-onMounted(() => {
-  adminStore.fetchUser(userId.value)
+// ─── Edit Profile ───
+const showEditModal = ref(false)
+const updating = ref(false)
+const editForm = ref({
+  firstName: '',
+  lastName: '',
+  email: '',
+  role: 'client',
 })
+
+function openEditModal() {
+  const u = adminStore.selectedUser
+  if (!u) return
+  editForm.value = {
+    firstName: u.firstName,
+    lastName: u.lastName,
+    email: u.email,
+    role: u.role,
+  }
+  showEditModal.value = true
+}
+
+async function handleEditSave() {
+  if (!editForm.value.firstName || !editForm.value.lastName || !editForm.value.email) {
+    toast.error(t('admin.users.updateError'))
+    return
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(editForm.value.email)) {
+    toast.error(t('admin.users.emailInvalid'))
+    return
+  }
+  updating.value = true
+  try {
+    await adminStore.updateUser(userId.value, { ...editForm.value })
+    toast.success(t('admin.users.updated'))
+    showEditModal.value = false
+    await adminStore.fetchUser(userId.value)
+  } catch {
+    toast.error(t('admin.users.updateError'))
+  } finally {
+    updating.value = false
+  }
+}
+
+// ─── Reset Password ───
+const showResetModal = ref(false)
+const resetting = ref(false)
+const resetForm = ref({ newPassword: '', confirmPassword: '' })
+
+function openResetModal() {
+  resetForm.value = { newPassword: '', confirmPassword: '' }
+  showResetModal.value = true
+}
+
+async function handleResetPassword() {
+  if (resetForm.value.newPassword.length < 8) {
+    toast.error(t('admin.users.passwordMinLength'))
+    return
+  }
+  if (resetForm.value.newPassword !== resetForm.value.confirmPassword) {
+    toast.error(t('admin.users.passwordMismatch'))
+    return
+  }
+  resetting.value = true
+  try {
+    await adminStore.resetUserPassword(userId.value, resetForm.value.newPassword)
+    toast.success(t('admin.users.passwordReset'))
+    showResetModal.value = false
+  } catch {
+    toast.error(t('admin.users.passwordResetError'))
+  } finally {
+    resetting.value = false
+  }
+}
 
 async function saveRole() {
   try {
     await adminStore.updateUser(userId.value, { role: selectedRole.value })
     editingRole.value = false
     toast.success(t('admin.users.updated'))
+    await adminStore.fetchUser(userId.value)
   } catch {
     toast.error(t('admin.users.updateError'))
   }
@@ -42,6 +116,7 @@ async function handleDeactivate() {
   try {
     await adminStore.deactivateUser(userId.value)
     toast.success(t('admin.users.deactivated'))
+    await adminStore.fetchUser(userId.value)
   } catch {
     toast.error(t('admin.users.deactivateError'))
   }
@@ -53,6 +128,7 @@ async function handleActivate() {
   try {
     await adminStore.activateUser(userId.value)
     toast.success(t('admin.users.activated'))
+    await adminStore.fetchUser(userId.value)
   } catch {
     toast.error(t('admin.users.activateError'))
   }
@@ -69,6 +145,10 @@ async function handleDelete() {
     toast.error(t('admin.users.deleteError'))
   }
 }
+
+onMounted(() => {
+  adminStore.fetchUser(userId.value)
+})
 </script>
 
 <template>
@@ -102,6 +182,14 @@ async function handleDelete() {
       </BCard>
 
       <BCard class="ds-admin-detail__card">
+        <h3>{{ t('admin.users.editProfile') }}</h3>
+        <p class="ds-admin-detail__hint">{{ t('admin.users.editProfileHint') }}</p>
+        <BButton size="sm" outline @click="openEditModal">
+          <i class="bi bi-pencil" /> {{ t('admin.users.edit') }}
+        </BButton>
+      </BCard>
+
+      <BCard class="ds-admin-detail__card">
         <h3>{{ t('admin.users.manageRole') }}</h3>
         <div v-if="!editingRole" class="ds-admin-detail__role">
           <span>{{ t('admin.users.currentRole') }}: <strong>{{ adminStore.selectedUser.role }}</strong></span>
@@ -128,6 +216,13 @@ async function handleDelete() {
       <BCard class="ds-admin-detail__card">
         <h3>{{ t('admin.users.accountActions') }}</h3>
         <div class="ds-admin-detail__actions">
+          <BButton
+            size="sm"
+            variant="outline"
+            @click="openResetModal"
+          >
+            <i class="bi bi-key" /> {{ t('admin.users.resetPassword') }}
+          </BButton>
           <BButton
             v-if="adminStore.selectedUser.emailVerified"
             size="sm"
@@ -157,6 +252,66 @@ async function handleDelete() {
         </div>
       </BCard>
     </template>
+
+    <!-- Edit Profile Modal -->
+    <BModal v-model="showEditModal" :title="t('admin.users.editUser')">
+      <div class="ds-form">
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.firstName') }}</label>
+          <BInput v-model="editForm.firstName" :placeholder="t('admin.users.firstNamePlaceholder')" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.lastName') }}</label>
+          <BInput v-model="editForm.lastName" :placeholder="t('admin.users.lastNamePlaceholder')" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.email') }}</label>
+          <BInput v-model="editForm.email" type="email" placeholder="user@example.com" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.role') }}</label>
+          <BSelect
+            v-model="editForm.role"
+            :options="[
+              { value: 'agent', label: 'Agent' },
+              { value: 'client', label: 'Client' },
+              { value: 'admin', label: 'Admin' },
+            ]"
+          />
+        </div>
+      </div>
+      <template #footer>
+        <BButton variant="accent" :disabled="updating" @click="handleEditSave">
+          {{ updating ? t('admin.users.updating') : t('admin.users.save') }}
+        </BButton>
+        <BButton outline @click="showEditModal = false">
+          {{ t('admin.users.cancel') }}
+        </BButton>
+      </template>
+    </BModal>
+
+    <!-- Reset Password Modal -->
+    <BModal v-model="showResetModal" :title="t('admin.users.resetPasswordTitle')">
+      <p class="ds-admin-detail__hint">{{ t('admin.users.resetPasswordHint') }}</p>
+      <div class="ds-form">
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.newPassword') }}</label>
+          <BInput v-model="resetForm.newPassword" type="password" :placeholder="t('admin.users.passwordPlaceholder')" />
+        </div>
+        <div class="ds-form-group">
+          <label>{{ t('admin.users.confirmPassword') }}</label>
+          <BInput v-model="resetForm.confirmPassword" type="password" :placeholder="t('admin.users.passwordPlaceholder')" />
+        </div>
+      </div>
+      <template #footer>
+        <BButton variant="accent" :disabled="resetting" @click="handleResetPassword">
+          {{ resetting ? t('admin.users.resetting') : t('admin.users.resetPassword') }}
+        </BButton>
+        <BButton outline @click="showResetModal = false">
+          {{ t('admin.users.cancel') }}
+        </BButton>
+      </template>
+    </BModal>
 
     <ConfirmDialog
       :model-value="isConfirmVisible"

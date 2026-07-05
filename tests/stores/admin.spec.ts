@@ -7,6 +7,7 @@ vi.mock('@/services/admin', () => ({
   getUser: vi.fn(),
   createUser: vi.fn(),
   updateUser: vi.fn(),
+  resetUserPassword: vi.fn(),
   deactivateUser: vi.fn(),
   activateUser: vi.fn(),
   deleteUser: vi.fn(),
@@ -45,6 +46,7 @@ const mockGetUsers = vi.mocked(adminService.getUsers)
 const mockGetUser = vi.mocked(adminService.getUser)
 const mockCreateUser = vi.mocked(adminService.createUser)
 const mockUpdateUser = vi.mocked(adminService.updateUser)
+const mockResetUserPassword = vi.mocked(adminService.resetUserPassword)
 const mockDeactivateUser = vi.mocked(adminService.deactivateUser)
 const mockActivateUser = vi.mocked(adminService.activateUser)
 const mockDeleteUser = vi.mocked(adminService.deleteUser)
@@ -182,6 +184,38 @@ describe('Admin Store', () => {
       await store.updateUser('1', { role: 'agent' })
 
       expect(store.users[0].role).toBe('agent')
+    })
+
+    it('updates firstName, lastName and email', async () => {
+      mockUpdateUser.mockResolvedValueOnce({
+        data: { id: 1, firstName: 'New', lastName: 'Name', email: 'new@test.com', role: 'client' },
+      } as any)
+
+      const store = useAdminStore()
+      await store.updateUser('1', { firstName: 'New', lastName: 'Name', email: 'new@test.com' })
+
+      expect(mockUpdateUser).toHaveBeenCalledWith('1', { firstName: 'New', lastName: 'Name', email: 'new@test.com' })
+    })
+  })
+
+  describe('resetUserPassword()', () => {
+    it('calls the service with id and password', async () => {
+      mockResetUserPassword.mockResolvedValueOnce({
+        data: { id: 1 },
+      } as any)
+
+      const store = useAdminStore()
+      const result = await store.resetUserPassword('1', 'NewPass456!')
+
+      expect(mockResetUserPassword).toHaveBeenCalledWith('1', 'NewPass456!')
+      expect(result).toEqual({ id: 1 })
+    })
+
+    it('throws on failure', async () => {
+      mockResetUserPassword.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await expect(store.resetUserPassword('1', 'NewPass456!')).rejects.toThrow()
     })
   })
 
