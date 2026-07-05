@@ -458,7 +458,7 @@
 - [x] Implement recurrent mission auto-generation with proper date scheduling
 - [x] Implement seat limit enforcement per subscription tier
 - [x] Implement recurring mission limit per tier (10/month for Small Business, unlimited for others)
-- [ ] Implement CSV bulk mission creation for Enterprise tier
+- [x] Implement CSV bulk mission creation for Enterprise tier
 - [x] Implement agent billing cycle and invoice generation
 
 ---

@@ -3,14 +3,14 @@ import { Hono } from 'hono'
 import { SignJWT } from 'jose'
 import { authenticate, optionalAuth } from '@/server/middleware/auth'
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret')
+const secret = () => new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret')
 
 async function createToken(payload: Record<string, unknown>) {
   return new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('1h')
-    .sign(secret)
+    .sign(secret())
 }
 
 describe('auth middleware', () => {
