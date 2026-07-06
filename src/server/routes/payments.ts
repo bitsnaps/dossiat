@@ -43,13 +43,17 @@ payments.post('/missions/:id/payments',
     if (mission.agentId !== auth.userId && mission.clientId !== auth.userId && auth.role !== 'admin') {
       throw new AppError('Access denied', 403)
     }
+    if (mission.agentId === null) {
+      throw new AppError('Mission has no assigned agent', 400)
+    }
+    const agentId = mission.agentId
 
     const { gatewayFee, platformFee, netAmount } = calculateAllFees(Number(amount), method as PaymentMethod)
 
     const payment = await Payment.create({
       missionId,
       payerId: mission.clientId,
-      payeeId: mission.agentId,
+      payeeId: agentId,
       amount: Number(amount),
       currency: currency || mission.currency || 'USD',
       method,
@@ -60,7 +64,7 @@ payments.post('/missions/:id/payments',
     })
 
     // Notify the payee (agent) about the new payment
-    createNotification(mission.agentId, 'payment.recorded', 'Payment Recorded', `A payment of ${payment.amount} ${payment.currency} has been recorded for mission "${mission.title}"`, { missionId: mission.id, paymentId: payment.id })
+    createNotification(agentId, 'payment.recorded', 'Payment Recorded', `A payment of ${payment.amount} ${payment.currency} has been recorded for mission "${mission.title}"`, { missionId: mission.id, paymentId: payment.id })
 
     return successResponse(c, payment, 'Payment recorded', 201)
   }

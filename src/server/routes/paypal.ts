@@ -140,14 +140,15 @@ paypal.post('/capture',
     // Record the payment if missionId provided
     if (missionId) {
       const mission = await Mission.findByPk(missionId)
-      if (mission) {
+      if (mission && mission.agentId !== null) {
+        const agentId = mission.agentId
         const gatewayFee = captureAmount * 0.0349 + 0.49 // PayPal fee
         const platformFee = Math.max(1, captureAmount * 0.01)
 
         await Payment.create({
           missionId,
           payerId: auth.userId,
-          payeeId: mission.agentId,
+          payeeId: agentId,
           amount: captureAmount,
           currency: captureCurrency,
           method: 'paypal',
@@ -160,7 +161,7 @@ paypal.post('/capture',
           confirmedByPayee: true,
         })
 
-        createNotification(mission.agentId, 'payment.confirmed', 'Payment Confirmed', `A PayPal payment of ${captureAmount} ${captureCurrency} has been confirmed`, { missionId, orderId })
+        createNotification(agentId, 'payment.confirmed', 'Payment Confirmed', `A PayPal payment of ${captureAmount} ${captureCurrency} has been confirmed`, { missionId, orderId })
       }
     }
 

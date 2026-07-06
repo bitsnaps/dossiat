@@ -94,7 +94,9 @@ disputes.put('/:id/resolve',
     // Notify both parties about dispute resolution
     const mission = await Mission.findByPk(dispute.missionId)
     if (mission) {
-      createNotification(mission.agentId, 'dispute.resolved', 'Dispute Resolved', `Dispute on mission "${mission.title}" has been resolved`, { disputeId: dispute.id, missionId: mission.id })
+      if (mission.agentId !== null) {
+        createNotification(mission.agentId, 'dispute.resolved', 'Dispute Resolved', `Dispute on mission "${mission.title}" has been resolved`, { disputeId: dispute.id, missionId: mission.id })
+      }
       createNotification(mission.clientId, 'dispute.resolved', 'Dispute Resolved', `Dispute on mission "${mission.title}" has been resolved`, { disputeId: dispute.id, missionId: mission.id })
     }
 
@@ -115,7 +117,9 @@ disputes.put('/:id/escalate', authenticate(), async (c) => {
     // Notify both parties about escalation
     const mission = await Mission.findByPk(dispute.missionId)
     if (mission) {
-      createNotification(mission.agentId, 'dispute.escalated', 'Dispute Escalated', `Dispute on mission "${mission.title}" has been escalated for admin review`, { disputeId: dispute.id, missionId: mission.id })
+      if (mission.agentId !== null) {
+        createNotification(mission.agentId, 'dispute.escalated', 'Dispute Escalated', `Dispute on mission "${mission.title}" has been escalated for admin review`, { disputeId: dispute.id, missionId: mission.id })
+      }
       createNotification(mission.clientId, 'dispute.escalated', 'Dispute Escalated', `Dispute on mission "${mission.title}" has been escalated for admin review`, { disputeId: dispute.id, missionId: mission.id })
     }
 
@@ -148,7 +152,9 @@ disputes.post('/missions/:id/dispute',
 
     // Notify the other party about dispute creation
     const recipientId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
-    createNotification(recipientId, 'dispute.created', 'Dispute Initiated', `A dispute has been initiated on mission "${mission.title}"`, { disputeId: dispute.id, missionId: mission.id })
+    if (recipientId !== null) {
+      createNotification(recipientId, 'dispute.created', 'Dispute Initiated', `A dispute has been initiated on mission "${mission.title}"`, { disputeId: dispute.id, missionId: mission.id })
+    }
 
     return successResponse(c, dispute, 'Dispute initiated', 201)
   }

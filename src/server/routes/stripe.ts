@@ -82,7 +82,9 @@ stripe.post('/create-checkout-session',
       throw new AppError('Access denied', 403)
     }
 
-    const agentProfile = await AgentProfile.findOne({ where: { userId: mission.agentId } })
+    const agentProfile = mission.agentId !== null
+      ? await AgentProfile.findOne({ where: { userId: mission.agentId } })
+      : null
     const stripeAccountId = agentProfile ? (agentProfile as any).stripeAccountId : null
 
     const platformFee = Math.max(1, Number(amount) * 0.01)
