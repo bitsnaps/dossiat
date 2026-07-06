@@ -1,6 +1,15 @@
-# Section 9 — CSV/XLSX Bulk Mission Creation for Enterprise Tier
+# Section 9 — CSV Bulk Mission Creation for Enterprise Tier
 
 > Implements the remaining unchecked item in [`docs/TODO.md`](docs/TODO.md:461).
+>
+> **Revision (2026-07):** XLSX support was dropped. `exceljs` crashed the
+> `/app/missions/bulk` route in the browser
+> (`TypeError: import_util.default.inherits is not a function`) because its Node
+> entry uses Node core modules Vite cannot polyfill. Bulk creation is now
+> **CSV-only** (parse + template download). See
+> [`plans/remove-exceljs-csv-only.md`](plans/remove-exceljs-csv-only.md:1) for
+> the removal rationale. The XLSX sections below are kept for historical
+> reference only and are **no longer implemented**.
 
 ---
 
@@ -23,8 +32,13 @@
 
 | Package | Version | Purpose |
 |---------|---------|---------|
-| `exceljs` | `^4.4.0` | Read/write Excel `.xlsx`/`.xls` files |
-| `csv` | `^6.6.1` | Parse CSV files (Node.js stream-based) |
+| _(none)_ | — | CSV parsing is now done by a hand-rolled, dependency-free parser at [`src/utils/csv.ts`](src/utils/csv.ts:1) |
+
+> `exceljs` and `csv` were both removed — both are Node stream-based and pulled
+> in Node core modules (`util.inherits`, `stream`, …) that Vite cannot polyfill
+> in the browser, crashing the `/app/missions/bulk` route with
+> `TypeError: import_util.default.inherits is not a function`. See the revision
+> note at the top of this file and [`plans/remove-exceljs-csv-only.md`](plans/remove-exceljs-csv-only.md:1).
 
 ---
 
@@ -321,6 +335,7 @@ flowchart LR
 
 - **No breaking changes** — purely additive (new view, route, store action).
 - **No DB migration** — reuses existing `Mission` and `Conversation` models.
-- **Two new dependencies** — `exceljs` (Excel parsing/template generation) and `csv` (CSV parsing via `csv/sync`).
+- **No third-party CSV/Excel deps** — parsing is done by a hand-rolled, browser-safe parser at [`src/utils/csv.ts`](src/utils/csv.ts:1). Both `exceljs` and `csv` were removed (they pulled in Node core modules that crashed the route in the browser).
 - **Max 100 rows** per upload — enforced both frontend (preview) and backend (API).
 - **Enterprise-only** — enforced backend via `csv_import` feature flag on `SubscriptionPlan.features`.
+- **CSV-only** — XLSX/XLS parsing and template generation were dropped to avoid the `exceljs` browser polyfill crash.

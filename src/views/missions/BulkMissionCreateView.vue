@@ -2,8 +2,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { parse } from 'csv/sync'
-import ExcelJS from 'exceljs'
+import { parseCsv } from '@/utils/csv'
 import { useMissionsStore } from '@/stores/missions'
 import { useToast } from '@/composables/useToast'
 import type { CreateMissionData } from '@/services/missions'
@@ -92,7 +91,7 @@ function mapToParsedRow(raw: Record<string, any>, index: number): ParsedRow {
 
 async function handleFile(file: File) {
   const ext = file.name.split('.').pop()?.toLowerCase()
-  if (!ext || !['csv', 'xlsx', 'xls'].includes(ext)) {
+  if (!ext || ext !== 'csv') {
     toast.error(t('missions.bulk.errorFileFormat'))
     return
   }
@@ -102,42 +101,14 @@ async function handleFile(file: File) {
   parsedRows.value = []
 
   try {
-    let rawRows: Record<string, any>[] = []
+    let rawRows: Record<string, string>[] = []
 
-    if (ext === 'csv') {
-      const text = await file.text()
-      rawRows = parse(text, {
-        columns: true,
-        skip_empty_lines: true,
-        trim: true,
-        relax_column_count: true,
-      }) as Record<string, any>[]
-    } else {
-      const buffer = await file.arrayBuffer()
-      const workbook = new ExcelJS.Workbook()
-      await workbook.xlsx.load(buffer)
-      const sheet = workbook.worksheets[0]
-      if (!sheet || sheet.rowCount < 2) {
-        parsedRows.value = []
-        parsing.value = false
-        return
-      }
-
-      const headers: string[] = []
-      sheet.getRow(1).eachCell((cell, colNumber) => {
-        headers[colNumber - 1] = String(cell.value ?? '').trim()
-      })
-
-      sheet.eachRow((row, rowNumber) => {
-        if (rowNumber === 1) return
-        const obj: Record<string, any> = {}
-        row.eachCell((cell, colNumber) => {
-          const key = headers[colNumber - 1]
-          if (key) obj[key] = cell.value
-        })
-        rawRows.push(obj)
-      })
-    }
+    const text = await file.text()
+    rawRows = parseCsv(text, {
+      columns: true,
+      skipEmptyLines: true,
+      trim: true,
+    })
 
     if (rawRows.length > MAX_ROWS) {
       toast.error(t('missions.bulk.errorMax'))
@@ -168,44 +139,6 @@ function downloadCsvTemplate() {
   const link = document.createElement('a')
   link.href = url
   link.download = 'missions-template.csv'
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
-async function downloadXlsxTemplate() {
-  const workbook = new ExcelJS.Workbook()
-  workbook.creator = 'Dossiat'
-  const sheet = workbook.addWorksheet('Missions')
-  sheet.columns = [
-    { header: 'title', key: 'title', width: 30 },
-    { header: 'clientId', key: 'clientId', width: 12 },
-    { header: 'pricingType', key: 'pricingType', width: 15 },
-    { header: 'description', key: 'description', width: 40 },
-    { header: 'agreedAmount', key: 'agreedAmount', width: 15 },
-    { header: 'currency', key: 'currency', width: 10 },
-    { header: 'agreedChecklist', key: 'agreedChecklist', width: 40 },
-    { header: 'type', key: 'type', width: 12 },
-  ]
-  sheet.getRow(1).eachCell(cell => {
-    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '4F46E5' } }
-    cell.font = { color: { argb: 'FFFFFF' }, bold: true }
-  })
-  sheet.addRow({
-    title: 'Example Mission',
-    clientId: 1,
-    pricingType: 'fixed',
-    description: 'Sample mission description',
-    agreedAmount: 100,
-    currency: 'USD',
-    agreedChecklist: 'Task 1|Task 2',
-    type: 'one_time',
-  })
-  const buffer = await workbook.xlsx.writeBuffer()
-  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-  const url = URL.createObjectURL(blob)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'missions-template.xlsx'
   link.click()
   URL.revokeObjectURL(url)
 }
@@ -251,20 +184,17 @@ async function handleConfirm() {
         <BButton variant="outline" size="sm" icon="bi-file-earmark-spreadsheet" @click="downloadCsvTemplate">
           {{ t('missions.bulk.downloadTemplateCsv') }}
         </BButton>
-        <BButton variant="outline" size="sm" icon="bi-file-earmark-excel" @click="downloadXlsxTemplate">
-          {{ t('missions.bulk.downloadTemplateXlsx') }}
-        </BButton>
       </div>
 
       <FileUpload
-        accept=".csv,.xlsx,.xls"
+        accept=".csv"
         :loading="parsing"
         @upload:file="handleFile"
         @error="toast.error"
       >
         <i class="bi bi-cloud-arrow-up ds-file-upload__icon" />
         <span class="ds-file-upload__text">{{ t('missions.bulk.upload') }}</span>
-        <span class="ds-file-upload__hint">CSV, XLSX, XLS</span>
+        <span class="ds-file-upload__hint">CSV</span>
       </FileUpload>
 
       <div v-if="parsedRows.length > 0" class="ds-bulk-create__preview">
