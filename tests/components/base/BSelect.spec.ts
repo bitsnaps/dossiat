@@ -5,6 +5,7 @@ import BSelect from '@/components/base/BSelect.vue'
 const defaultOptions = [
   { value: 'USD', label: 'USD' },
   { value: 'EUR', label: 'EUR' },
+  { value: 'DZD', label: 'DZD' },
   { value: 'GBP', label: 'GBP' },
 ]
 

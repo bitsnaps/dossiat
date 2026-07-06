@@ -52,6 +52,7 @@ const clientTypeOptions = [
 const currencyOptions = [
   { value: 'USD', label: 'USD' },
   { value: 'EUR', label: 'EUR' },
+  { value: 'DZD', label: 'DZD' },
   { value: 'GBP', label: 'GBP' },
   { value: 'MAD', label: 'MAD' },
   { value: 'AED', label: 'AED' },
