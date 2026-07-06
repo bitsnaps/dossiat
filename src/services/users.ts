@@ -56,6 +56,7 @@ export function updateClientProfile(data: {
   return put('/clients/me', data)
 }
 
-export function getNetworkUsers() {
-  return get('/users/network')
+export function getNetworkUsers(role?: 'client' | 'agent') {
+  const query = role ? `?role=${role}` : ''
+  return get(`/users/network${query}`)
 }

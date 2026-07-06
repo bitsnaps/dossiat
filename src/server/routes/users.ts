@@ -3,8 +3,7 @@ import bcrypt from 'bcryptjs'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { Op } from 'sequelize'
-import { User, AgentProfile, ClientProfile, Mission } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
@@ -177,37 +176,29 @@ users.post('/agents/me/invite-link',
 )
 
 // GET /api/users/network — list users in the caller's network (for dropdowns)
+// Query: ?role=client|agent — which role to list. When an agent requests
+// role=client (e.g. to assign a client on mission creation), ALL clients are
+// returned, not only those with existing missions.
 users.get('/network', authenticate(), async (c) => {
   const auth = c.get('auth')
+  const requestedRole = c.req.query('role') as 'client' | 'agent' | undefined
 
-  if (auth.role === 'agent') {
-    // Agent sees clients they have missions with
-    const missions = await Mission.findAll({
-      where: { agentId: auth.userId },
-      attributes: ['clientId'],
-    })
-    const clientIds = [...new Set(missions.map((m) => m.clientId))]
-    if (clientIds.length === 0) return successResponse(c, [])
-
+  // Agent listing clients (for mission assignment)
+  if (auth.role === 'agent' && (requestedRole === 'client' || !requestedRole)) {
     const clients = await User.findAll({
-      where: { id: { [Op.in]: clientIds }, role: 'client' },
+      where: { role: 'client' },
       attributes: ['id', 'firstName', 'lastName', 'email'],
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     })
     return successResponse(c, clients)
   }
 
-  if (auth.role === 'client') {
-    // Client sees agents they have missions with
-    const missions = await Mission.findAll({
-      where: { clientId: auth.userId, agentId: { [Op.ne]: null } },
-      attributes: ['agentId'],
-    })
-    const agentIds = [...new Set(missions.map((m) => m.agentId!))]
-    if (agentIds.length === 0) return successResponse(c, [])
-
+  // Client listing agents (for mission assignment)
+  if (auth.role === 'client' && (requestedRole === 'agent' || !requestedRole)) {
     const agents = await User.findAll({
-      where: { id: { [Op.in]: agentIds }, role: 'agent' },
+      where: { role: 'agent' },
       attributes: ['id', 'firstName', 'lastName', 'email'],
+      order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     })
     return successResponse(c, agents)
   }

@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import { getNetworkUsers } from '@/services/users'
+import type { ApiResponse } from '@/server/utils/apiResponse'
 
 interface NetworkUser {
   id: number
@@ -34,7 +35,8 @@ const loading = ref(false)
 async function fetchUsers() {
   loading.value = true
   try {
-    users.value = await getNetworkUsers()
+    const response = await getNetworkUsers(props.role) as ApiResponse<NetworkUser[]>
+    users.value = Array.isArray(response?.data) ? response.data : []
   } catch {
     users.value = []
   } finally {
@@ -42,7 +44,7 @@ async function fetchUsers() {
   }
 }
 
-fetchUsers()
+watch(() => props.role, fetchUsers, { immediate: true })
 
 function onChange(e: Event) {
   emit('update:modelValue', (e.target as HTMLSelectElement).value)
