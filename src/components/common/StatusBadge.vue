@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<Props>(), {
 const { t } = useI18n()
 
 const missionVariantMap: Record<string, string> = {
+  open: 'info',
   in_progress: 'info',
   agreed: 'accent',
   pending_agreement: 'warning',

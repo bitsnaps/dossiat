@@ -51,7 +51,7 @@ recurrence.post('/missions/:id/recurrence',
 
     const mission = await Mission.findByPk(missionId)
     if (!mission) throw new AppError('Mission not found', 404)
-    if (mission.agentId !== auth.userId) throw new AppError('Only the agent can set recurrence', 403)
+    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) throw new AppError('Only mission participants can set recurrence', 403)
 
     const existing = await RecurrentMissionConfig.findOne({ where: { missionId } })
     if (existing) throw new AppError('Recurrence already configured', 400)
@@ -89,7 +89,7 @@ recurrence.put('/missions/:id/recurrence',
 
     const mission = await Mission.findByPk(missionId)
     if (!mission) throw new AppError('Mission not found', 404)
-    if (mission.agentId !== auth.userId) throw new AppError('Only the agent can update recurrence', 403)
+    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) throw new AppError('Only mission participants can update recurrence', 403)
 
     const config = await RecurrentMissionConfig.findOne({ where: { missionId } })
     if (!config) throw new AppError('Recurrence not configured', 404)
@@ -114,7 +114,7 @@ recurrence.delete('/missions/:id/recurrence', authenticate(), async (c) => {
 
   const mission = await Mission.findByPk(missionId)
   if (!mission) throw new AppError('Mission not found', 404)
-  if (mission.agentId !== auth.userId) throw new AppError('Only the agent can disable recurrence', 403)
+  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) throw new AppError('Only mission participants can disable recurrence', 403)
 
   const config = await RecurrentMissionConfig.findOne({ where: { missionId } })
   if (!config) throw new AppError('Recurrence not configured', 404)

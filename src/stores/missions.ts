@@ -8,12 +8,14 @@ import {
   updateMission as apiUpdateMission,
   deleteMission as apiDeleteMission,
   agreeMission as apiAgreeMission,
+  claimMission as apiClaimMission,
   getAgreementStatus as apiGetAgreementStatus,
   createBulkMissions as apiCreateBulkMissions,
   updateMissionStatus as apiUpdateMissionStatus,
   getAttachments as apiGetAttachments,
   uploadAttachment as apiUploadAttachment,
   type CreateMissionData,
+  type ClaimMissionData,
 } from '@/services/missions'
 
 interface MissionUser {
@@ -54,14 +56,16 @@ interface Mission {
   type: string
   pricingType: string
   agreedAmount?: number | null
+  proposedAmount?: number | null
+  proposedBy?: number | null
   currency?: string
   agreedChecklist?: string[]
   completedChecklist?: string[]
   startedAt?: string | null
   completedAt?: string | null
-  agentId?: number
+  agentId?: number | null
   clientId?: number
-  agent?: MissionUser
+  agent?: MissionUser | null
   client?: MissionUser
   attachments?: Attachment[]
   recurrenceConfig?: RecurrenceConfig | null
@@ -224,6 +228,28 @@ export const useMissionsStore = defineStore('missions', () => {
     }
   }
 
+  async function claimMission(id: string, data?: ClaimMissionData) {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await apiClaimMission(id, data) as ApiResponse<Mission>
+      const updated = response.data!
+      const index = missions.value.findIndex((m) => m.id === Number(id))
+      if (index !== -1) {
+        missions.value[index] = { ...missions.value[index], ...updated }
+      }
+      if (currentMission.value?.id === Number(id)) {
+        currentMission.value = { ...currentMission.value, ...updated }
+      }
+      return updated
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to claim mission'
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function updateMissionStatus(id: string, status: string) {
     loading.value = true
     error.value = null
@@ -317,6 +343,7 @@ export const useMissionsStore = defineStore('missions', () => {
     deleteMission,
     fetchAgreementStatus,
     agreeMission,
+    claimMission,
     updateMissionStatus,
     fetchAttachments,
     uploadAttachment,

@@ -238,14 +238,16 @@ EmailVerificationToken.init(
 
 interface MissionModel {
   id: number
-  agentId: number
+  agentId: number | null
   clientId: number
   title: string
   description: string | null
-  status: 'draft' | 'pending_agreement' | 'agreed' | 'in_progress' | 'completed' | 'disputed' | 'cancelled'
+  status: 'open' | 'draft' | 'pending_agreement' | 'agreed' | 'in_progress' | 'completed' | 'disputed' | 'cancelled'
   type: 'one_time' | 'recurrent'
   pricingType: 'fixed' | 'hourly' | 'task_based'
   agreedAmount: number | null
+  proposedAmount: number | null
+  proposedBy: number | null
   currency: string
   agreedChecklist: string[]
   completedChecklist: string[]
@@ -257,18 +259,20 @@ interface MissionModel {
   updatedAt?: Date
 }
 
-interface MissionCreationAttributes extends Optional<MissionModel, 'id' | 'description' | 'agreedAmount' | 'agreedChecklist' | 'completedChecklist' | 'agreedByAgent' | 'agreedByClient' | 'startedAt' | 'completedAt' | 'createdAt' | 'updatedAt'> {}
+interface MissionCreationAttributes extends Optional<MissionModel, 'id' | 'agentId' | 'description' | 'agreedAmount' | 'proposedAmount' | 'proposedBy' | 'agreedChecklist' | 'completedChecklist' | 'agreedByAgent' | 'agreedByClient' | 'startedAt' | 'completedAt' | 'createdAt' | 'updatedAt'> {}
 
 class Mission extends Model<MissionModel, MissionCreationAttributes> implements MissionModel {
   declare id: number
-  declare agentId: number
+  declare agentId: number | null
   declare clientId: number
   declare title: string
   declare description: string | null
-  declare status: 'draft' | 'pending_agreement' | 'agreed' | 'in_progress' | 'completed' | 'disputed' | 'cancelled'
+  declare status: 'open' | 'draft' | 'pending_agreement' | 'agreed' | 'in_progress' | 'completed' | 'disputed' | 'cancelled'
   declare type: 'one_time' | 'recurrent'
   declare pricingType: 'fixed' | 'hourly' | 'task_based'
   declare agreedAmount: number | null
+  declare proposedAmount: number | null
+  declare proposedBy: number | null
   declare currency: string
   declare agreedChecklist: string[]
   declare completedChecklist: string[]
@@ -283,18 +287,20 @@ class Mission extends Model<MissionModel, MissionCreationAttributes> implements 
 Mission.init(
   {
     id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-    agentId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
+    agentId: { type: DataTypes.INTEGER, allowNull: true, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
     clientId: { type: DataTypes.INTEGER, allowNull: false, references: { model: 'users', key: 'id' }, onDelete: 'CASCADE' },
     title: { type: DataTypes.STRING, allowNull: false },
     description: { type: DataTypes.TEXT, allowNull: true },
     status: {
-      type: DataTypes.ENUM('draft', 'pending_agreement', 'agreed', 'in_progress', 'completed', 'disputed', 'cancelled'),
+      type: DataTypes.ENUM('open', 'draft', 'pending_agreement', 'agreed', 'in_progress', 'completed', 'disputed', 'cancelled'),
       allowNull: false,
       defaultValue: 'draft',
     },
     type: { type: DataTypes.ENUM('one_time', 'recurrent'), allowNull: false, defaultValue: 'one_time' },
     pricingType: { type: DataTypes.ENUM('fixed', 'hourly', 'task_based'), allowNull: false },
     agreedAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
+    proposedAmount: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
+    proposedBy: { type: DataTypes.INTEGER, allowNull: true, references: { model: 'users', key: 'id' }, onDelete: 'SET NULL' },
     currency: { type: DataTypes.STRING(3), allowNull: false, defaultValue: 'USD' },
     agreedChecklist: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },
     completedChecklist: { type: DataTypes.JSON, allowNull: false, defaultValue: [] },

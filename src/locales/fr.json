@@ -467,6 +467,7 @@
     },
     "status": {
       "mission": {
+        "open": "Ouverte",
         "agreed": "Acceptée",
         "cancelled": "Annulée",
         "completed": "Terminée",
@@ -794,6 +795,7 @@
       "empty": "Aucun élément de liste défini."
     },
     "create": {
+      "subtitleClient": "Publiez une demande de mission pour que les agents la prennent.",
       "cancel": "Annuler",
       "checklist": {
         "add": "Ajouter un élément",
@@ -833,6 +835,7 @@
     "detail": {
       "actions": {
         "agree": "Accepter",
+        "claim": "Reprendre la mission",
         "cancel": "Annuler la mission",
         "decline": "Refuser",
         "edit": "Modifier",
@@ -867,6 +870,8 @@
       "recurrent": "Récurrente",
       "started": "Démarrée le",
       "taskBased": "Par tâches",
+      "unassigned": "Non assigné",
+      "proposedAmount": "Montant proposé",
       "timeline": "Chronologie",
       "title": "Détail de la mission",
       "type": "Type"
@@ -883,6 +888,7 @@
         "type": "Type"
       },
       "create": "Créer une mission",
+      "openMissions": "Missions ouvertes",
       "filters": {
         "allStatuses": "Tous les statuts",
         "allTypes": "Tous les types",
@@ -935,6 +941,7 @@
       "weekly": "Hebdomadaire"
     },
     "status": {
+      "open": "Ouverte",
       "agreed": "Acceptée",
       "cancelled": "Annulée",
       "completed": "Terminée",

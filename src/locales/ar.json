@@ -467,6 +467,7 @@
     },
     "status": {
       "mission": {
+        "open": "مفتوح",
         "agreed": "مقبول",
         "cancelled": "ملغى",
         "completed": "مكتمل",
@@ -794,6 +795,7 @@
       "empty": "لم يتم تحديد بنود قائمة التحقق."
     },
     "create": {
+      "subtitleClient": "انشر طلب مهمة لكي يتولى الوكيلها.",
       "cancel": "إلغاء",
       "checklist": {
         "add": "إضافة بند",
@@ -833,6 +835,7 @@
     "detail": {
       "actions": {
         "agree": "موافقة",
+        "claim": "تولي المهمة",
         "cancel": "إلغاء المهمة",
         "decline": "رفض",
         "edit": "تعديل",
@@ -867,6 +870,8 @@
       "recurrent": "دوري",
       "started": "تاريخ البداية",
       "taskBased": "حسب المهام",
+      "unassigned": "غير معين",
+      "proposedAmount": "المبلغ المقترح",
       "timeline": "الجدول الزمني",
       "title": "تفاصيل المهمة",
       "type": "النوع"
@@ -883,6 +888,7 @@
         "type": "النوع"
       },
       "create": "إنشاء مهمة",
+      "openMissions": "المهمات المفتوحة",
       "filters": {
         "allStatuses": "جميع الحالات",
         "allTypes": "جميع الأنواع",
@@ -935,6 +941,7 @@
       "weekly": "أسبوعي"
     },
     "status": {
+      "open": "مفتوح",
       "agreed": "مقبول",
       "cancelled": "ملغى",
       "completed": "مكتمل",

@@ -31,6 +31,7 @@ const mission = computed(() => missionsStore.currentMission)
 
 function statusBadgeVariant(status: string) {
   const map: Record<string, string> = {
+    open: 'info',
     in_progress: 'info',
     agreed: 'accent',
     pending_agreement: 'warning',
@@ -64,6 +65,7 @@ const canSendForAgreement = computed(() => isAgent.value && mission.value?.statu
 const canStart = computed(() => isAgent.value && mission.value?.status === 'agreed')
 const canComplete = computed(() => isAgent.value && mission.value?.status === 'in_progress')
 const canAgree = computed(() => isClient.value && mission.value?.status === 'pending_agreement')
+const canClaim = computed(() => isAgent.value && mission.value?.status === 'open' && mission.value?.agentId == null)
 const canCancel = computed(() =>
   mission.value?.status !== 'completed' && mission.value?.status !== 'cancelled' && mission.value?.status !== 'disputed'
 )
@@ -92,6 +94,15 @@ async function handleMarkComplete() {
     toast.success(t('missions.detail.actions.markComplete'))
   } catch {
     toast.error('Failed to mark complete')
+  }
+}
+
+async function handleClaim() {
+  try {
+    await missionsStore.claimMission(missionId.value)
+    toast.success(t('missions.detail.actions.claim'))
+  } catch {
+    toast.error('Failed to claim mission')
   }
 }
 
@@ -176,6 +187,13 @@ function goBack() {
         <!-- Actions -->
         <div class="ds-mission-detail__actions">
           <BButton
+            v-if="canClaim"
+            variant="accent"
+            @click="handleClaim"
+          >
+            {{ t('missions.detail.actions.claim') }}
+          </BButton>
+          <BButton
             v-if="canSendForAgreement"
             variant="accent"
             @click="handleSendForAgreement"
@@ -244,6 +262,9 @@ function goBack() {
           </span>
           <span v-if="mission.agent" class="ds-mission-detail__party-email font-mono">
             {{ mission.agent.email }}
+          </span>
+          <span v-else class="ds-mission-detail__party-name ds-mission-detail__party-name--muted">
+            {{ t('missions.detail.unassigned') }}
           </span>
         </BCard>
         <BCard variant="bordered" padding="md" class="ds-mission-detail__party-card">
@@ -440,6 +461,11 @@ function goBack() {
 .ds-mission-detail__party-email {
   font-size: 0.8125rem;
   color: var(--ds-text-muted, #64748b);
+}
+
+.ds-mission-detail__party-name--muted {
+  color: var(--ds-text-muted, #64748b);
+  font-style: italic;
 }
 
 .ds-mission-detail__content-grid {

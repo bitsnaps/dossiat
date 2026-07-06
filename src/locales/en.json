@@ -465,6 +465,7 @@
     "list": {
       "title": "Missions",
       "create": "Create Mission",
+      "openMissions": "Open Missions",
       "noResults": "No missions found.",
       "noResultsHint": "Try adjusting your filters or create a new mission.",
       "filters": {
@@ -509,6 +510,8 @@
       "fixed": "Fixed",
       "hourly": "Hourly",
       "taskBased": "Task-based",
+      "unassigned": "Unassigned",
+      "proposedAmount": "Proposed Amount",
       "checklist": "Mission Checklist",
       "attachments": "Attachments",
       "timeline": "Timeline",
@@ -517,6 +520,7 @@
         "startMission": "Start Mission",
         "markComplete": "Mark Complete",
         "agree": "Agree",
+        "claim": "Claim Mission",
         "decline": "Decline",
         "cancel": "Cancel Mission",
         "edit": "Edit",
@@ -534,6 +538,7 @@
     "create": {
       "title": "Create Mission",
       "subtitle": "Set up a new mission for your client.",
+      "subtitleClient": "Post a mission request for agents to claim.",
       "fields": {
         "title": "Mission Title",
         "titlePlaceholder": "e.g. Pay electricity bill, Register company...",
@@ -547,6 +552,7 @@
         "taskBased": "Task-based",
         "amount": "Amount",
         "amountPlaceholder": "0.00",
+        "proposedAmount": "Proposed Amount",
         "currency": "Currency",
         "missionType": "Mission Type",
         "oneTime": "One-time",
@@ -562,6 +568,7 @@
       "cancel": "Cancel",
       "creating": "Creating...",
       "created": "Mission created successfully.",
+      "createdClient": "Mission posted. Waiting for an agent to claim.",
       "validation": {
         "titleRequired": "Title is required.",
         "clientRequired": "Please select a client.",
@@ -644,6 +651,7 @@
       "inactive": "Inactive"
     },
     "status": {
+      "open": "Open",
       "draft": "Draft",
       "pending_agreement": "Pending Agreement",
       "agreed": "Agreed",
@@ -986,6 +994,7 @@
   "common": {
     "status": {
       "mission": {
+        "open": "Open",
         "draft": "Draft",
         "pending_agreement": "Pending Agreement",
         "agreed": "Agreed",

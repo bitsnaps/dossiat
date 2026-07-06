@@ -3,13 +3,17 @@ import { Op } from 'sequelize'
 import { Mission, RecurrentMissionConfig, MissionAttachment, Conversation, User, ClientProfile, Subscription, SubscriptionPlan } from '@/server/database/models'
 import { successResponse, paginatedResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
-import { roleGuard } from '@/server/middleware/roleGuard'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
 import { createNotification } from '@/server/services/notification'
 import { checkSeatLimit } from '@/server/services/subscriptionGuard'
 
 const missions = new Hono()
+
+/** Helper: check if a user has permission to access a mission */
+function isMissionParticipant(mission: any, userId: number): boolean {
+  return mission.clientId === userId || mission.agentId === userId
+}
 
 // GET /api/missions
 missions.get('/', authenticate(), async (c) => {
@@ -20,8 +24,10 @@ missions.get('/', authenticate(), async (c) => {
 
   const where: any = {}
   if (auth.role === 'agent') {
-    where.agentId = auth.userId
+    // Agents see their own missions PLUS open missions available to claim
+    where[Op.or] = [{ agentId: auth.userId }, { status: 'open' }]
   } else if (auth.role === 'client') {
+    // Clients see missions where they are the client (includes their own open missions)
     where.clientId = auth.userId
   }
 
@@ -62,7 +68,6 @@ missions.post('/',
   validateRequest({
     body: {
       title: validators.required(),
-      clientId: validators.required(),
       pricingType: validators.isIn(['fixed', 'hourly', 'task_based']),
     },
   }),
@@ -70,36 +75,60 @@ missions.post('/',
     const auth = c.get('auth')
     const body = await c.req.json()
 
-    if (auth.role !== 'agent') {
-      throw new AppError('Only agents can create missions', 403)
+    if (auth.role === 'agent') {
+      // Agent-initiated: requires clientId
+      if (!body.clientId) {
+        throw new AppError('clientId is required for agent-created missions', 422)
+      }
+
+      // Check seat limit for the client
+      const seatCheck = await checkSeatLimit(body.clientId)
+      if (!seatCheck.allowed) {
+        throw new AppError(`Client has reached the maximum of ${seatCheck.max} agent seats. Upgrade your plan to add more.`, 403)
+      }
+
+      const mission = await Mission.create({
+        agentId: auth.userId,
+        clientId: body.clientId,
+        title: body.title,
+        description: body.description || null,
+        status: 'draft',
+        type: body.type || 'one_time',
+        pricingType: body.pricingType,
+        agreedAmount: body.agreedAmount || null,
+        currency: body.currency || 'USD',
+        agreedChecklist: body.agreedChecklist || [],
+      })
+
+      // Create conversation for the mission
+      await Conversation.create({ missionId: mission.id })
+
+      // Notify the client about the new mission
+      createNotification(body.clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
+
+      return successResponse(c, mission, 'Mission created', 201)
     }
 
-    // Check seat limit for the client
-    const seatCheck = await checkSeatLimit(body.clientId)
-    if (!seatCheck.allowed) {
-      throw new AppError(`Client has reached the maximum of ${seatCheck.max} agent seats. Upgrade your plan to add more.`, 403)
+    if (auth.role === 'client') {
+      // Client-initiated: no agentId, status is open
+      const mission = await Mission.create({
+        agentId: null,
+        clientId: auth.userId,
+        title: body.title,
+        description: body.description || null,
+        status: 'open',
+        type: body.type || 'one_time',
+        pricingType: body.pricingType,
+        proposedAmount: body.agreedAmount || null,
+        proposedBy: auth.userId,
+        currency: body.currency || 'USD',
+        agreedChecklist: body.agreedChecklist || [],
+      })
+
+      return successResponse(c, mission, 'Mission created', 201)
     }
 
-    const mission = await Mission.create({
-      agentId: auth.userId,
-      clientId: body.clientId,
-      title: body.title,
-      description: body.description || null,
-      status: 'draft',
-      type: body.type || 'one_time',
-      pricingType: body.pricingType,
-      agreedAmount: body.agreedAmount || null,
-      currency: body.currency || 'USD',
-      agreedChecklist: body.agreedChecklist || [],
-    })
-
-    // Create conversation for the mission
-    await Conversation.create({ missionId: mission.id })
-
-    // Notify the client about the new mission
-    createNotification(body.clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
-
-    return successResponse(c, mission, 'Mission created', 201)
+    throw new AppError('Forbidden', 403)
   }
 )
 
@@ -137,33 +166,50 @@ missions.post('/bulk',
     // Validate each mission entry
     for (const entry of missionData) {
       if (!entry.title) throw new AppError('Each mission must have a title', 422)
-      if (!entry.clientId) throw new AppError('Each mission must have a clientId', 422)
       if (!entry.pricingType) throw new AppError('Each mission must have a pricingType', 422)
     }
 
     const created: any[] = []
 
     for (const entry of missionData) {
-      const clientId = auth.role === 'agent' ? entry.clientId : auth.userId
-      const agentId = auth.role === 'agent' ? auth.userId : entry.clientId
+      if (auth.role === 'agent') {
+        // Agent creates missions for clients
+        if (!entry.clientId) throw new AppError('Each mission must have a clientId', 422)
 
-      const mission = await Mission.create({
-        agentId,
-        clientId,
-        title: entry.title,
-        description: entry.description || null,
-        status: 'draft',
-        type: entry.type || 'one_time',
-        pricingType: entry.pricingType,
-        agreedAmount: entry.agreedAmount || null,
-        currency: entry.currency || 'USD',
-        agreedChecklist: entry.agreedChecklist || [],
-      })
+        const mission = await Mission.create({
+          agentId: auth.userId,
+          clientId: entry.clientId,
+          title: entry.title,
+          description: entry.description || null,
+          status: 'draft',
+          type: entry.type || 'one_time',
+          pricingType: entry.pricingType,
+          agreedAmount: entry.agreedAmount || null,
+          currency: entry.currency || 'USD',
+          agreedChecklist: entry.agreedChecklist || [],
+        })
 
-      await Conversation.create({ missionId: mission.id })
-      createNotification(clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
+        await Conversation.create({ missionId: mission.id })
+        createNotification(entry.clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
+        created.push(mission)
+      } else if (auth.role === 'client') {
+        // Client creates open missions (unassigned)
+        const mission = await Mission.create({
+          agentId: null,
+          clientId: auth.userId,
+          title: entry.title,
+          description: entry.description || null,
+          status: 'open',
+          type: entry.type || 'one_time',
+          pricingType: entry.pricingType,
+          proposedAmount: entry.agreedAmount || null,
+          proposedBy: auth.userId,
+          currency: entry.currency || 'USD',
+          agreedChecklist: entry.agreedChecklist || [],
+        })
 
-      created.push(mission)
+        created.push(mission)
+      }
     }
 
     return successResponse(c, { count: created.length, missions: created }, `${created.length} missions created`, 201)
@@ -186,12 +232,80 @@ missions.get('/:id', authenticate(), async (c) => {
 
   if (!mission) throw new AppError('Mission not found', 404)
 
-  // Permission check
-  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId && auth.role !== 'admin') {
+  // Permission check: participant, admin, or agent viewing open missions
+  const isParticipant = isMissionParticipant(mission, auth.userId)
+  const isOpenAndAgent = mission.status === 'open' && auth.role === 'agent'
+  if (!isParticipant && auth.role !== 'admin' && !isOpenAndAgent) {
     throw new AppError('Access denied', 403)
   }
 
   return successResponse(c, mission)
+})
+
+// POST /api/missions/:id/claim — Agent claims an open mission
+missions.post('/:id/claim', authenticate(), async (c) => {
+  const auth = c.get('auth')
+  const id = parseInt(c.req.param('id')!)
+
+  if (auth.role !== 'agent') {
+    throw new AppError('Only agents can claim missions', 403)
+  }
+
+  const mission = await Mission.findByPk(id)
+  if (!mission) throw new AppError('Mission not found', 404)
+
+  if (mission.status !== 'open') {
+    throw new AppError('Mission is not open for claiming', 400)
+  }
+
+  if (mission.agentId !== null) {
+    throw new AppError('Mission already has an assigned agent', 400)
+  }
+
+  // Check seat limit for the client
+  const seatCheck = await checkSeatLimit(mission.clientId)
+  if (!seatCheck.allowed) {
+    throw new AppError(`Client has reached the maximum of ${seatCheck.max} agent seats. Upgrade your plan to add more.`, 403)
+  }
+
+  const body = await c.req.json().catch(() => ({}))
+
+  // Determine agreed amount: agent's override > client's proposed > null
+  const agreedAmount = body.agreedAmount != null
+    ? body.agreedAmount
+    : mission.proposedAmount != null
+      ? mission.proposedAmount
+      : null
+
+  await mission.update({
+    agentId: auth.userId,
+    status: 'pending_agreement',
+    agreedAmount,
+  })
+
+  // Ensure conversation exists
+  const existingConversation = await Conversation.findOne({ where: { missionId: mission.id } })
+  if (!existingConversation) {
+    await Conversation.create({ missionId: mission.id })
+  }
+
+  // Notify the client
+  createNotification(
+    mission.clientId,
+    'mission.claimed',
+    'Mission Claimed',
+    `An agent has claimed your mission "${mission.title}"`,
+    { missionId: mission.id },
+  )
+
+  const updated = await Mission.findByPk(id, {
+    include: [
+      { model: User, as: 'agent', attributes: ['id', 'firstName', 'lastName', 'email'] },
+      { model: User, as: 'client', attributes: ['id', 'firstName', 'lastName', 'email'] },
+    ],
+  })
+
+  return successResponse(c, updated, 'Mission claimed')
 })
 
 // PUT /api/missions/:id
@@ -210,7 +324,7 @@ missions.put('/:id',
     const mission = await Mission.findByPk(id)
     if (!mission) throw new AppError('Mission not found', 404)
 
-    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+    if (!isMissionParticipant(mission, auth.userId) && auth.role !== 'admin') {
       throw new AppError('Access denied', 403)
     }
 
@@ -234,15 +348,17 @@ missions.delete('/:id', authenticate(), async (c) => {
   const mission = await Mission.findByPk(id)
   if (!mission) throw new AppError('Mission not found', 404)
 
-  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+  if (!isMissionParticipant(mission, auth.userId) && auth.role !== 'admin') {
     throw new AppError('Access denied', 403)
   }
 
   await mission.update({ status: 'cancelled' })
 
   // Notify the other party
-  const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
-  createNotification(otherUserId, 'mission.cancelled', 'Mission Cancelled', `Mission "${mission.title}" has been cancelled`, { missionId: mission.id })
+  if (mission.agentId != null) {
+    const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
+    createNotification(otherUserId, 'mission.cancelled', 'Mission Cancelled', `Mission "${mission.title}" has been cancelled`, { missionId: mission.id })
+  }
 
   return successResponse(c, { message: 'Mission cancelled' })
 })
@@ -257,6 +373,10 @@ missions.post('/:id/agree', authenticate(), async (c) => {
 
   if (mission.status !== 'pending_agreement') {
     throw new AppError('Mission is not in pending_agreement status', 400)
+  }
+
+  if (mission.agentId == null) {
+    throw new AppError('Mission has no assigned agent', 400)
   }
 
   if (auth.userId !== mission.agentId && auth.userId !== mission.clientId) {
@@ -300,7 +420,7 @@ missions.get('/:id/agreement-status', authenticate(), async (c) => {
   const mission = await Mission.findByPk(id)
   if (!mission) throw new AppError('Mission not found', 404)
 
-  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId && auth.role !== 'admin') {
+  if (!isMissionParticipant(mission, auth.userId) && auth.role !== 'admin') {
     throw new AppError('Access denied', 403)
   }
 
@@ -327,12 +447,13 @@ missions.put('/:id/status',
     const mission = await Mission.findByPk(id)
     if (!mission) throw new AppError('Mission not found', 404)
 
-    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+    if (!isMissionParticipant(mission, auth.userId) && auth.role !== 'admin') {
       throw new AppError('Access denied', 403)
     }
 
     const validTransitions: Record<string, string[]> = {
-      draft: ['pending_agreement'],
+      open: ['pending_agreement', 'cancelled'],
+      draft: ['pending_agreement', 'cancelled'],
       pending_agreement: ['agreed', 'cancelled'],
       agreed: ['in_progress', 'cancelled'],
       in_progress: ['completed', 'disputed'],
@@ -349,16 +470,18 @@ missions.put('/:id/status',
     await mission.update(updates)
 
     // Notify the other party about status change
-    const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
-    const statusLabels: Record<string, string> = {
-      pending_agreement: 'sent for agreement',
-      agreed: 'agreed upon',
-      in_progress: 'started',
-      completed: 'completed',
-      disputed: 'disputed',
-      cancelled: 'cancelled',
+    if (mission.agentId != null) {
+      const otherUserId = auth.userId === mission.agentId ? mission.clientId : mission.agentId
+      const statusLabels: Record<string, string> = {
+        pending_agreement: 'sent for agreement',
+        agreed: 'agreed upon',
+        in_progress: 'started',
+        completed: 'completed',
+        disputed: 'disputed',
+        cancelled: 'cancelled',
+      }
+      createNotification(otherUserId, 'mission.status_changed', 'Mission Status Updated', `Mission "${mission.title}" has been ${statusLabels[status] || status}`, { missionId: mission.id, status })
     }
-    createNotification(otherUserId, 'mission.status_changed', 'Mission Status Updated', `Mission "${mission.title}" has been ${statusLabels[status] || status}`, { missionId: mission.id, status })
 
     return successResponse(c, mission, 'Mission status updated')
   }
@@ -374,7 +497,7 @@ missions.post('/:id/attachments',
     const mission = await Mission.findByPk(id)
     if (!mission) throw new AppError('Mission not found', 404)
 
-    if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+    if (!isMissionParticipant(mission, auth.userId) && auth.role !== 'admin') {
       throw new AppError('Access denied', 403)
     }
 
@@ -400,7 +523,7 @@ missions.get('/:id/attachments', authenticate(), async (c) => {
   const mission = await Mission.findByPk(id)
   if (!mission) throw new AppError('Mission not found', 404)
 
-  if (mission.agentId !== auth.userId && mission.clientId !== auth.userId) {
+  if (!isMissionParticipant(mission, auth.userId) && auth.role !== 'admin') {
     throw new AppError('Access denied', 403)
   }
 

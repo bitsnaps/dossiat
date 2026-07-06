@@ -3,7 +3,8 @@ import bcrypt from 'bcryptjs'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { User, AgentProfile, ClientProfile } from '@/server/database/models'
+import { Op } from 'sequelize'
+import { User, AgentProfile, ClientProfile, Mission } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
@@ -174,6 +175,45 @@ users.post('/agents/me/invite-link',
     }, 'Invite link regenerated')
   }
 )
+
+// GET /api/users/network — list users in the caller's network (for dropdowns)
+users.get('/network', authenticate(), async (c) => {
+  const auth = c.get('auth')
+
+  if (auth.role === 'agent') {
+    // Agent sees clients they have missions with
+    const missions = await Mission.findAll({
+      where: { agentId: auth.userId },
+      attributes: ['clientId'],
+    })
+    const clientIds = [...new Set(missions.map((m) => m.clientId))]
+    if (clientIds.length === 0) return successResponse(c, [])
+
+    const clients = await User.findAll({
+      where: { id: { [Op.in]: clientIds }, role: 'client' },
+      attributes: ['id', 'firstName', 'lastName', 'email'],
+    })
+    return successResponse(c, clients)
+  }
+
+  if (auth.role === 'client') {
+    // Client sees agents they have missions with
+    const missions = await Mission.findAll({
+      where: { clientId: auth.userId, agentId: { [Op.ne]: null } },
+      attributes: ['agentId'],
+    })
+    const agentIds = [...new Set(missions.map((m) => m.agentId!))]
+    if (agentIds.length === 0) return successResponse(c, [])
+
+    const agents = await User.findAll({
+      where: { id: { [Op.in]: agentIds }, role: 'agent' },
+      attributes: ['id', 'firstName', 'lastName', 'email'],
+    })
+    return successResponse(c, agents)
+  }
+
+  return successResponse(c, [])
+})
 
 // GET /api/users/clients/me
 users.get('/clients/me',

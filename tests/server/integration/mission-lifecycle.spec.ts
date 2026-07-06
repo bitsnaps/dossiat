@@ -200,3 +200,89 @@ describe('Mission Lifecycle Integration', { timeout: 30_000 }, () => {
     expect(body.data[0].method).toBe('cash')
   })
 })
+
+describe('Client-Initiated Mission Lifecycle', { timeout: 30_000 }, () => {
+  let clientMissionId: number
+
+  it('step 1: client creates open mission', async () => {
+    const res = await app.request('/api/missions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({
+        title: 'Client Lifecycle Mission',
+        description: 'Created by client',
+        pricingType: 'fixed',
+        agreedAmount: 300,
+      }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(201)
+    expect(body.data.status).toBe('open')
+    expect(body.data.agentId).toBeNull()
+    expect(body.data.proposedAmount).toBe(300)
+    clientMissionId = body.data.id
+  })
+
+  it('step 2: agent claims the mission', async () => {
+    const res = await app.request(`/api/missions/${clientMissionId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentToken}` },
+      body: JSON.stringify({}),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.status).toBe('pending_agreement')
+    expect(body.data.agentId).toBe(agentId)
+    expect(body.data.agreedAmount).toBe(300)
+  })
+
+  it('step 3: agent agrees', async () => {
+    const res = await app.request(`/api/missions/${clientMissionId}/agree`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${agentToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.agreedByAgent).toBe(true)
+    expect(body.data.status).toBe('pending_agreement')
+  })
+
+  it('step 4: client agrees', async () => {
+    const res = await app.request(`/api/missions/${clientMissionId}/agree`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${clientToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.agreedByClient).toBe(true)
+    expect(body.data.status).toBe('agreed')
+  })
+
+  it('step 5: agent starts mission', async () => {
+    const res = await app.request(`/api/missions/${clientMissionId}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentToken}` },
+      body: JSON.stringify({ status: 'in_progress' }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.status).toBe('in_progress')
+  })
+
+  it('step 6: agent completes mission', async () => {
+    const res = await app.request(`/api/missions/${clientMissionId}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentToken}` },
+      body: JSON.stringify({ status: 'completed' }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.status).toBe('completed')
+  })
+})

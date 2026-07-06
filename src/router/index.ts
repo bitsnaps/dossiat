@@ -86,7 +86,7 @@ const router = createRouter({
           path: 'missions/create',
           name: 'mission-create',
           component: () => import('@/views/missions/MissionCreateView.vue'),
-          meta: { requiresAuth: true, roles: ['agent'], title: 'Create Mission' },
+          meta: { requiresAuth: true, roles: ['agent', 'client'], title: 'Create Mission' },
         },
         {
           path: 'missions/bulk',

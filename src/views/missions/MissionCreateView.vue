@@ -3,17 +3,23 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
 import BButton from '@/components/base/BButton.vue'
 import BRadioGroup from '@/components/base/BRadioGroup.vue'
 import BSelect from '@/components/base/BSelect.vue'
+import UserSelect from '@/components/common/UserSelect.vue'
 
 const { t } = useI18n()
 const router = useRouter()
 const missionsStore = useMissionsStore()
+const authStore = useAuthStore()
 const toast = useToast()
+
+const isAgent = computed(() => authStore.hasRole('agent'))
+const isClient = computed(() => authStore.hasRole('client'))
 
 const title = ref('')
 const clientId = ref('')
@@ -55,7 +61,7 @@ const errors = ref<Record<string, string>>({})
 function validate() {
   const errs: Record<string, string> = {}
   if (!title.value.trim()) errs.title = t('missions.create.validation.titleRequired')
-  if (!clientId.value.trim()) errs.client = t('missions.create.validation.clientRequired')
+  if (isAgent.value && !clientId.value.trim()) errs.client = t('missions.create.validation.clientRequired')
   errors.value = errs
   return Object.keys(errs).length === 0
 }
@@ -78,7 +84,7 @@ async function handleSubmit() {
   try {
     const newMission = await missionsStore.createMission({
       title: title.value.trim(),
-      clientId: clientId.value.trim(),
+      clientId: isAgent.value ? clientId.value.trim() : undefined,
       description: description.value.trim() || undefined,
       pricingType: pricingType.value,
       agreedAmount: agreedAmount.value ? Number(agreedAmount.value) : undefined,
@@ -99,7 +105,9 @@ async function handleSubmit() {
   <div class="ds-mission-create">
     <div class="ds-mission-create__header">
       <h1 class="ds-mission-create__title">{{ t('missions.create.title') }}</h1>
-      <p class="ds-mission-create__subtitle">{{ t('missions.create.subtitle') }}</p>
+      <p class="ds-mission-create__subtitle">
+        {{ isClient ? t('missions.create.subtitleClient') : t('missions.create.subtitle') }}
+      </p>
     </div>
 
     <BCard variant="bordered" padding="lg" class="ds-mission-create__card">
@@ -112,13 +120,14 @@ async function handleSubmit() {
           :error="errors.title"
         />
 
-        <!-- Client -->
-        <BInput
+        <!-- Client (Agent only) -->
+        <UserSelect
+          v-if="isAgent"
           v-model="clientId"
+          role="client"
           :label="t('missions.create.fields.client')"
           :placeholder="t('missions.create.fields.clientPlaceholder')"
           :error="errors.client"
-          type="number"
         />
 
         <!-- Description -->
@@ -142,7 +151,7 @@ async function handleSubmit() {
         <!-- Amount -->
         <BInput
           v-model="agreedAmount"
-          :label="t('missions.create.fields.amount')"
+          :label="isClient ? t('missions.create.fields.proposedAmount') : t('missions.create.fields.amount')"
           :placeholder="t('missions.create.fields.amountPlaceholder')"
           type="number"
         />

@@ -17,6 +17,10 @@ export interface CreateMissionData {
   agreedChecklist?: string[]
 }
 
+export interface ClaimMissionData {
+  agreedAmount?: number
+}
+
 export function getMissions(params?: MissionListParams) {
   return get('/missions', params ? { params } : undefined)
 }
@@ -39,6 +43,10 @@ export function deleteMission(id: string) {
 
 export function agreeMission(id: string) {
   return post(`/missions/${id}/agree`)
+}
+
+export function claimMission(id: string, data?: ClaimMissionData) {
+  return post(`/missions/${id}/claim`, data)
 }
 
 export function createBulkMissions(missions: CreateMissionData[]) {

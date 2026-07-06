@@ -388,10 +388,10 @@ describe('Mission Bulk Routes', () => {
     expect(body.success).toBe(false)
   })
 
-  it('POST /api/missions/bulk - missing clientId returns 422', async () => {
+  it('POST /api/missions/bulk - agent missing clientId returns 422', async () => {
     const res = await app.request('/api/missions/bulk', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${enterpriseClientToken}` },
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentToken}` },
       body: JSON.stringify({
         missions: [
           { title: 'No Client', pricingType: 'fixed' },
@@ -417,6 +417,120 @@ describe('Mission Bulk Routes', () => {
     const body = await res.json()
 
     expect(res.status).toBe(422)
+    expect(body.success).toBe(false)
+  })
+})
+
+describe('Client-Initiated Missions', () => {
+  let clientCreatedMissionId: number
+
+  it('POST /api/missions - client creates an open mission', async () => {
+    const res = await app.request('/api/missions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({
+        title: 'Client Open Mission',
+        description: 'A mission posted by client',
+        pricingType: 'fixed',
+        agreedAmount: 200,
+      }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(201)
+    expect(body.success).toBe(true)
+    expect(body.data.title).toBe('Client Open Mission')
+    expect(body.data.status).toBe('open')
+    expect(body.data.agentId).toBeNull()
+    expect(body.data.clientId).toBe(clientId)
+    expect(body.data.proposedAmount).toBe(200)
+    expect(body.data.proposedBy).toBe(clientId)
+    clientCreatedMissionId = body.data.id
+  })
+
+  it('GET /api/missions - client sees their open missions', async () => {
+    const res = await app.request('/api/missions', {
+      headers: { Authorization: `Bearer ${clientToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.length).toBeGreaterThan(0)
+    const openMission = body.data.find((m: any) => m.id === clientCreatedMissionId)
+    expect(openMission).toBeDefined()
+    expect(openMission.status).toBe('open')
+  })
+
+  it('GET /api/missions - agent sees open missions', async () => {
+    const res = await app.request('/api/missions', {
+      headers: { Authorization: `Bearer ${agentToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    const openMission = body.data.find((m: any) => m.id === clientCreatedMissionId)
+    expect(openMission).toBeDefined()
+    expect(openMission.status).toBe('open')
+  })
+
+  it('GET /api/missions/:id - agent can view open mission', async () => {
+    const res = await app.request(`/api/missions/${clientCreatedMissionId}`, {
+      headers: { Authorization: `Bearer ${agentToken}` },
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.data.id).toBe(clientCreatedMissionId)
+  })
+
+  it('POST /api/missions/:id/claim - agent claims open mission', async () => {
+    const res = await app.request(`/api/missions/${clientCreatedMissionId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentToken}` },
+      body: JSON.stringify({}),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(200)
+    expect(body.success).toBe(true)
+    expect(body.data.status).toBe('pending_agreement')
+    expect(body.data.agentId).toBe(agentId)
+    expect(body.data.agreedAmount).toBe(200)
+  })
+
+  it('POST /api/missions/:id/claim - cannot claim already claimed mission', async () => {
+    const res = await app.request(`/api/missions/${clientCreatedMissionId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${agentToken}` },
+      body: JSON.stringify({}),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(400)
+    expect(body.success).toBe(false)
+  })
+
+  it('POST /api/missions/:id/claim - client cannot claim (403)', async () => {
+    // Create a new open mission for this test
+    const createRes = await app.request('/api/missions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({
+        title: 'Claim Test Mission',
+        pricingType: 'fixed',
+      }),
+    })
+    const createBody = await createRes.json()
+    const claimableId = createBody.data.id
+
+    const res = await app.request(`/api/missions/${claimableId}/claim`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({}),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(403)
     expect(body.success).toBe(false)
   })
 })

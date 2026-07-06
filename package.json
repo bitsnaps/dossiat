@@ -19,7 +19,7 @@
     "i18n:sync": "node scripts/sync-i18n.mjs",
     "i18n:sync:fix": "node scripts/sync-i18n.mjs --fix",
     "create-admin": "node scripts/create-admin.cjs",
-    "check": "vue-tsc --noEmit"
+    "lint": "vue-tsc --noEmit"
   },
   "dependencies": {
     "@hono/node-server": "^2.0.3",
@@ -30,8 +30,6 @@
     "bcryptjs": "^3.0.3",
     "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
-    "domaineat": "link:",
-    "dossiat": "link:",
     "dotenv": "^17.4.2",
     "hono": "^4.12.21",
     "jose": "^6.2.3",

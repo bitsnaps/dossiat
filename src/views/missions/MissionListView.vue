@@ -32,7 +32,10 @@ function counterpartyName(mission: any) {
   if (authStore.hasRole('agent')) {
     return mission.client ? `${mission.client.firstName} ${mission.client.lastName}` : '—'
   }
-  return mission.agent ? `${mission.agent.firstName} ${mission.agent.lastName}` : '—'
+  if (mission.agent) {
+    return `${mission.agent.firstName} ${mission.agent.lastName}`
+  }
+  return t('missions.detail.unassigned')
 }
 </script>
 
@@ -40,7 +43,7 @@ function counterpartyName(mission: any) {
   <div class="ds-mission-list-view">
     <div class="ds-mission-list-view__header">
       <h1 class="ds-mission-list-view__title">{{ t('missions.list.title') }}</h1>
-      <BButton v-if="authStore.hasRole('agent')" variant="accent" to="/app/missions/create" icon="bi-plus-circle">
+      <BButton v-if="authStore.hasRole('agent') || authStore.hasRole('client')" variant="accent" to="/app/missions/create" icon="bi-plus-circle">
         {{ t('missions.list.create') }}
       </BButton>
     </div>
@@ -112,7 +115,7 @@ function counterpartyName(mission: any) {
       :title="t('missions.list.noResults')"
       :hint="t('missions.list.noResultsHint')"
     >
-      <BButton v-if="authStore.hasRole('agent')" variant="accent" to="/app/missions/create">
+      <BButton v-if="authStore.hasRole('agent') || authStore.hasRole('client')" variant="accent" to="/app/missions/create">
         {{ t('missions.list.create') }}
       </BButton>
     </EmptyState>

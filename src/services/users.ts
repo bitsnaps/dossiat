@@ -55,3 +55,7 @@ export function updateClientProfile(data: {
 }) {
   return put('/clients/me', data)
 }
+
+export function getNetworkUsers() {
+  return get('/users/network')
+}

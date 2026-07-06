@@ -7,6 +7,7 @@ vi.mock('@/services/missions', () => ({
   getMission: vi.fn(),
   updateMission: vi.fn(),
   deleteMission: vi.fn(),
+  claimMission: vi.fn(),
 }))
 
 import * as missionsService from '@/services/missions'
@@ -17,6 +18,7 @@ const mockCreateMission = vi.mocked(missionsService.createMission)
 const mockGetMission = vi.mocked(missionsService.getMission)
 const mockUpdateMission = vi.mocked(missionsService.updateMission)
 const mockDeleteMission = vi.mocked(missionsService.deleteMission)
+const mockClaimMission = vi.mocked(missionsService.claimMission)
 
 describe('Missions Store', () => {
   beforeEach(() => {
@@ -100,6 +102,23 @@ describe('Missions Store', () => {
       await store.updateMission('1', { title: 'Updated' } as any)
 
       expect(store.missions[0].title).toBe('Updated')
+    })
+  })
+
+  describe('claimMission()', () => {
+    it('updates mission after claim', async () => {
+      const openMission = { id: 1, title: 'Open', status: 'open', type: 'one_time', pricingType: 'fixed', agentId: null }
+      const claimedMission = { id: 1, title: 'Open', status: 'pending_agreement', type: 'one_time', pricingType: 'fixed', agentId: 1 }
+      mockGetMissions.mockResolvedValueOnce({ success: true, data: [openMission] } as any)
+      mockClaimMission.mockResolvedValueOnce({ success: true, data: claimedMission } as any)
+
+      const store = useMissionsStore()
+      await store.fetchMissions()
+      const result = await store.claimMission('1')
+
+      expect(store.missions[0].status).toBe('pending_agreement')
+      expect(store.missions[0].agentId).toBe(1)
+      expect(result).toEqual(claimedMission)
     })
   })
 

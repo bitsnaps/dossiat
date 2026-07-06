@@ -391,7 +391,7 @@ admin.put('/missions/:id/status',
     if (!mission) throw new AppError('Mission not found', 404)
 
     const { status } = await c.req.json()
-    const validStatuses = ['draft', 'pending_agreement', 'agreed', 'in_progress', 'completed', 'disputed', 'cancelled']
+    const validStatuses = ['open', 'draft', 'pending_agreement', 'agreed', 'in_progress', 'completed', 'disputed', 'cancelled']
     if (!validStatuses.includes(status)) {
       throw new AppError(`Invalid status. Must be one of: ${validStatuses.join(', ')}`, 422)
     }

@@ -6,7 +6,6 @@ const defaultOptions = [
   { value: 'USD', label: 'USD' },
   { value: 'EUR', label: 'EUR' },
   { value: 'DZD', label: 'DZD' },
-  { value: 'GBP', label: 'GBP' },
 ]
 
 function mountSelect(props: Record<string, unknown> = {}) {
@@ -20,7 +19,7 @@ describe('BSelect', () => {
   it('renders all options', () => {
     const wrapper = mountSelect()
     const options = wrapper.findAll('option')
-    expect(options).toHaveLength(3)
+    expect(options).toHaveLength(defaultOptions.length)
   })
 
   it('renders placeholder as disabled first option when provided', () => {
@@ -34,7 +33,7 @@ describe('BSelect', () => {
   it('does not render placeholder option when not provided', () => {
     const wrapper = mountSelect()
     const options = wrapper.findAll('option')
-    expect(options).toHaveLength(3)
+    expect(options).toHaveLength(defaultOptions.length)
     expect(options[0].text()).toBe('USD')
   })
 

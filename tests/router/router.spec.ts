@@ -96,7 +96,7 @@ function createTestRouter(authState: { isAuthenticated: boolean; user: any; hasR
           path: 'missions/create',
           name: 'mission-create',
           component: StubComponent,
-          meta: { requiresAuth: true, title: 'Create Mission' },
+          meta: { requiresAuth: true, roles: ['agent', 'client'], title: 'Create Mission' },
         },
         {
           path: 'messages',
@@ -283,6 +283,18 @@ describe('Router Configuration', () => {
       const router = createTestRouter(authState)
       const route = router.resolve('/app/missions/create')
       expect(route.name).toBe('mission-create')
+    })
+
+    it('allows client to access mission-create route', async () => {
+      authState.isAuthenticated = true
+      authState.user = { id: 2, role: 'client' }
+      authState.hasRole = vi.fn((role: string) => role === 'client')
+
+      const router = createTestRouter(authState)
+      await router.push('/app/missions/create')
+      await router.isReady()
+
+      expect(router.currentRoute.value.name).toBe('mission-create')
     })
 
     it('defines the messages route at /app/messages', () => {
