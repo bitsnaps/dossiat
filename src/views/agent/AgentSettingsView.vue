@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAgentProfileStore } from '@/stores/agentProfile'
 import { useToast } from '@/composables/useToast'
+import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -43,20 +44,6 @@ const clientTypeOptions = [
   { value: 'B2B', label: 'B2B' },
   { value: 'B2C', label: 'B2C' },
   { value: 'Both', label: 'Both' },
-]
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
-  { value: 'DZD', label: 'DZD' },
-  { value: 'GBP', label: 'GBP' },
-  { value: 'MAD', label: 'MAD' },
-  { value: 'AED', label: 'AED' },
-  { value: 'SAR', label: 'SAR' },
-  { value: 'CAD', label: 'CAD' },
-  { value: 'AUD', label: 'AUD' },
-  { value: 'JPY', label: 'JPY' },
-  { value: 'CHF', label: 'CHF' },
 ]
 
 onMounted(async () => {
@@ -157,7 +144,7 @@ async function handleSave() {
       <!-- Currency -->
       <BSelect
         v-model="currency"
-        :options="currencyOptions"
+        :options="CURRENCY_OPTIONS"
         :label="t('agentProfile.setup.currency')"
       />
 

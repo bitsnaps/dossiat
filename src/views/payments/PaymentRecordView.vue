@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { usePaymentsStore } from '@/stores/payments'
 import { useMissionsStore } from '@/stores/missions'
+import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import BCard from '@/components/base/BCard.vue'
 import BButton from '@/components/base/BButton.vue'
 import BInput from '@/components/base/BInput.vue'
@@ -21,15 +22,6 @@ const method = ref<string>('cash')
 const missionId = ref<string>('')
 const success = ref(false)
 const validationError = ref('')
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
-  { value: 'DZD', label: 'DZD' },
-  { value: 'GBP', label: 'GBP' },
-  { value: 'MAD', label: 'MAD' },
-  { value: 'AED', label: 'AED' },
-]
 
 const methodOptions = [
   { value: 'cash', label: t('payments.record.methods.cash') },
@@ -111,7 +103,7 @@ async function handleSubmit() {
           <label class="ds-payment-record__label">{{ t('payments.record.fields.currency') }}</label>
           <BSelect
             v-model="currency"
-            :options="currencyOptions"
+            :options="CURRENCY_OPTIONS"
             class="ds-payment-record__currency"
           />
         </div>

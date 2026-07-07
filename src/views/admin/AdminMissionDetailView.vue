@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAdminStore } from '@/stores/admin'
+import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import BCard from '@/components/base/BCard.vue'
 import BSelect from '@/components/base/BSelect.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -223,15 +224,7 @@ async function handleDelete() {
             <label>{{ t('admin.missions.currency') }}</label>
             <BSelect
               v-model="editForm.currency"
-              :options="[
-                { value: 'USD', label: 'USD' },
-                { value: 'EUR', label: 'EUR' },
-                { value: 'GBP', label: 'GBP' },
-                { value: 'MAD', label: 'MAD' },
-                { value: 'AED', label: 'AED' },
-                { value: 'SAR', label: 'SAR' },
-                { value: 'CAD', label: 'CAD' },
-              ]"
+              :options="CURRENCY_OPTIONS"
             />
           </div>
         </div>

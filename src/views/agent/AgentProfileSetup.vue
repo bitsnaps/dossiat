@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAgentProfileStore } from '@/stores/agentProfile'
 import { useToast } from '@/composables/useToast'
+import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import BCard from '@/components/base/BCard.vue'
 import BButton from '@/components/base/BButton.vue'
 import BInput from '@/components/base/BInput.vue'
@@ -47,20 +48,6 @@ const clientTypeOptions = [
   { value: 'B2B', label: 'B2B' },
   { value: 'B2C', label: 'B2C' },
   { value: 'Both', label: 'Both' },
-]
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
-  { value: 'DZD', label: 'DZD' },
-  { value: 'GBP', label: 'GBP' },
-  { value: 'MAD', label: 'MAD' },
-  { value: 'AED', label: 'AED' },
-  { value: 'SAR', label: 'SAR' },
-  { value: 'CAD', label: 'CAD' },
-  { value: 'AUD', label: 'AUD' },
-  { value: 'JPY', label: 'JPY' },
-  { value: 'CHF', label: 'CHF' },
 ]
 
 const progress = computed(() => Math.round((currentStep.value / totalSteps) * 100))
@@ -196,7 +183,7 @@ async function handleSubmit() {
         />
         <BSelect
           v-model="currency"
-          :options="currencyOptions"
+          :options="CURRENCY_OPTIONS"
           :label="t('agentProfile.setup.currency')"
           :error="errors.currency"
         />

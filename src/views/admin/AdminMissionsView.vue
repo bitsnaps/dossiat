@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAdminStore } from '@/stores/admin'
 import { usePagination } from '@/composables/usePagination'
+import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import SearchInput from '@/components/common/SearchInput.vue'
 import Pagination from '@/components/common/Pagination.vue'
 import BSelect from '@/components/base/BSelect.vue'
@@ -345,16 +346,7 @@ async function onTypeChange(value: string) {
             <label>{{ t('admin.missions.currency') }}</label>
             <BSelect
               v-model="form.currency"
-              :options="[
-                { value: 'USD', label: 'USD' },
-                { value: 'EUR', label: 'EUR' },
-                { value: 'DZD', label: 'DZD' },
-                { value: 'GBP', label: 'GBP' },
-                { value: 'MAD', label: 'MAD' },
-                { value: 'AED', label: 'AED' },
-                { value: 'SAR', label: 'SAR' },
-                { value: 'CAD', label: 'CAD' },
-              ]"
+              :options="CURRENCY_OPTIONS"
             />
           </div>
         </div>

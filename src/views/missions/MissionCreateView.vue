@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
+import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
 import BButton from '@/components/base/BButton.vue'
@@ -41,20 +42,6 @@ const missionTypeOptions = computed(() => [
   { value: 'one_time', label: t('missions.create.fields.oneTime') },
   { value: 'recurrent', label: t('missions.create.fields.recurrent') },
 ])
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
-  { value: 'DZD', label: 'DZD' },
-  { value: 'GBP', label: 'GBP' },
-  { value: 'MAD', label: 'MAD' },
-  { value: 'AED', label: 'AED' },
-  { value: 'SAR', label: 'SAR' },
-  { value: 'CAD', label: 'CAD' },
-  { value: 'AUD', label: 'AUD' },
-  { value: 'JPY', label: 'JPY' },
-  { value: 'CHF', label: 'CHF' },
-]
 
 const errors = ref<Record<string, string>>({})
 
@@ -159,7 +146,7 @@ async function handleSubmit() {
         <!-- Currency -->
         <BSelect
           v-model="currency"
-          :options="currencyOptions"
+          :options="CURRENCY_OPTIONS"
           :label="t('missions.create.fields.currency')"
         />
 
