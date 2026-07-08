@@ -32,7 +32,43 @@
       "resolveError": "فشل في حل النزاع",
       "resolved": "تم حل النزاع بنجاح",
       "status": "الحالة",
-      "view": "عرض"
+      "view": "عرض",
+      "search": "بحث بالسبب...",
+      "createDispute": "إنشاء نزاع",
+      "editDispute": "تعديل النزاع",
+      "deleteDispute": "حذف النزاع",
+      "deleteTitle": "حذف النزاع",
+      "deleteConfirm": "هل أنت متأكد من حذف هذا النزاع؟ لا يمكن التراجع عن هذا الإجراء.",
+      "created": "تم إنشاء النزاع بنجاح.",
+      "createError": "فشل في إنشاء النزاع.",
+      "updated": "تم تحديث النزاع بنجاح.",
+      "updateError": "فشل في تحديث النزاع.",
+      "deleted": "تم حذف النزاع بنجاح.",
+      "deleteError": "فشل في حذف النزاع.",
+      "escalated": "تم تصعيد النزاع بنجاح.",
+      "escalateError": "فشل في تصعيد النزاع.",
+      "escalate": "تصعيد",
+      "escalateConfirm": "هل أنت متأكد من أنك تريد تصعيد هذا النزاع؟",
+      "messageSent": "تم إرسال الرسالة بنجاح.",
+      "messageError": "فشل في إرسال الرسالة.",
+      "sendMessage": "إرسال رسالة",
+      "messagePlaceholder": "اكتب رسالة...",
+      "statusUpdated": "تم تحديث حالة النزاع.",
+      "statusUpdateError": "فشل في تحديث الحالة.",
+      "manageStatus": "إدارة الحالة",
+      "currentStatus": "الحالة الحالية",
+      "changeStatus": "تغيير الحالة",
+      "save": "حفظ",
+      "cancel": "إلغاء",
+      "actions": "الإجراءات",
+      "createTitle": "إنشاء نزاع جديد",
+      "reasonRequired": "السبب مطلوب.",
+      "missionRequired": "المهمة مطلوبة.",
+      "selectMission": "اختر مهمة",
+      "initiatedByRequired": "المبادر مطلوب.",
+      "selectInitiator": "اختر المبادر",
+      "create": "إنشاء",
+      "creating": "جارٍ الإنشاء..."
     },
     "missions": {
       "agent": "الوكيل",
@@ -349,7 +385,7 @@
     "feature3Title": "رصيد المنصة",
     "finance": "المالية",
     "inviteLinkLabel": "رابط الدعوة الفريد الخاص بك",
-    "profileName": "ياسين بنعلي",
+    "profileName": "آدم بن علي",
     "profileRole": "وكيل إداري ومالي • الدار البيضاء، المغرب",
     "realEstate": "العقارات",
     "sectionLabel": "للوكلا",
@@ -489,6 +525,12 @@
         "failed": "فشل",
         "pending": "قيد الانتظار",
         "refunded": "مسترد"
+      },
+      "dispute": {
+        "open": "مفتوح",
+        "reconciling": "قيد التوفيق",
+        "resolved": "محلول",
+        "escalated": "تم التصعيد"
       },
       "role": {
         "admin": "مدير",
@@ -810,6 +852,7 @@
         "title": "بنود قائمة التحقق"
       },
       "created": "تم إنشاء المهمة بنجاح.",
+      "createdClient": "تم نشر المهمة. بانتظار وكيل لتوليها.",
       "creating": "جارٍ الإنشاء...",
       "fields": {
         "amount": "المبلغ",
@@ -827,7 +870,8 @@
         "recurrent": "دوري",
         "taskBased": "حسب المهام",
         "title": "عنوان المهمة",
-        "titlePlaceholder": "مثال: دفع فاتورة الكهرباء، تسجيل شركة..."
+        "titlePlaceholder": "مثال: دفع فاتورة الكهرباء، تسجيل شركة...",
+        "proposedAmount": "المبلغ المقترح"
       },
       "submit": "إنشاء المهمة",
       "subtitle": "قم بإعداد مهمة جديدة لعميلك.",
@@ -989,7 +1033,7 @@
   },
   "mockup": {
     "mission1Status": "قيد التنفيذ",
-    "mission1Sub": "وكيل: ياسين ب. • الدار البيضاء",
+    "mission1Sub": "وكيل: آدم ب. • الدار البيضاء",
     "mission1Title": "دفع فاتورة الكهرباء المحلية",
     "mission2Status": "مكتمل",
     "mission2Sub": "وكيل: سارة م. • ليون",

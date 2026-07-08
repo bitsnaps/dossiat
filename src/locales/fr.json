@@ -32,7 +32,43 @@
       "resolveError": "Échec de la résolution du litige",
       "resolved": "Litige résolu avec succès.",
       "status": "Statut",
-      "view": "Voir"
+      "view": "Voir",
+      "search": "Rechercher par motif...",
+      "createDispute": "Créer un litige",
+      "editDispute": "Modifier le litige",
+      "deleteDispute": "Supprimer le litige",
+      "deleteTitle": "Supprimer le litige",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce litige ? Cette action est irréversible.",
+      "created": "Litige créé avec succès.",
+      "createError": "Échec de la création du litige.",
+      "updated": "Litige mis à jour avec succès.",
+      "updateError": "Échec de la mise à jour du litige.",
+      "deleted": "Litige supprimé avec succès.",
+      "deleteError": "Échec de la suppression du litige.",
+      "escalated": "Litige escaladé avec succès.",
+      "escalateError": "Échec de l'escalade du litige.",
+      "escalate": "Escalader",
+      "escalateConfirm": "Êtes-vous sûr de vouloir escalader ce litige ?",
+      "messageSent": "Message envoyé avec succès.",
+      "messageError": "Échec de l'envoi du message.",
+      "sendMessage": "Envoyer un message",
+      "messagePlaceholder": "Écrivez un message...",
+      "statusUpdated": "Statut du litige mis à jour.",
+      "statusUpdateError": "Échec de la mise à jour du statut.",
+      "manageStatus": "Gérer le statut",
+      "currentStatus": "Statut actuel",
+      "changeStatus": "Changer le statut",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "actions": "Actions",
+      "createTitle": "Créer un nouveau litige",
+      "reasonRequired": "Le motif est requis.",
+      "missionRequired": "La mission est requise.",
+      "selectMission": "Sélectionner une mission",
+      "initiatedByRequired": "L'initiateur est requis.",
+      "selectInitiator": "Sélectionner l'initiateur",
+      "create": "Créer",
+      "creating": "Création..."
     },
     "missions": {
       "agent": "Agent",
@@ -349,7 +385,7 @@
     "feature3Title": "Crédits plateforme",
     "finance": "Finance",
     "inviteLinkLabel": "Votre lien d'invitation unique",
-    "profileName": "Yassine Benali",
+    "profileName": "Adam Benali",
     "profileRole": "Agent Admin & Finance • Casablanca, MA",
     "realEstate": "Immobilier",
     "sectionLabel": "Pour les Agents",
@@ -489,6 +525,12 @@
         "failed": "Échoué",
         "pending": "En attente",
         "refunded": "Remboursé"
+      },
+      "dispute": {
+        "open": "Ouvert",
+        "reconciling": "En réconciliation",
+        "resolved": "Résolu",
+        "escalated": "Escaladé"
       },
       "role": {
         "admin": "Admin",
@@ -810,6 +852,7 @@
         "title": "Éléments de la liste"
       },
       "created": "Mission créée avec succès.",
+      "createdClient": "Mission publiée. En attente qu'un agent la reprenne.",
       "creating": "Création...",
       "fields": {
         "amount": "Montant",
@@ -827,7 +870,8 @@
         "recurrent": "Récurrente",
         "taskBased": "Par tâches",
         "title": "Titre de la mission",
-        "titlePlaceholder": "ex. Payer la facture d'électricité, Enregistrer l'entreprise..."
+        "titlePlaceholder": "ex. Payer la facture d'électricité, Enregistrer l'entreprise...",
+        "proposedAmount": "Montant proposé"
       },
       "submit": "Créer la mission",
       "subtitle": "Configurez une nouvelle mission pour votre client.",
@@ -989,7 +1033,7 @@
   },
   "mockup": {
     "mission1Status": "En cours",
-    "mission1Sub": "Agent : Yassine B. • Casablanca",
+    "mission1Sub": "Agent : Adam B. • Casablanca",
     "mission1Title": "Payer la facture d'électricité locale",
     "mission2Status": "Terminé",
     "mission2Sub": "Agent : Sara M. • Lyon",
