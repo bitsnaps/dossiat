@@ -937,4 +937,273 @@ admin.get('/stats', async (c) => {
   })
 })
 
+// ─── Revenue Stats Helpers ───
+
+type Period = 'daily' | 'weekly' | 'monthly' | 'yearly'
+
+function parsePeriod(value: string | undefined): Period {
+  const allowed: Period[] = ['daily', 'weekly', 'monthly', 'yearly']
+  return (allowed as string[]).includes(value || '') ? (value as Period) : 'monthly'
+}
+
+function bucketStart(date: Date, period: Period): Date {
+  const d = new Date(date)
+  d.setHours(0, 0, 0, 0)
+  if (period === 'daily') return d
+  if (period === 'weekly') {
+    const day = d.getDay() // 0 = Sunday
+    d.setDate(d.getDate() - day)
+    return d
+  }
+  if (period === 'monthly') {
+    d.setDate(1)
+    return d
+  }
+  // yearly
+  d.setMonth(0, 1)
+  return d
+}
+
+function addPeriod(d: Date, period: Period): Date {
+  const r = new Date(d)
+  if (period === 'daily') r.setDate(r.getDate() + 1)
+  else if (period === 'weekly') r.setDate(r.getDate() + 7)
+  else if (period === 'monthly') r.setMonth(r.getMonth() + 1)
+  else r.setFullYear(r.getFullYear() + 1)
+  return r
+}
+
+function formatLabel(start: Date, period: Period): string {
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  if (period === 'daily') return `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, '0')}-${String(start.getDate()).padStart(2, '0')}`
+  if (period === 'weekly') return `Week of ${months[start.getMonth()]} ${start.getDate()}, ${start.getFullYear()}`
+  if (period === 'monthly') return `${months[start.getMonth()]} ${start.getFullYear()}`
+  return `${start.getFullYear()}`
+}
+
+function generateBuckets(period: Period, from: Date, to: Date) {
+  const buckets: { start: Date; end: Date; label: string }[] = []
+  let cursor = bucketStart(from, period)
+  const endBucket = bucketStart(to, period)
+  // Guard against runaway loops
+  let safety = 0
+  while (cursor <= endBucket && safety < 1000) {
+    const end = addPeriod(cursor, period)
+    buckets.push({ start: new Date(cursor), end: new Date(end), label: formatLabel(cursor, period) })
+    cursor = end
+    safety++
+  }
+  return buckets
+}
+
+// ─── GET /api/admin/stats/revenue ───
+
+admin.get('/stats/revenue', async (c) => {
+  const period = parsePeriod(c.req.query('period'))
+  const now = new Date()
+
+  // Default range: 12 periods back from now
+  const defaultFrom = new Date(now)
+  if (period === 'daily') defaultFrom.setDate(defaultFrom.getDate() - 11)
+  else if (period === 'weekly') defaultFrom.setDate(defaultFrom.getDate() - 11 * 7)
+  else if (period === 'monthly') defaultFrom.setMonth(defaultFrom.getMonth() - 11)
+  else defaultFrom.setFullYear(defaultFrom.getFullYear() - 11)
+
+  const fromStr = c.req.query('from')
+  const toStr = c.req.query('to')
+  const from = fromStr ? new Date(fromStr) : defaultFrom
+  const to = toStr ? new Date(toStr) : now
+
+  if (isNaN(from.getTime()) || isNaN(to.getTime())) {
+    throw new AppError('Invalid from/to date format', 422)
+  }
+
+  // Fetch confirmed payments in range
+  const payments = await Payment.findAll({
+    where: {
+      status: 'confirmed',
+      [Op.or]: [
+        { confirmedAt: { [Op.between]: [from, to] } },
+        { confirmedAt: null, createdAt: { [Op.between]: [from, to] } },
+      ],
+    },
+    attributes: ['amount', 'platformFee', 'gatewayFee', 'netAmount', 'method', 'confirmedAt', 'createdAt'],
+    raw: true,
+  })
+
+  const buckets = generateBuckets(period, from, to)
+  const breakdown = buckets.map((b) => ({
+    periodStart: b.start.toISOString(),
+    periodEnd: b.end.toISOString(),
+    label: b.label,
+    grossAmount: 0,
+    platformFee: 0,
+    gatewayFee: 0,
+    netAmount: 0,
+    paymentCount: 0,
+  }))
+
+  const totals = { grossAmount: 0, platformFee: 0, gatewayFee: 0, netAmount: 0, paymentCount: 0 }
+  const byMethodMap: Record<string, { grossAmount: number; platformFee: number; gatewayFee: number; netAmount: number; paymentCount: number }> = {}
+
+  for (const p of payments as any[]) {
+    const ts = p.confirmedAt ? new Date(p.confirmedAt) : new Date(p.createdAt)
+    const bStart = bucketStart(ts, period)
+    // Find matching bucket
+    const idx = buckets.findIndex((b) => b.start.getTime() === bStart.getTime())
+    const amount = Number(p.amount) || 0
+    const platformFee = Number(p.platformFee) || 0
+    const gatewayFee = Number(p.gatewayFee) || 0
+    const netAmount = Number(p.netAmount) || 0
+
+    if (idx >= 0) {
+      breakdown[idx].grossAmount += amount
+      breakdown[idx].platformFee += platformFee
+      breakdown[idx].gatewayFee += gatewayFee
+      breakdown[idx].netAmount += netAmount
+      breakdown[idx].paymentCount += 1
+    }
+
+    totals.grossAmount += amount
+    totals.platformFee += platformFee
+    totals.gatewayFee += gatewayFee
+    totals.netAmount += netAmount
+    totals.paymentCount += 1
+
+    const method = p.method || 'unknown'
+    if (!byMethodMap[method]) byMethodMap[method] = { grossAmount: 0, platformFee: 0, gatewayFee: 0, netAmount: 0, paymentCount: 0 }
+    byMethodMap[method].grossAmount += amount
+    byMethodMap[method].platformFee += platformFee
+    byMethodMap[method].gatewayFee += gatewayFee
+    byMethodMap[method].netAmount += netAmount
+    byMethodMap[method].paymentCount += 1
+  }
+
+  const byMethod = Object.entries(byMethodMap).map(([method, v]) => ({ method, ...v }))
+
+  return successResponse(c, {
+    period,
+    from: from.toISOString(),
+    to: to.toISOString(),
+    breakdown,
+    totals,
+    byMethod,
+  })
+})
+
+// ─── Activity Feed Helpers ───
+
+interface ActivityItem {
+  type: string
+  id: string
+  createdAt: string
+  summary: string
+  actor: { id: number; firstName: string; lastName: string; role: string } | null
+  context: Record<string, unknown>
+}
+
+function actorFromUser(u: any): ActivityItem['actor'] {
+  if (!u) return null
+  return { id: u.id, firstName: u.firstName, lastName: u.lastName, role: u.role }
+}
+
+// ─── GET /api/admin/stats/activity ───
+
+admin.get('/stats/activity', async (c) => {
+  const limitRaw = parseInt(c.req.query('limit') || '20')
+  const limit = Math.min(Math.max(limitRaw || 20, 1), 100)
+
+  const userAttrs = ['id', 'firstName', 'lastName', 'role']
+
+  const [missions, payments, disputes, users] = await Promise.all([
+    Mission.findAll({
+      where: { status: { [Op.in]: ['draft', 'open', 'pending_agreement', 'agreed', 'in_progress', 'completed'] } },
+      include: [
+        { model: User, as: 'agent', attributes: userAttrs },
+        { model: User, as: 'client', attributes: userAttrs },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+    }),
+    Payment.findAll({
+      where: { status: 'confirmed' },
+      include: [
+        { model: User, as: 'payer', attributes: userAttrs },
+        { model: Mission, as: 'mission', attributes: ['id', 'title'] },
+      ],
+      order: [['confirmedAt', 'DESC']],
+      limit,
+    }),
+    Dispute.findAll({
+      include: [
+        { model: User, as: 'initiator', attributes: userAttrs },
+        { model: Mission, as: 'mission', attributes: ['id', 'title'] },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit,
+    }),
+    User.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'role', 'email', 'createdAt'],
+      order: [['createdAt', 'DESC']],
+      limit,
+    }),
+  ])
+
+  const events: ActivityItem[] = []
+
+  for (const m of missions as any[]) {
+    const isCompleted = m.status === 'completed'
+    const ts = isCompleted && m.completedAt ? new Date(m.completedAt) : new Date(m.createdAt)
+    events.push({
+      type: isCompleted ? 'mission_completed' : 'mission_created',
+      id: `mission:${m.id}`,
+      createdAt: ts.toISOString(),
+      summary: `${isCompleted ? 'Mission completed' : 'Mission created'}: '${m.title}'`,
+      actor: actorFromUser(m.agent || m.client),
+      context: { missionId: m.id, title: m.title, status: m.status },
+    })
+  }
+
+  for (const p of payments as any[]) {
+    const ts = p.confirmedAt ? new Date(p.confirmedAt) : new Date(p.createdAt)
+    events.push({
+      type: 'payment_confirmed',
+      id: `payment:${p.id}`,
+      createdAt: ts.toISOString(),
+      summary: `Payment of ${Number(p.amount).toFixed(2)} ${p.currency} confirmed`,
+      actor: actorFromUser(p.payer),
+      context: { paymentId: p.id, amount: Number(p.amount), currency: p.currency, method: p.method, missionId: p.missionId },
+    })
+  }
+
+  for (const d of disputes as any[]) {
+    const isResolved = d.status === 'resolved'
+    const ts = isResolved && d.resolvedAt ? new Date(d.resolvedAt) : new Date(d.createdAt)
+    events.push({
+      type: isResolved ? 'dispute_resolved' : 'dispute_opened',
+      id: `dispute:${d.id}`,
+      createdAt: ts.toISOString(),
+      summary: `${isResolved ? 'Dispute resolved' : 'Dispute opened'} on mission '${d.mission?.title || 'Unknown'}'`,
+      actor: actorFromUser(d.initiator),
+      context: { disputeId: d.id, missionId: d.missionId, reason: d.reason },
+    })
+  }
+
+  for (const u of users as any[]) {
+    events.push({
+      type: 'user_registered',
+      id: `user:${u.id}`,
+      createdAt: new Date(u.createdAt).toISOString(),
+      summary: `New ${u.role} registered: ${u.email}`,
+      actor: actorFromUser(u),
+      context: { userId: u.id, email: u.email, role: u.role },
+    })
+  }
+
+  events.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  const feed = events.slice(0, limit)
+
+  return successResponse(c, feed)
+})
+
 export default admin

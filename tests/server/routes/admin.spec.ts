@@ -1591,4 +1591,314 @@ describe('Admin Routes', { timeout: 30_000 }, () => {
       })
     })
   })
+
+  // ─── GET /api/admin/stats/revenue ───
+
+  describe('GET /api/admin/stats/revenue', () => {
+    let revenueMissionId: number
+    let confirmedPaymentIds: number[] = []
+
+    beforeAll(async () => {
+      const mission = await Mission.create({
+        agentId,
+        clientId,
+        title: 'Revenue Stats Mission',
+        type: 'one_time',
+        pricingType: 'fixed',
+        agreedAmount: 1000,
+        currency: 'USD',
+        status: 'completed',
+      })
+      revenueMissionId = mission.id
+
+      // Confirmed cash payment
+      const cash = await Payment.create({
+        missionId: revenueMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 500,
+        currency: 'USD',
+        method: 'cash',
+        platformFee: 5,
+        gatewayFee: 0,
+        netAmount: 495,
+        status: 'confirmed',
+        confirmedAt: new Date(),
+      })
+      confirmedPaymentIds.push(cash.id)
+
+      // Confirmed stripe payment
+      const stripe = await Payment.create({
+        missionId: revenueMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 300,
+        currency: 'USD',
+        method: 'stripe',
+        platformFee: 3,
+        gatewayFee: 9,
+        netAmount: 288,
+        status: 'confirmed',
+        confirmedAt: new Date(),
+      })
+      confirmedPaymentIds.push(stripe.id)
+
+      // Pending payment — should be excluded
+      const pending = await Payment.create({
+        missionId: revenueMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 9999,
+        currency: 'USD',
+        method: 'cash',
+        platformFee: 99,
+        gatewayFee: 0,
+        netAmount: 9900,
+        status: 'pending',
+      })
+      confirmedPaymentIds.push(pending.id)
+    })
+
+    afterAll(async () => {
+      await Payment.destroy({ where: { id: confirmedPaymentIds } })
+      confirmedPaymentIds = []
+      if (revenueMissionId) {
+        await Mission.destroy({ where: { id: revenueMissionId } })
+      }
+    })
+
+    it('returns revenue breakdown with buckets and totals', async () => {
+      const res = await app.request('/api/admin/stats/revenue', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(body.data.period).toBe('monthly')
+      expect(body.data.from).toBeDefined()
+      expect(body.data.to).toBeDefined()
+      expect(Array.isArray(body.data.breakdown)).toBe(true)
+      expect(body.data.breakdown.length).toBeGreaterThan(0)
+
+      const bucket = body.data.breakdown[0]
+      expect(bucket).toHaveProperty('periodStart')
+      expect(bucket).toHaveProperty('periodEnd')
+      expect(bucket).toHaveProperty('label')
+      expect(bucket).toHaveProperty('grossAmount')
+      expect(bucket).toHaveProperty('platformFee')
+      expect(bucket).toHaveProperty('gatewayFee')
+      expect(bucket).toHaveProperty('netAmount')
+      expect(bucket).toHaveProperty('paymentCount')
+
+      expect(body.data.totals).toBeDefined()
+      expect(body.data.totals).toHaveProperty('grossAmount')
+      expect(body.data.totals).toHaveProperty('platformFee')
+      expect(body.data.totals).toHaveProperty('gatewayFee')
+      expect(body.data.totals).toHaveProperty('netAmount')
+      expect(body.data.totals).toHaveProperty('paymentCount')
+      // Only confirmed payments (cash 500 + stripe 300 = 800 gross)
+      expect(Number(body.data.totals.grossAmount)).toBeGreaterThanOrEqual(800)
+      expect(Number(body.data.totals.paymentCount)).toBeGreaterThanOrEqual(2)
+    })
+
+    it('returns byMethod breakdown', async () => {
+      const res = await app.request('/api/admin/stats/revenue', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(Array.isArray(body.data.byMethod)).toBe(true)
+      const methods = body.data.byMethod.map((m: any) => m.method)
+      expect(methods).toContain('cash')
+      expect(methods).toContain('stripe')
+    })
+
+    it('respects period=daily', async () => {
+      const res = await app.request('/api/admin/stats/revenue?period=daily', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.data.period).toBe('daily')
+      expect(Array.isArray(body.data.breakdown)).toBe(true)
+    })
+
+    it('respects from/to date range', async () => {
+      // Range far in the future — should yield no confirmed payments
+      const future = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+      const futureEnd = new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000).toISOString()
+      const res = await app.request(`/api/admin/stats/revenue?from=${future}&to=${futureEnd}`, {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(Number(body.data.totals.paymentCount)).toBe(0)
+    })
+
+    it('excludes non-confirmed payments', async () => {
+      const res = await app.request('/api/admin/stats/revenue', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      // Pending payment amount 9999 should never appear in totals
+      expect(Number(body.data.totals.grossAmount)).toBeLessThan(9999)
+    })
+
+    it('rejects non-admin users', async () => {
+      const res = await app.request('/api/admin/stats/revenue', {
+        headers: { Authorization: `Bearer ${agentToken}` },
+      })
+
+      expect(res.status).toBe(403)
+    })
+
+    it('rejects unauthenticated requests', async () => {
+      const res = await app.request('/api/admin/stats/revenue')
+
+      expect(res.status).toBe(401)
+    })
+  })
+
+  // ─── GET /api/admin/stats/activity ───
+
+  describe('GET /api/admin/stats/activity', () => {
+    let activityMissionId: number
+    let activityPaymentId: number
+    let activityDisputeId: number
+    let activityUserId: number
+
+    beforeAll(async () => {
+      const mission = await Mission.create({
+        agentId,
+        clientId,
+        title: 'Activity Feed Mission',
+        type: 'one_time',
+        pricingType: 'fixed',
+        agreedAmount: 200,
+        currency: 'USD',
+        status: 'in_progress',
+      })
+      activityMissionId = mission.id
+
+      const payment = await Payment.create({
+        missionId: activityMissionId,
+        payerId: clientId,
+        payeeId: agentId,
+        amount: 200,
+        currency: 'USD',
+        method: 'cash',
+        platformFee: 2,
+        gatewayFee: 0,
+        netAmount: 198,
+        status: 'confirmed',
+        confirmedAt: new Date(),
+      })
+      activityPaymentId = payment.id
+
+      const dispute = await Dispute.create({
+        missionId: activityMissionId,
+        initiatedBy: clientId,
+        reason: 'Activity feed dispute',
+        status: 'open',
+      })
+      activityDisputeId = dispute.id
+
+      const user = await User.create({
+        email: `activity-${Date.now()}@test.com`,
+        passwordHash: await bcrypt.hash('Pass123!', 12),
+        firstName: 'Activity',
+        lastName: 'User',
+        role: 'agent',
+        emailVerified: true,
+      })
+      activityUserId = user.id
+    })
+
+    afterAll(async () => {
+      await Dispute.destroy({ where: { id: activityDisputeId } })
+      await Payment.destroy({ where: { id: activityPaymentId } })
+      await Mission.destroy({ where: { id: activityMissionId } })
+      await User.destroy({ where: { id: activityUserId } })
+    })
+
+    it('returns activity feed sorted by createdAt DESC', async () => {
+      const res = await app.request('/api/admin/stats/activity', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.success).toBe(true)
+      expect(Array.isArray(body.data)).toBe(true)
+      expect(body.data.length).toBeGreaterThan(0)
+
+      // Verify DESC sort
+      for (let i = 1; i < body.data.length; i++) {
+        const prev = new Date(body.data[i - 1].createdAt).getTime()
+        const curr = new Date(body.data[i].createdAt).getTime()
+        expect(prev).toBeGreaterThanOrEqual(curr)
+      }
+
+      const item = body.data[0]
+      expect(item).toHaveProperty('type')
+      expect(item).toHaveProperty('id')
+      expect(item).toHaveProperty('createdAt')
+      expect(item).toHaveProperty('summary')
+      expect(item).toHaveProperty('actor')
+      expect(item).toHaveProperty('context')
+    })
+
+    it('includes events of multiple types', async () => {
+      const res = await app.request('/api/admin/stats/activity?limit=100', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      const types = body.data.map((i: any) => i.type)
+      expect(types).toContain('mission_created')
+      expect(types).toContain('payment_confirmed')
+      expect(types).toContain('dispute_opened')
+      expect(types).toContain('user_registered')
+    })
+
+    it('respects limit param', async () => {
+      const res = await app.request('/api/admin/stats/activity?limit=5', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.data.length).toBeLessThanOrEqual(5)
+    })
+
+    it('caps limit at 100', async () => {
+      const res = await app.request('/api/admin/stats/activity?limit=9999', {
+        headers: { Authorization: `Bearer ${adminToken}` },
+      })
+      const body = await res.json()
+
+      expect(res.status).toBe(200)
+      expect(body.data.length).toBeLessThanOrEqual(100)
+    })
+
+    it('rejects non-admin users', async () => {
+      const res = await app.request('/api/admin/stats/activity', {
+        headers: { Authorization: `Bearer ${agentToken}` },
+      })
+
+      expect(res.status).toBe(403)
+    })
+
+    it('rejects unauthenticated requests', async () => {
+      const res = await app.request('/api/admin/stats/activity')
+
+      expect(res.status).toBe(401)
+    })
+  })
 })

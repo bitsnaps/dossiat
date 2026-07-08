@@ -35,6 +35,44 @@ describe('Admin Service', () => {
     })
   })
 
+  describe('getRevenueStats()', () => {
+    it('calls GET /admin/stats/revenue without params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { breakdown: [] } } as any)
+
+      const result = await admin.getRevenueStats()
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/stats/revenue', { params: undefined })
+      expect(result).toEqual({ success: true, data: { breakdown: [] } })
+    })
+
+    it('calls GET /admin/stats/revenue with params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { breakdown: [] } } as any)
+
+      await admin.getRevenueStats({ period: 'daily', from: '2026-01-01', to: '2026-07-08' })
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/stats/revenue', { params: { period: 'daily', from: '2026-01-01', to: '2026-07-08' } })
+    })
+  })
+
+  describe('getActivityFeed()', () => {
+    it('calls GET /admin/stats/activity without params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      const result = await admin.getActivityFeed()
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/stats/activity', { params: undefined })
+      expect(result).toEqual({ success: true, data: [] })
+    })
+
+    it('calls GET /admin/stats/activity with limit', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await admin.getActivityFeed({ limit: 50 })
+
+      expect(mockGet).toHaveBeenCalledWith('/admin/stats/activity', { params: { limit: 50 } })
+    })
+  })
+
   // ─── Users ───
 
   describe('getUsers()', () => {

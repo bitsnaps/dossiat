@@ -1,7 +1,13 @@
 {
   "admin": {
     "dashboard": {
+      "daysAgo": "منذ {n} يوم",
+      "hoursAgo": "منذ {n} ساعة",
+      "justNow": "الآن",
+      "minutesAgo": "منذ {n} دقيقة",
+      "noActivity": "لا يوجد نشاط حديث.",
       "openDisputes": "النزاعات المفتوحة",
+      "recentActivity": "النشاط الأخير",
       "subtitle": "نظرة عامة ليوم {date}",
       "title": "لوحة تحكم الإدارة",
       "totalDisputes": "إجمالي النزاعات",
@@ -986,7 +992,7 @@
     "mission1Sub": "وكيل: ياسين ب. • الدار البيضاء",
     "mission1Title": "دفع فاتورة الكهرباء المحلية",
     "mission2Status": "مكتمل",
-    "mission2Sub": "وكيل: ليلى م. • ليون",
+    "mission2Sub": "وكيل: سارة م. • ليون",
     "mission2Title": "تجديد تسجيل الشركة",
     "mission3Status": "دوري",
     "mission3Sub": "دوري • مجدول تلقائياً",

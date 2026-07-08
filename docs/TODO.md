@@ -525,8 +525,8 @@
 - [x] Create `POST /api/admin/subscription-plans` — create new subscription plan
 - [x] Create `PUT /api/admin/subscription-plans/:id` — update subscription plan
 - [x] Create `DELETE /api/admin/subscription-plans/:id` — deactivate subscription plan
-- [ ] Create `GET /api/admin/stats/revenue` — revenue breakdown by period
-- [ ] Create `GET /api/admin/stats/activity` — recent platform activity feed
+- [x] Create `GET /api/admin/stats/revenue` — revenue breakdown by period
+- [x] Create `GET /api/admin/stats/activity` — recent platform activity feed
 
 ### 13b. Frontend Admin Service
 

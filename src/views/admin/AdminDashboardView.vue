@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAdminStore } from '@/stores/admin'
 
@@ -8,6 +8,7 @@ const adminStore = useAdminStore()
 
 onMounted(() => {
   adminStore.fetchStats()
+  adminStore.fetchActivityFeed()
 })
 
 const statCards = [
@@ -17,6 +18,32 @@ const statCards = [
   { key: 'openDisputes', icon: 'bi-exclamation-triangle', color: '#dc2626' },
   { key: 'totalRevenue', icon: 'bi-currency-dollar', color: '#7c3aed', format: 'currency' },
 ]
+
+const activityIcon: Record<string, string> = {
+  mission_created: 'bi-clipboard-plus',
+  mission_completed: 'bi-clipboard-check',
+  payment_confirmed: 'bi-cash-coin',
+  dispute_opened: 'bi-flag',
+  dispute_resolved: 'bi-check-circle',
+  user_registered: 'bi-person-plus',
+}
+
+function activityIconFor(type: string) {
+  return activityIcon[type] || 'bi-activity'
+}
+
+function relativeTime(iso: string) {
+  const diff = Date.now() - new Date(iso).getTime()
+  const mins = Math.floor(diff / 60000)
+  if (mins < 1) return t('admin.dashboard.justNow')
+  if (mins < 60) return t('admin.dashboard.minutesAgo', { n: mins })
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return t('admin.dashboard.hoursAgo', { n: hours })
+  const days = Math.floor(hours / 24)
+  return t('admin.dashboard.daysAgo', { n: days })
+}
+
+const hasActivity = computed(() => (adminStore.activityFeed || []).length > 0)
 </script>
 
 <template>
@@ -45,6 +72,39 @@ const statCards = [
           </div>
           <div class="ds-admin-dashboard__stat-label">{{ t(`admin.dashboard.${card.key}`) }}</div>
         </div>
+      </div>
+    </div>
+
+    <div class="ds-admin-dashboard__activity">
+      <h2 class="ds-admin-dashboard__section-title">{{ t('admin.dashboard.recentActivity') }}</h2>
+
+      <div v-if="adminStore.loading.activityFeed" class="ds-admin-dashboard__loading">
+        <span class="ds-spinner" />
+      </div>
+
+      <div v-else-if="hasActivity" class="ds-admin-dashboard__activity-list">
+        <div
+          v-for="item in adminStore.activityFeed"
+          :key="item.id"
+          class="ds-admin-dashboard__activity-item"
+        >
+          <div class="ds-admin-dashboard__activity-icon">
+            <i :class="['bi', activityIconFor(item.type)]" />
+          </div>
+          <div class="ds-admin-dashboard__activity-body">
+            <div class="ds-admin-dashboard__activity-summary">{{ item.summary }}</div>
+            <div class="ds-admin-dashboard__activity-meta">
+              <span v-if="item.actor" class="ds-admin-dashboard__activity-actor">
+                {{ item.actor.firstName }} {{ item.actor.lastName }}
+              </span>
+              <span class="ds-admin-dashboard__activity-time">{{ relativeTime(item.createdAt) }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div v-else class="ds-admin-dashboard__activity-empty">
+        {{ t('admin.dashboard.noActivity') }}
       </div>
     </div>
   </div>

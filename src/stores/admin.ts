@@ -85,6 +85,59 @@ export interface AdminStats {
   totalRevenue: number
 }
 
+export interface RevenueBucket {
+  periodStart: string
+  periodEnd: string
+  label: string
+  grossAmount: number
+  platformFee: number
+  gatewayFee: number
+  netAmount: number
+  paymentCount: number
+}
+
+export interface RevenueTotals {
+  grossAmount: number
+  platformFee: number
+  gatewayFee: number
+  netAmount: number
+  paymentCount: number
+}
+
+export interface RevenueByMethod {
+  method: string
+  grossAmount: number
+  platformFee: number
+  gatewayFee: number
+  netAmount: number
+  paymentCount: number
+}
+
+export interface RevenueStats {
+  period: string
+  from: string
+  to: string
+  breakdown: RevenueBucket[]
+  totals: RevenueTotals
+  byMethod: RevenueByMethod[]
+}
+
+export interface ActivityActor {
+  id: number
+  firstName: string
+  lastName: string
+  role: string
+}
+
+export interface ActivityItem {
+  type: string
+  id: string
+  createdAt: string
+  summary: string
+  actor: ActivityActor | null
+  context: Record<string, unknown>
+}
+
 interface PaginationMeta {
   page: number
   limit: number
@@ -103,6 +156,8 @@ export const useAdminStore = defineStore('admin', () => {
   const selectedDispute = ref<AdminDispute | null>(null)
   const plans = ref<AdminPlan[]>([])
   const stats = ref<AdminStats | null>(null)
+  const revenueStats = ref<RevenueStats | null>(null)
+  const activityFeed = ref<ActivityItem[]>([])
   const loading = ref<Record<string, boolean>>({})
   const error = ref<string | null>(null)
   const pagination = ref<Record<string, PaginationMeta>>({})
@@ -123,6 +178,32 @@ export const useAdminStore = defineStore('admin', () => {
       error.value = err.response?.data?.error || err.message || 'Failed to fetch stats'
     } finally {
       setLoading('stats', false)
+    }
+  }
+
+  async function fetchRevenueStats(params?: { period?: string; from?: string; to?: string }) {
+    setLoading('revenueStats', true)
+    error.value = null
+    try {
+      const response = await adminApi.getRevenueStats(params) as ApiResponse<RevenueStats>
+      revenueStats.value = response.data!
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to fetch revenue stats'
+    } finally {
+      setLoading('revenueStats', false)
+    }
+  }
+
+  async function fetchActivityFeed(params?: { limit?: number }) {
+    setLoading('activityFeed', true)
+    error.value = null
+    try {
+      const response = await adminApi.getActivityFeed(params) as ApiResponse<ActivityItem[]>
+      activityFeed.value = response.data || []
+    } catch (err: any) {
+      error.value = err.response?.data?.error || err.message || 'Failed to fetch activity feed'
+    } finally {
+      setLoading('activityFeed', false)
     }
   }
 
@@ -581,8 +662,8 @@ export const useAdminStore = defineStore('admin', () => {
     missions, selectedMission,
     payments, selectedPayment,
     disputes, selectedDispute,
-    plans, stats, loading, error, pagination,
-    fetchStats,
+    plans, stats, revenueStats, activityFeed, loading, error, pagination,
+    fetchStats, fetchRevenueStats, fetchActivityFeed,
     fetchUsers, fetchUser, createUser, updateUser, resetUserPassword, deactivateUser, activateUser, deleteUser,
     fetchMissions, fetchMission, createMission, updateMission, deleteMission, updateMissionStatus,
     fetchPayments, fetchPayment, createPayment, updatePayment, deletePayment, updatePaymentStatus,

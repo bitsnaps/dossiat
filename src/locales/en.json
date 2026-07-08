@@ -25,7 +25,7 @@
     "mission1Sub": "Agent: Yassine B. • Casablanca",
     "mission1Status": "In progress",
     "mission2Title": "Renew company registration",
-    "mission2Sub": "Agent: Léa M. • Lyon",
+    "mission2Sub": "Agent: Sara M. • Lyon",
     "mission2Status": "Complete",
     "mission3Title": "Monthly VAT filing",
     "mission3Sub": "Recurrent • Auto-scheduled",
@@ -1130,7 +1130,13 @@
       "totalMissions": "Total Missions",
       "totalDisputes": "Total Disputes",
       "openDisputes": "Open Disputes",
-      "totalRevenue": "Total Revenue"
+      "totalRevenue": "Total Revenue",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No recent activity.",
+      "justNow": "Just now",
+      "minutesAgo": "{n}m ago",
+      "hoursAgo": "{n}h ago",
+      "daysAgo": "{n}d ago"
     },
     "users": {
       "title": "User Management",

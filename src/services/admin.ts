@@ -6,6 +6,14 @@ export function getStats() {
   return get('/admin/stats')
 }
 
+export function getRevenueStats(params?: { period?: string; from?: string; to?: string }) {
+  return get('/admin/stats/revenue', { params })
+}
+
+export function getActivityFeed(params?: { limit?: number }) {
+  return get('/admin/stats/activity', { params })
+}
+
 // ─── Users ───
 
 export function getUsers(params?: { page?: number; limit?: number; search?: string; role?: string }) {

@@ -1,7 +1,13 @@
 {
   "admin": {
     "dashboard": {
+      "daysAgo": "il y a {n} j",
+      "hoursAgo": "il y a {n} h",
+      "justNow": "À l'instant",
+      "minutesAgo": "il y a {n} min",
+      "noActivity": "Aucune activité récente.",
       "openDisputes": "Litiges ouverts",
+      "recentActivity": "Activité récente",
       "subtitle": "Aperçu pour le {date}",
       "title": "Tableau de bord admin",
       "totalDisputes": "Total litiges",
@@ -986,7 +992,7 @@
     "mission1Sub": "Agent : Yassine B. • Casablanca",
     "mission1Title": "Payer la facture d'électricité locale",
     "mission2Status": "Terminé",
-    "mission2Sub": "Agent : Léa M. • Lyon",
+    "mission2Sub": "Agent : Sara M. • Lyon",
     "mission2Title": "Renouveler l'enregistrement de l'entreprise",
     "mission3Status": "Récurrent",
     "mission3Sub": "Récurrent • Planifié automatiquement",

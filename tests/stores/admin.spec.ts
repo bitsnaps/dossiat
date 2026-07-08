@@ -3,6 +3,8 @@ import { setActivePinia, createPinia } from 'pinia'
 
 vi.mock('@/services/admin', () => ({
   getStats: vi.fn(),
+  getRevenueStats: vi.fn(),
+  getActivityFeed: vi.fn(),
   getUsers: vi.fn(),
   getUser: vi.fn(),
   createUser: vi.fn(),
@@ -42,6 +44,8 @@ import * as adminService from '@/services/admin'
 import { useAdminStore } from '@/stores/admin'
 
 const mockGetStats = vi.mocked(adminService.getStats)
+const mockGetRevenueStats = vi.mocked(adminService.getRevenueStats)
+const mockGetActivityFeed = vi.mocked(adminService.getActivityFeed)
 const mockGetUsers = vi.mocked(adminService.getUsers)
 const mockGetUser = vi.mocked(adminService.getUser)
 const mockCreateUser = vi.mocked(adminService.createUser)
@@ -118,6 +122,67 @@ describe('Admin Store', () => {
 
       expect(store.error).toBe('Failed')
       expect(store.stats).toBeNull()
+    })
+  })
+
+  describe('fetchRevenueStats()', () => {
+    it('loads revenue stats from API', async () => {
+      mockGetRevenueStats.mockResolvedValueOnce({
+        data: {
+          period: 'monthly',
+          from: '2025-08-01',
+          to: '2026-07-08',
+          breakdown: [{ periodStart: '2026-07-01', periodEnd: '2026-08-01', label: 'Jul 2026', grossAmount: 1000, platformFee: 10, gatewayFee: 30, netAmount: 960, paymentCount: 5 }],
+          totals: { grossAmount: 1000, platformFee: 10, gatewayFee: 30, netAmount: 960, paymentCount: 5 },
+          byMethod: [{ method: 'cash', grossAmount: 1000, platformFee: 10, gatewayFee: 0, netAmount: 990, paymentCount: 5 }],
+        },
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchRevenueStats({ period: 'monthly' })
+
+      expect(mockGetRevenueStats).toHaveBeenCalledWith({ period: 'monthly' })
+      expect(store.revenueStats).not.toBeNull()
+      expect(store.revenueStats!.period).toBe('monthly')
+      expect(store.revenueStats!.breakdown.length).toBe(1)
+    })
+
+    it('sets error on failure', async () => {
+      mockGetRevenueStats.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await store.fetchRevenueStats()
+
+      expect(store.error).toBe('Failed')
+      expect(store.revenueStats).toBeNull()
+    })
+  })
+
+  describe('fetchActivityFeed()', () => {
+    it('loads activity feed from API', async () => {
+      mockGetActivityFeed.mockResolvedValueOnce({
+        data: [
+          { type: 'mission_created', id: 'mission:1', createdAt: '2026-07-08T10:00:00.000Z', summary: 'Mission created', actor: null, context: {} },
+          { type: 'user_registered', id: 'user:2', createdAt: '2026-07-08T09:00:00.000Z', summary: 'New agent registered', actor: null, context: {} },
+        ],
+      } as any)
+
+      const store = useAdminStore()
+      await store.fetchActivityFeed({ limit: 50 })
+
+      expect(mockGetActivityFeed).toHaveBeenCalledWith({ limit: 50 })
+      expect(store.activityFeed.length).toBe(2)
+      expect(store.activityFeed[0].type).toBe('mission_created')
+    })
+
+    it('sets error on failure', async () => {
+      mockGetActivityFeed.mockRejectedValueOnce({ response: { data: { error: 'Failed' } } })
+
+      const store = useAdminStore()
+      await store.fetchActivityFeed()
+
+      expect(store.error).toBe('Failed')
+      expect(store.activityFeed).toEqual([])
     })
   })
 
