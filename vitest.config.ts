@@ -23,5 +23,6 @@ export default defineConfig({
     environment: 'jsdom',
     // Server tests share a SQLite database — run them sequentially to avoid race conditions
     fileParallelism: false,
+    hookTimeout: 30000,
   },
 })

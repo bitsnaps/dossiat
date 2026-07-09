@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import crypto from 'node:crypto'
 import { Op } from 'sequelize'
 import { User, AgentProfile, ClientProfile, Mission, Dispute, Payment, SubscriptionPlan, RefreshToken } from '@/server/database/models'
 import { successResponse, paginatedResponse, errorResponse } from '@/server/utils/apiResponse'
@@ -90,6 +91,21 @@ admin.post('/users',
       emailVerified: false,
     })
 
+    // Create the corresponding profile for the role
+    if (user.role === 'agent') {
+      const slug = `${firstName.toLowerCase()}-${lastName.toLowerCase()}-${crypto.randomBytes(3).toString('hex')}`
+      await AgentProfile.create({
+        userId: user.id,
+        uniqueInviteSlug: slug,
+        specialties: [],
+        acceptedClientTypes: 'Both',
+        currency: 'USD',
+        timezone: 'UTC',
+      })
+    } else if (user.role === 'client') {
+      await ClientProfile.create({ userId: user.id })
+    }
+
     const { passwordHash: _, ...userSafe } = user.toJSON() as any
 
     return successResponse(c, userSafe, 'User created', 201)
@@ -140,7 +156,30 @@ admin.put('/users/:id',
       throw new AppError('No valid fields to update', 422)
     }
 
+    // Ensure profile exists when role changes to agent or client
+    const prevRole = user.role
     await user.update(updates)
+    const newRole = user.role
+
+    if (newRole === 'agent' && prevRole !== 'agent') {
+      const existingProfile = await AgentProfile.findOne({ where: { userId: user.id } })
+      if (!existingProfile) {
+        const slug = `${user.firstName.toLowerCase()}-${user.lastName.toLowerCase()}-${crypto.randomBytes(3).toString('hex')}`
+        await AgentProfile.create({
+          userId: user.id,
+          uniqueInviteSlug: slug,
+          specialties: [],
+          acceptedClientTypes: 'Both',
+          currency: 'USD',
+          timezone: 'UTC',
+        })
+      }
+    } else if (newRole === 'client' && prevRole !== 'client') {
+      const existingProfile = await ClientProfile.findOne({ where: { userId: user.id } })
+      if (!existingProfile) {
+        await ClientProfile.create({ userId: user.id })
+      }
+    }
 
     const updated = await User.findByPk(id, {
       attributes: { exclude: ['passwordHash'] },

@@ -14,6 +14,22 @@ const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE = parseInt(process.env.MAX_AVATAR_SIZE || String(5 * 1024 * 1024)) // 5MB default
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads/avatars'
 
+async function ensureAgentProfile(userId: number) {
+  const slug = crypto.randomBytes(6).toString('hex')
+  const [profile] = await AgentProfile.findOrCreate({
+    where: { userId },
+    defaults: {
+      userId,
+      uniqueInviteSlug: slug,
+      specialties: [],
+      acceptedClientTypes: 'Both',
+      currency: 'USD',
+      timezone: 'UTC',
+    },
+  })
+  return profile
+}
+
 const users = new Hono()
 
 // GET /api/users/me
@@ -87,6 +103,67 @@ users.put('/me/password',
   }
 )
 
+// GET /api/users/agents/discover — search agents (clients only; admins via X-View-As-Role: client)
+// Query: ?q=<text>&clientType=B2B|B2C|Both&limit=<n>&offset=<n>
+users.get('/agents/discover',
+  authenticate(),
+  roleGuard('client'),
+  async (c) => {
+    const q = (c.req.query('q') || '').trim()
+    const clientType = c.req.query('clientType') as 'B2B' | 'B2C' | 'Both' | undefined
+    const limit = Math.min(parseInt(c.req.query('limit') || '20', 10) || 20, 100)
+    const offset = Math.max(parseInt(c.req.query('offset') || '0', 10) || 0, 0)
+
+    const where: any = {}
+    if (clientType && ['B2B', 'B2C', 'Both'].includes(clientType)) {
+      where.acceptedClientTypes = clientType
+    }
+
+    const profiles = await AgentProfile.findAll({
+      where,
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'firstName', 'lastName', 'email'],
+          where: { emailVerified: true },
+        },
+      ],
+      limit,
+      offset,
+      order: [[{ model: User, as: 'user' }, 'firstName', 'ASC']],
+    }) as any[]
+
+    // Filter by name (firstName/lastName) and specialties in JS to stay dialect-agnostic
+    const needle = q.toLowerCase()
+    const filtered = needle
+      ? profiles.filter((p) => {
+          const fn = (p.user?.firstName || '').toLowerCase()
+          const ln = (p.user?.lastName || '').toLowerCase()
+          const specialties: string[] = Array.isArray(p.specialties) ? p.specialties : []
+          return (
+            fn.includes(needle) ||
+            ln.includes(needle) ||
+            specialties.some((s) => String(s).toLowerCase().includes(needle))
+          )
+        })
+      : profiles
+
+    const data = filtered.map((p) => ({
+      id: p.id,
+      slug: p.uniqueInviteSlug,
+      firstName: p.user?.firstName,
+      lastName: p.user?.lastName,
+      bio: p.bio,
+      specialties: Array.isArray(p.specialties) ? p.specialties : [],
+      acceptedClientTypes: p.acceptedClientTypes,
+      profilePhotoUrl: p.profilePhotoUrl,
+    }))
+
+    return successResponse(c, data)
+  }
+)
+
 // GET /api/users/agents/:slug — public agent profile (progressive visibility)
 users.get('/agents/:slug', async (c) => {
   const slug = c.req.param('slug')
@@ -147,9 +224,7 @@ users.put('/agents/me',
     const auth = c.get('auth')
     const { bio, specialties, acceptedClientTypes, currency, timezone } = await c.req.json()
 
-    const profile = await AgentProfile.findOne({ where: { userId: auth.userId } })
-    if (!profile) throw new AppError('Agent profile not found', 404)
-
+    const profile = await ensureAgentProfile(auth.userId)
     await profile.update({ bio, specialties, acceptedClientTypes, currency, timezone })
 
     return successResponse(c, profile, 'Agent profile updated')
@@ -162,8 +237,7 @@ users.post('/agents/me/invite-link',
   roleGuard('agent'),
   async (c) => {
     const auth = c.get('auth')
-    const profile = await AgentProfile.findOne({ where: { userId: auth.userId } })
-    if (!profile) throw new AppError('Agent profile not found', 404)
+    const profile = await ensureAgentProfile(auth.userId)
 
     const slug = crypto.randomBytes(6).toString('hex')
     await profile.update({ uniqueInviteSlug: slug })
@@ -254,7 +328,7 @@ users.post('/me/avatar', authenticate(), async (c) => {
   // Get the profile based on role
   let profile: any = null
   if (auth.role === 'agent') {
-    profile = await AgentProfile.findOne({ where: { userId: auth.userId } })
+    profile = await ensureAgentProfile(auth.userId)
   } else if (auth.role === 'client') {
     profile = await ClientProfile.findOne({ where: { userId: auth.userId } })
   }
