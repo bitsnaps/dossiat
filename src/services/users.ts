@@ -60,3 +60,12 @@ export function getNetworkUsers(role?: 'client' | 'agent') {
   const query = role ? `?role=${role}` : ''
   return get(`/users/network${query}`)
 }
+
+export function discoverAgents(params?: {
+  q?: string
+  clientType?: 'B2B' | 'B2C' | 'Both'
+  limit?: number
+  offset?: number
+}) {
+  return get('/users/agents/discover', { params })
+}

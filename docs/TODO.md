@@ -117,6 +117,7 @@
 - [x] Create `POST /api/agents/me/invite-link` — Generate/regenerate unique invite link
 - [x] Create `GET /api/clients/me` — Get client profile details
 - [x] Create `PUT /api/clients/me` — Update client profile
+- [x] Create `GET /api/users/agents/discover` — Search agents by name, specialty, client type (client-only; admins via X-View-As-Role)
 
 ### 3d. Mission Routes
 
@@ -315,7 +316,7 @@
 
 - [x] Create `ClientProfileView.vue` — Client profile view
 - [x] Create `ClientSettingsView.vue` — Edit client profile and company info
-- [x] Create `AgentDiscoveryView.vue` — Browse agents discovered via invite links (future: public marketplace)
+- [x] Create `AgentDiscoveryView.vue` — Browse agents by name, specialty, and client type (wired to `GET /api/users/agents/discover`)
 
 ### 5d. Mission Pages
 

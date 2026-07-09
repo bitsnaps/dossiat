@@ -17,6 +17,7 @@ import {
   updateAgentProfile,
   getClientProfile,
   updateClientProfile,
+  discoverAgents,
 } from '@/services/users'
 
 const mockGet = vi.mocked(get)
@@ -122,6 +123,27 @@ describe('Users Service', () => {
 
       expect(mockPut).toHaveBeenCalledWith('/clients/me', { companyName: 'Acme Corp' })
       expect(result).toEqual({ success: true })
+    })
+  })
+
+  describe('discoverAgents()', () => {
+    it('calls GET /api/users/agents/discover with params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      const result = await discoverAgents({ q: 'Legal', clientType: 'Both', limit: 10, offset: 0 })
+
+      expect(mockGet).toHaveBeenCalledWith('/users/agents/discover', {
+        params: { q: 'Legal', clientType: 'Both', limit: 10, offset: 0 },
+      })
+      expect(result).toEqual({ success: true, data: [] })
+    })
+
+    it('calls GET /api/users/agents/discover with no params', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: [] } as any)
+
+      await discoverAgents()
+
+      expect(mockGet).toHaveBeenCalledWith('/users/agents/discover', { params: undefined })
     })
   })
 })

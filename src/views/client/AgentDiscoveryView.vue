@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
 import BAvatar from '@/components/base/BAvatar.vue'
 import BInput from '@/components/base/BInput.vue'
+import { discoverAgents } from '@/services/users'
+import type { ApiResponse } from '@/server/utils/apiResponse'
 
 const { t } = useI18n()
 
 const searchQuery = ref('')
 const loading = ref(false)
+const error = ref<string | null>(null)
 
 interface DiscoveredAgent {
   id: number
@@ -25,11 +28,14 @@ interface DiscoveredAgent {
 
 const agents = ref<DiscoveredAgent[]>([])
 
-// Placeholder for future API call
 async function searchAgents() {
   loading.value = true
+  error.value = null
   try {
-    // TODO: Replace with actual API call when agent discovery endpoint is available
+    const response = await discoverAgents({ q: searchQuery.value }) as ApiResponse<DiscoveredAgent[]>
+    agents.value = response.data ?? []
+  } catch (err: any) {
+    error.value = err.response?.data?.error || err.message || t('agentDiscovery.empty')
     agents.value = []
   } finally {
     loading.value = false
@@ -41,6 +47,8 @@ function clientTypeLabel(type: 'B2B' | 'B2C' | 'Both') {
   if (type === 'B2C') return t('agentDiscovery.agent.b2c')
   return t('agentDiscovery.agent.both')
 }
+
+onMounted(searchAgents)
 </script>
 
 <template>
@@ -64,6 +72,12 @@ function clientTypeLabel(type: 'B2B' | 'B2C' | 'Both') {
     <!-- Loading -->
     <div v-if="loading" class="ds-loading">
       <i class="bi bi-arrow-repeat ds-loading__spinner" />
+    </div>
+
+    <!-- Error State -->
+    <div v-else-if="error" class="ds-empty-state">
+      <i class="bi bi-exclamation-triangle ds-empty-state__icon" />
+      <p>{{ error }}</p>
     </div>
 
     <!-- Empty State -->
