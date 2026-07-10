@@ -110,7 +110,44 @@ missions.post('/',
     }
 
     if (auth.role === 'client') {
-      // Client-initiated: no agentId, status is open
+      if (body.agentId) {
+        // Client pre-assigns to a specific agent: validate agent exists
+        const agentUser = await User.findByPk(body.agentId)
+        if (!agentUser || agentUser.role !== 'agent') {
+          throw new AppError('Agent not found', 404)
+        }
+
+        // Check seat limit for the client (seat limits apply once an agent is assigned)
+        const seatCheck = await checkSeatLimit(auth.userId)
+        if (!seatCheck.allowed) {
+          throw new AppError(`You have reached the maximum of ${seatCheck.max} agent seats. Upgrade your plan to add more.`, 403)
+        }
+
+        const mission = await Mission.create({
+          agentId: body.agentId,
+          clientId: auth.userId,
+          title: body.title,
+          description: body.description || null,
+          status: 'pending_agreement',
+          type: body.type || 'one_time',
+          pricingType: body.pricingType,
+          agreedAmount: body.agreedAmount || null,
+          proposedAmount: body.agreedAmount || null,
+          proposedBy: auth.userId,
+          currency: body.currency || 'USD',
+          agreedChecklist: body.agreedChecklist || [],
+        })
+
+        // Create conversation for the mission
+        await Conversation.create({ missionId: mission.id })
+
+        // Notify the agent about the new mission
+        createNotification(body.agentId, 'mission.created', 'New Mission', `You have a new mission from a client: ${mission.title}`, { missionId: mission.id })
+
+        return successResponse(c, mission, 'Mission created', 201)
+      }
+
+      // Client-initiated open mission: no agentId, status is open
       const mission = await Mission.create({
         agentId: null,
         clientId: auth.userId,
@@ -193,22 +230,54 @@ missions.post('/bulk',
         createNotification(entry.clientId, 'mission.created', 'New Mission', `You have a new mission: ${mission.title}`, { missionId: mission.id })
         created.push(mission)
       } else if (auth.role === 'client') {
-        // Client creates open missions (unassigned)
-        const mission = await Mission.create({
-          agentId: null,
-          clientId: auth.userId,
-          title: entry.title,
-          description: entry.description || null,
-          status: 'open',
-          type: entry.type || 'one_time',
-          pricingType: entry.pricingType,
-          proposedAmount: entry.agreedAmount || null,
-          proposedBy: auth.userId,
-          currency: entry.currency || 'USD',
-          agreedChecklist: entry.agreedChecklist || [],
-        })
+        if (entry.agentId) {
+          // Client pre-assigns to a specific agent
+          const agentUser = await User.findByPk(entry.agentId)
+          if (!agentUser || agentUser.role !== 'agent') {
+            throw new AppError('Agent not found for one of the missions', 404)
+          }
 
-        created.push(mission)
+          const seatCheck = await checkSeatLimit(auth.userId)
+          if (!seatCheck.allowed) {
+            throw new AppError(`You have reached the maximum of ${seatCheck.max} agent seats. Upgrade your plan to add more.`, 403)
+          }
+
+          const mission = await Mission.create({
+            agentId: entry.agentId,
+            clientId: auth.userId,
+            title: entry.title,
+            description: entry.description || null,
+            status: 'pending_agreement',
+            type: entry.type || 'one_time',
+            pricingType: entry.pricingType,
+            agreedAmount: entry.agreedAmount || null,
+            proposedAmount: entry.agreedAmount || null,
+            proposedBy: auth.userId,
+            currency: entry.currency || 'USD',
+            agreedChecklist: entry.agreedChecklist || [],
+          })
+
+          await Conversation.create({ missionId: mission.id })
+          createNotification(entry.agentId, 'mission.created', 'New Mission', `You have a new mission from a client: ${mission.title}`, { missionId: mission.id })
+          created.push(mission)
+        } else {
+          // Client creates open missions (unassigned)
+          const mission = await Mission.create({
+            agentId: null,
+            clientId: auth.userId,
+            title: entry.title,
+            description: entry.description || null,
+            status: 'open',
+            type: entry.type || 'one_time',
+            pricingType: entry.pricingType,
+            proposedAmount: entry.agreedAmount || null,
+            proposedBy: auth.userId,
+            currency: entry.currency || 'USD',
+            agreedChecklist: entry.agreedChecklist || [],
+          })
+
+          created.push(mission)
+        }
       }
     }
 

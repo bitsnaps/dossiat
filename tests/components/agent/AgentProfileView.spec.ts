@@ -9,17 +9,19 @@ const router = createRouter({
   routes: [
     { path: '/', component: { template: '<div />' } },
     { path: '/agents/:slug', name: 'agent-profile', component: { template: '<div />' } },
+    { path: '/app/missions/create', name: 'mission-create', component: { template: '<div />' } },
   ],
 })
 
 const mockStoreFactory = vi.fn()
+const mockAuthReturnValue = {
+  user: null as any,
+  isAuthenticated: false,
+  hasRole: vi.fn(() => false),
+}
 
 vi.mock('@/stores/auth', () => ({
-  useAuthStore: vi.fn(() => ({
-    user: null,
-    isAuthenticated: false,
-    hasRole: vi.fn(() => false),
-  })),
+  useAuthStore: vi.fn(() => mockAuthReturnValue),
 }))
 
 vi.mock('@/stores/agentProfile', () => ({
@@ -101,5 +103,60 @@ describe('AgentProfileView', () => {
     })
     expect(wrapper.html()).toContain('Finance')
     expect(wrapper.html()).toContain('Legal')
+  })
+
+  it('shows Start a Mission CTA for authenticated clients viewing another agent', () => {
+    mockAuthReturnValue.user = { id: 100, firstName: 'Client', lastName: 'User', role: 'client' }
+    mockAuthReturnValue.isAuthenticated = true
+    mockAuthReturnValue.hasRole = vi.fn((role: string) => role === 'client')
+
+    const wrapper = mountWithStore({
+      publicProfile: {
+        id: 1,
+        bio: 'Bio',
+        specialties: ['Finance'],
+        acceptedClientTypes: 'Both',
+        timezone: 'UTC',
+        profilePhotoUrl: null,
+        user: { id: 200, firstName: 'Agent', lastName: 'Profile' },
+      },
+    })
+
+    const cta = wrapper.find('.ds-agent-profile__cta')
+    expect(cta.exists()).toBe(true)
+    const link = cta.find('a')
+    expect(link.exists()).toBe(true)
+    expect(link.attributes('href')).toContain('/app/missions/create?agentId=200')
+
+    // Reset
+    mockAuthReturnValue.user = null
+    mockAuthReturnValue.isAuthenticated = false
+    mockAuthReturnValue.hasRole = vi.fn(() => false)
+  })
+
+  it('does not show Start a Mission CTA for authenticated agents viewing another agent', () => {
+    mockAuthReturnValue.user = { id: 300, firstName: 'Agent', lastName: 'User', role: 'agent' }
+    mockAuthReturnValue.isAuthenticated = true
+    mockAuthReturnValue.hasRole = vi.fn((role: string) => role === 'agent')
+
+    const wrapper = mountWithStore({
+      publicProfile: {
+        id: 1,
+        bio: 'Bio',
+        specialties: ['Finance'],
+        acceptedClientTypes: 'Both',
+        timezone: 'UTC',
+        profilePhotoUrl: null,
+        user: { id: 400, firstName: 'Other', lastName: 'Agent' },
+      },
+    })
+
+    const cta = wrapper.find('.ds-agent-profile__cta')
+    expect(cta.exists()).toBe(false)
+
+    // Reset
+    mockAuthReturnValue.user = null
+    mockAuthReturnValue.isAuthenticated = false
+    mockAuthReturnValue.hasRole = vi.fn(() => false)
   })
 })

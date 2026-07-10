@@ -137,9 +137,14 @@ onUnmounted(() => {
         <InviteLinkShare :slug="ownInviteSlug" />
       </BCard>
 
-      <!-- CTA for authenticated visitors (non-owners) -->
-      <div v-if="!isOwnProfile && authStore.isAuthenticated" class="ds-agent-profile__cta">
-        <BButton variant="accent" size="lg" icon="bi-clipboard-plus">
+      <!-- CTA for authenticated clients (non-owners) -->
+      <div v-if="!isOwnProfile && authStore.isAuthenticated && authStore.hasRole('client')" class="ds-agent-profile__cta">
+        <BButton
+          variant="accent"
+          size="lg"
+          icon="bi-clipboard-plus"
+          :to="`/app/missions/create?agentId=${agentProfileStore.publicProfile.user.id}`"
+        >
           {{ t('agentProfile.view.startMission') }}
         </BButton>
       </div>
@@ -156,3 +161,98 @@ onUnmounted(() => {
     </template>
   </div>
 </template>
+
+<style scoped>
+.ds-agent-profile {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 48rem;
+  padding-bottom: 2rem;
+}
+
+.ds-agent-profile__hero {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  background: var(--ds-surface, #131a2e);
+  border: 1px solid var(--ds-border, rgba(255, 255, 255, 0.08));
+  border-radius: var(--ds-radius-xl, 16px);
+}
+
+.ds-agent-profile__hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ds-agent-profile__name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--ds-text, #e8ecf4);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ds-agent-profile__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ds-agent-profile__section {
+  margin-top: 0;
+}
+
+.ds-agent-profile__bio {
+  font-size: 0.875rem;
+  color: var(--ds-text-muted, #9aa3b8);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ds-agent-profile__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.ds-agent-profile__cta {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 0.5rem;
+}
+
+.ds-agent-profile__register-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.ds-agent-profile__register-text {
+  font-size: 0.875rem;
+  color: var(--ds-text-muted, #9aa3b8);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .ds-agent-profile {
+    max-width: 100%;
+    padding: 0 0.5rem;
+  }
+
+  .ds-agent-profile__hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem;
+  }
+
+  .ds-agent-profile__name {
+    font-size: 1.25rem;
+  }
+}
+</style>

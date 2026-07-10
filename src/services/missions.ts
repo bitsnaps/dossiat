@@ -11,6 +11,7 @@ export interface CreateMissionData {
   title: string
   description?: string
   clientId?: string
+  agentId?: string
   pricingType: 'fixed' | 'hourly' | 'task_based'
   agreedAmount?: number
   currency?: string

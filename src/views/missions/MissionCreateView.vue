@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useAuthStore } from '@/stores/auth'
@@ -15,6 +15,7 @@ import UserSelect from '@/components/common/UserSelect.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+const route = useRoute()
 const missionsStore = useMissionsStore()
 const authStore = useAuthStore()
 const toast = useToast()
@@ -24,6 +25,7 @@ const isClient = computed(() => authStore.hasRole('client'))
 
 const title = ref('')
 const clientId = ref('')
+const agentId = ref((route.query.agentId as string) || '')
 const description = ref('')
 const pricingType = ref<'fixed' | 'hourly' | 'task_based'>('fixed')
 const agreedAmount = ref<number | ''>('')
@@ -72,13 +74,14 @@ async function handleSubmit() {
     const newMission = await missionsStore.createMission({
       title: title.value.trim(),
       clientId: isAgent.value ? clientId.value.trim() : undefined,
+      agentId: isClient.value && agentId.value ? agentId.value : undefined,
       description: description.value.trim() || undefined,
       pricingType: pricingType.value,
       agreedAmount: agreedAmount.value ? Number(agreedAmount.value) : undefined,
       currency: currency.value,
       agreedChecklist: filteredChecklist.value.length > 0 ? filteredChecklist.value : undefined,
     })
-    toast.success(t('missions.create.created'))
+    toast.success(isClient.value && agentId.value ? t('missions.create.createdPreAssigned') : t('missions.create.created'))
     router.push(`/app/missions/${newMission.id}`)
   } catch {
     // Error handled by store
@@ -115,6 +118,15 @@ async function handleSubmit() {
           :label="t('missions.create.fields.client')"
           :placeholder="t('missions.create.fields.clientPlaceholder')"
           :error="errors.client"
+        />
+
+        <!-- Agent (Client only) -->
+        <UserSelect
+          v-if="isClient"
+          v-model="agentId"
+          role="agent"
+          :label="t('missions.create.fields.agent')"
+          :placeholder="t('missions.create.fields.agentPlaceholder')"
         />
 
         <!-- Description -->

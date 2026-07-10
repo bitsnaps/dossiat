@@ -533,4 +533,60 @@ describe('Client-Initiated Missions', () => {
     expect(res.status).toBe(403)
     expect(body.success).toBe(false)
   })
+
+  it('POST /api/missions - client creates a mission pre-assigned to an agent', async () => {
+    const res = await app.request('/api/missions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({
+        title: 'Pre-assigned Mission',
+        pricingType: 'fixed',
+        agreedAmount: 300,
+        agentId,
+      }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(201)
+    expect(body.success).toBe(true)
+    expect(body.data.title).toBe('Pre-assigned Mission')
+    expect(body.data.status).toBe('pending_agreement')
+    expect(body.data.agentId).toBe(agentId)
+    expect(body.data.clientId).toBe(clientId)
+    expect(body.data.agreedAmount).toBe(300)
+    expect(body.data.proposedAmount).toBe(300)
+    expect(body.data.proposedBy).toBe(clientId)
+  })
+
+  it('POST /api/missions - client pre-assigns to invalid agentId returns 404', async () => {
+    const res = await app.request('/api/missions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({
+        title: 'Invalid Agent Mission',
+        pricingType: 'fixed',
+        agentId: 99999,
+      }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(404)
+    expect(body.success).toBe(false)
+  })
+
+  it('POST /api/missions - client pre-assigns to a non-agent user returns 404', async () => {
+    const res = await app.request('/api/missions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientToken}` },
+      body: JSON.stringify({
+        title: 'Non-Agent Assignment',
+        pricingType: 'fixed',
+        agentId: clientId, // clientId is a client, not an agent
+      }),
+    })
+    const body = await res.json()
+
+    expect(res.status).toBe(404)
+    expect(body.success).toBe(false)
+  })
 })
