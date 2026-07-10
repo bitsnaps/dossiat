@@ -96,4 +96,81 @@ describe('BTagGroup', () => {
     expect(wrapper.emitted('remove')![0]).toEqual(['Legal'])
     expect(wrapper.emitted('update:modelValue')![0]).toEqual([[]])
   })
+
+  it('does not render custom add input when allowCustom is false', () => {
+    const wrapper = mountTag()
+    expect(wrapper.find('.ds-tag-group__add').exists()).toBe(false)
+  })
+
+  it('renders custom add input when allowCustom is true', () => {
+    const wrapper = mountTag({ allowCustom: true })
+    expect(wrapper.find('.ds-tag-group__add').exists()).toBe(true)
+    expect(wrapper.find('.ds-tag-group__input').exists()).toBe(true)
+    expect(wrapper.find('.ds-tag-group__add-btn').exists()).toBe(true)
+  })
+
+  it('uses customPlaceholder and customAddLabel props', () => {
+    const wrapper = mountTag({
+      allowCustom: true,
+      customPlaceholder: 'Type a specialty…',
+      customAddLabel: 'Add',
+    })
+    expect(wrapper.find('.ds-tag-group__input').attributes('placeholder')).toBe('Type a specialty…')
+    expect(wrapper.find('.ds-tag-group__add-btn').text()).toBe('Add')
+  })
+
+  it('adds a custom value via the Add button', async () => {
+    const wrapper = mountTag({ allowCustom: true, modelValue: [] })
+    await wrapper.find('.ds-tag-group__input').setValue('Photography')
+    await wrapper.find('.ds-tag-group__add-btn').trigger('click')
+    expect(wrapper.emitted('update:modelValue')).toBeTruthy()
+    expect(wrapper.emitted('update:modelValue')![0]).toEqual([['Photography']])
+    expect(wrapper.emitted('add')![0]).toEqual(['Photography'])
+  })
+
+  it('adds a custom value when Enter is pressed', async () => {
+    const wrapper = mountTag({ allowCustom: true, modelValue: [] })
+    await wrapper.find('.ds-tag-group__input').setValue('Photography')
+    await wrapper.find('.ds-tag-group__input').trigger('keydown', { key: 'Enter' })
+    expect(wrapper.emitted('update:modelValue')![0]).toEqual([['Photography']])
+  })
+
+  it('does not add empty custom value', async () => {
+    const wrapper = mountTag({ allowCustom: true, modelValue: [] })
+    await wrapper.find('.ds-tag-group__input').setValue('   ')
+    await wrapper.find('.ds-tag-group__add-btn').trigger('click')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
+  it('does not add duplicate custom value (case-insensitive)', async () => {
+    const wrapper = mountTag({ allowCustom: true, modelValue: ['Legal'] })
+    await wrapper.find('.ds-tag-group__input').setValue('legal')
+    await wrapper.find('.ds-tag-group__add-btn').trigger('click')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
+  it('clears the custom input after adding', async () => {
+    const wrapper = mountTag({ allowCustom: true, modelValue: [] })
+    const input = wrapper.find('.ds-tag-group__input')
+    await input.setValue('Photography')
+    await wrapper.find('.ds-tag-group__add-btn').trigger('click')
+    expect((input.element as HTMLInputElement).value).toBe('')
+  })
+
+  it('renders custom selected values as active tags', () => {
+    const wrapper = mountTag({ modelValue: ['Legal', 'Photography'] })
+    const tags = wrapper.findAll('.ds-tag')
+    // 3 static options + 1 custom tag
+    expect(tags).toHaveLength(4)
+    const customTag = wrapper.find('.ds-tag--custom')
+    expect(customTag.exists()).toBe(true)
+    expect(customTag.classes()).toContain('ds-tag--active')
+    expect(customTag.text()).toContain('Photography')
+  })
+
+  it('disables custom add input when disabled', () => {
+    const wrapper = mountTag({ allowCustom: true, disabled: true })
+    expect(wrapper.find('.ds-tag-group__input').attributes('disabled')).toBeDefined()
+    expect(wrapper.find('.ds-tag-group__add-btn').attributes('disabled')).toBeDefined()
+  })
 })

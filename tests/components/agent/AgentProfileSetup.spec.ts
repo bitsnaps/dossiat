@@ -89,4 +89,23 @@ describe('AgentProfileSetup', () => {
     const backBtn = buttons.find((b) => b.text().includes('Back'))
     expect(backBtn).toBeUndefined()
   })
+
+  it('navigates to the specialties step and renders extended options', async () => {
+    const wrapper = mountSetup()
+    // Fill step 1 (Basics) bio input to pass validation
+    const bioInput = wrapper.find('input')
+    await bioInput.setValue('I am an experienced agent.')
+    // Move to step 2 (Specialties)
+    const nextBtn = wrapper.findAll('button').find((b) => b.text().includes('Next'))
+    await nextBtn!.trigger('click')
+
+    // Extended specialty options should be rendered as tags
+    const html = wrapper.html()
+    expect(html).toContain('Translation')
+    expect(html).toContain('Marketing')
+    expect(html).toContain('Logistics')
+    // Custom add input should be present
+    expect(wrapper.find('.ds-tag-group__add').exists()).toBe(true)
+    expect(wrapper.find('.ds-tag-group__input').exists()).toBe(true)
+  })
 })

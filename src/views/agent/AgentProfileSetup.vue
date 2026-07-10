@@ -33,16 +33,22 @@ const avatarPreview = ref<string | null>(null)
 // Validation errors
 const errors = ref<Record<string, string>>({})
 
-const specialtyOptions = [
-  { value: 'Legal', label: 'Legal' },
-  { value: 'Finance', label: 'Finance' },
-  { value: 'Real Estate', label: 'Real Estate' },
-  { value: 'Admin', label: 'Admin' },
-  { value: 'IT / Tech', label: 'IT / Tech' },
-  { value: 'HR', label: 'HR' },
-  { value: 'Consulting', label: 'Consulting' },
-  { value: 'Other', label: 'Other' },
-]
+const specialtyOptions = computed(() => [
+  { value: 'Legal', label: t('agentProfile.setup.specialtyLegal') },
+  { value: 'Finance', label: t('agentProfile.setup.specialtyFinance') },
+  { value: 'Real Estate', label: t('agentProfile.setup.specialtyRealEstate') },
+  { value: 'Admin', label: t('agentProfile.setup.specialtyAdmin') },
+  { value: 'IT / Tech', label: t('agentProfile.setup.specialtyIT') },
+  { value: 'HR', label: t('agentProfile.setup.specialtyHR') },
+  { value: 'Consulting', label: t('agentProfile.setup.specialtyConsulting') },
+  { value: 'Translation', label: t('agentProfile.setup.specialtyTranslation') },
+  { value: 'Marketing', label: t('agentProfile.setup.specialtyMarketing') },
+  { value: 'Design', label: t('agentProfile.setup.specialtyDesign') },
+  { value: 'Logistics', label: t('agentProfile.setup.specialtyLogistics') },
+  { value: 'Education', label: t('agentProfile.setup.specialtyEducation') },
+  { value: 'Healthcare', label: t('agentProfile.setup.specialtyHealthcare') },
+  { value: 'Other', label: t('agentProfile.setup.specialtyOther') },
+])
 
 const clientTypeOptions = [
   { value: 'B2B', label: 'B2B' },
@@ -196,6 +202,10 @@ async function handleSubmit() {
           v-model="specialties"
           :options="specialtyOptions"
           :error="errors.specialties"
+          allow-custom
+          removable
+          :custom-placeholder="t('agentProfile.setup.specialtyCustomPlaceholder')"
+          :custom-add-label="t('agentProfile.setup.specialtyAdd')"
         />
       </div>
 

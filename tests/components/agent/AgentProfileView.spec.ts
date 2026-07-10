@@ -17,7 +17,7 @@ const mockStoreFactory = vi.fn()
 const mockAuthReturnValue = {
   user: null as any,
   isAuthenticated: false,
-  hasRole: vi.fn(() => false),
+  hasRole: vi.fn((_role: string) => false),
 }
 
 vi.mock('@/stores/auth', () => ({
@@ -131,7 +131,7 @@ describe('AgentProfileView', () => {
     // Reset
     mockAuthReturnValue.user = null
     mockAuthReturnValue.isAuthenticated = false
-    mockAuthReturnValue.hasRole = vi.fn(() => false)
+    mockAuthReturnValue.hasRole = vi.fn((_role: string) => false)
   })
 
   it('does not show Start a Mission CTA for authenticated agents viewing another agent', () => {
@@ -157,6 +157,6 @@ describe('AgentProfileView', () => {
     // Reset
     mockAuthReturnValue.user = null
     mockAuthReturnValue.isAuthenticated = false
-    mockAuthReturnValue.hasRole = vi.fn(() => false)
+    mockAuthReturnValue.hasRole = vi.fn((_role: string) => false)
   })
 })
