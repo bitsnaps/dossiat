@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { usePaymentsStore } from '@/stores/payments'
@@ -9,13 +9,25 @@ import BCard from '@/components/base/BCard.vue'
 import BBadge from '@/components/base/BBadge.vue'
 import BButton from '@/components/base/BButton.vue'
 import BAlert from '@/components/base/BAlert.vue'
+import BModal from '@/components/base/BModal.vue'
 import SkeletonLoader from '@/components/common/SkeletonLoader.vue'
+import InviteLinkShare from '@/components/agent/InviteLinkShare.vue'
 
 const { t } = useI18n()
 const missionsStore = useMissionsStore()
 const paymentsStore = usePaymentsStore()
 const messagesStore = useMessagesStore()
 const agentProfileStore = useAgentProfileStore()
+
+const showInviteModal = ref(false)
+
+const inviteSlug = computed(() => agentProfileStore.profile?.uniqueInviteSlug || '')
+
+onMounted(() => {
+  if (!agentProfileStore.profile) {
+    agentProfileStore.fetchProfile()
+  }
+})
 
 const stats = computed(() => [
   {
@@ -170,10 +182,15 @@ const isLoading = computed(() => missionsStore.loading && missionsStore.missions
         <BButton variant="outline" to="/app/credits" icon="bi-coin">
           {{ t('dashboard.viewCredits') }}
         </BButton>
-        <BButton variant="outline" to="/app/settings" icon="bi-link-45deg">
+        <BButton variant="outline" icon="bi-link-45deg" :disabled="!inviteSlug" @click="showInviteModal = true">
           {{ t('dashboard.shareInviteLink') }}
         </BButton>
       </div>
     </BCard>
+
+    <!-- Invite Link Modal -->
+    <BModal v-model="showInviteModal" :title="t('dashboard.shareInviteLink')" size="md">
+      <InviteLinkShare v-if="inviteSlug" :slug="inviteSlug" />
+    </BModal>
   </div>
 </template>
