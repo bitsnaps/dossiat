@@ -18,6 +18,7 @@ import {
   getClientProfile,
   updateClientProfile,
   discoverAgents,
+  getUserById,
 } from '@/services/users'
 
 const mockGet = vi.mocked(get)
@@ -144,6 +145,25 @@ describe('Users Service', () => {
       await discoverAgents()
 
       expect(mockGet).toHaveBeenCalledWith('/users/agents/discover', { params: undefined })
+    })
+  })
+
+  describe('getUserById()', () => {
+    it('calls GET /api/users/:id', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { id: 1, firstName: 'John', lastName: 'Doe', role: 'agent' } } as any)
+
+      const result = await getUserById(1)
+
+      expect(mockGet).toHaveBeenCalledWith('/users/1')
+      expect(result).toEqual({ success: true, data: { id: 1, firstName: 'John', lastName: 'Doe', role: 'agent' } })
+    })
+
+    it('accepts string ids', async () => {
+      mockGet.mockResolvedValueOnce({ success: true, data: { id: 2 } } as any)
+
+      await getUserById('2')
+
+      expect(mockGet).toHaveBeenCalledWith('/users/2')
     })
   })
 })

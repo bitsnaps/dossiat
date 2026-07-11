@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs'
 import crypto from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { User, AgentProfile, ClientProfile } from '@/server/database/models'
+import { User, AgentProfile, ClientProfile, Mission } from '@/server/database/models'
 import { successResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
@@ -249,28 +249,56 @@ users.post('/agents/me/invite-link',
   }
 )
 
-// GET /api/users/network — list users in the caller's network (for dropdowns)
-// Query: ?role=client|agent — which role to list. When an agent requests
-// role=client (e.g. to assign a client on mission creation), ALL clients are
-// returned, not only those with existing missions.
+// GET /api/users/network — list users in the caller's private network (for dropdowns)
+// Query: ?role=client|agent — which role to list.
+//
+// Private Network model (per PRD §2): only users with whom the caller has at
+// least one existing mission are returned. Agents onboard new clients via their
+// invite link; clients discover agents via /agents/discover or the invite link.
 users.get('/network', authenticate(), async (c) => {
   const auth = c.get('auth')
   const requestedRole = c.req.query('role') as 'client' | 'agent' | undefined
 
-  // Agent listing clients (for mission assignment)
+  // Agent listing clients in their network (for mission assignment)
   if (auth.role === 'agent' && (requestedRole === 'client' || !requestedRole)) {
+    // Collect distinct clientIds from missions where this agent is assigned
+    const missions = await Mission.findAll({
+      where: { agentId: auth.userId },
+      attributes: ['clientId'],
+      group: ['clientId'],
+      raw: true,
+    })
+    const clientIds = missions.map((m: any) => m.clientId).filter((id: any) => id != null)
+
+    if (clientIds.length === 0) {
+      return successResponse(c, [])
+    }
+
     const clients = await User.findAll({
-      where: { role: 'client' },
+      where: { id: clientIds, role: 'client' },
       attributes: ['id', 'firstName', 'lastName', 'email'],
       order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     })
     return successResponse(c, clients)
   }
 
-  // Client listing agents (for mission assignment)
+  // Client listing agents in their network (for re-assignment convenience)
   if (auth.role === 'client' && (requestedRole === 'agent' || !requestedRole)) {
+    // Collect distinct agentIds from missions where this client is the client
+    const missions = await Mission.findAll({
+      where: { clientId: auth.userId },
+      attributes: ['agentId'],
+      group: ['agentId'],
+      raw: true,
+    })
+    const agentIds = missions.map((m: any) => m.agentId).filter((id: any) => id != null)
+
+    if (agentIds.length === 0) {
+      return successResponse(c, [])
+    }
+
     const agents = await User.findAll({
-      where: { role: 'agent' },
+      where: { id: agentIds, role: 'agent' },
       attributes: ['id', 'firstName', 'lastName', 'email'],
       order: [['firstName', 'ASC'], ['lastName', 'ASC']],
     })
@@ -387,6 +415,26 @@ users.post('/me/avatar', authenticate(), async (c) => {
   await profile.update({ profilePhotoUrl })
 
   return successResponse(c, { profilePhotoUrl }, 'Avatar uploaded successfully')
+})
+
+// GET /api/users/:id — minimal public user info by id (for read-only displays)
+// Returns only public-safe fields. Used e.g. to display a pre-assigned agent's
+// name in the mission create form when arriving via ?agentId=.
+// Declared last so it never shadows specific routes (/me, /network, /agents/*, /clients/*).
+users.get('/:id', authenticate(), async (c) => {
+  const idParam = c.req.param('id') ?? ''
+  // Only accept numeric ids to avoid matching other single-segment routes
+  if (!/^\d+$/.test(idParam)) {
+    throw new AppError('User not found', 404)
+  }
+
+  const user = await User.findByPk(parseInt(idParam, 10), {
+    attributes: ['id', 'firstName', 'lastName', 'role'],
+  })
+
+  if (!user) throw new AppError('User not found', 404)
+
+  return successResponse(c, user)
 })
 
 export default users

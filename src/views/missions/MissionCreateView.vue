@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useMissionsStore } from '@/stores/missions'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
+import { getUserById } from '@/services/users'
+import type { ApiResponse } from '@/server/utils/apiResponse'
 import { CURRENCY_OPTIONS } from '@/constants/currencies'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
@@ -34,6 +36,36 @@ const missionType = ref<'one_time' | 'recurrent'>('one_time')
 const checklistItems = ref<string[]>([''])
 const submitting = ref(false)
 
+// Client-side: pre-assigned agent display (read-only when arriving via ?agentId=)
+const preAssignedAgentName = ref('')
+const preAssignedAgentLoading = ref(false)
+
+// Client-side: assignment mode when no agentId is pre-filled
+// 'open' = post an open mission (any agent can claim)
+// 'browse' = navigate to discovery (no submission)
+const assignmentMode = ref<'open' | 'browse'>('open')
+
+const hasPreAssignedAgent = computed(() => isClient.value && !!agentId.value)
+
+onMounted(async () => {
+  if (hasPreAssignedAgent.value) {
+    preAssignedAgentLoading.value = true
+    try {
+      const response = await getUserById(agentId.value) as ApiResponse<{ id: number; firstName: string; lastName: string; role: string }>
+      const agentData = response.data
+      if (agentData) {
+        preAssignedAgentName.value = `${agentData.firstName} ${agentData.lastName}`
+      }
+    } catch {
+      // If the agent can't be fetched, clear the pre-assignment so the client
+      // falls back to the assignment-mode choice.
+      agentId.value = ''
+    } finally {
+      preAssignedAgentLoading.value = false
+    }
+  }
+})
+
 const pricingTypeOptions = computed(() => [
   { value: 'fixed', label: t('missions.create.fields.fixed') },
   { value: 'hourly', label: t('missions.create.fields.hourly') },
@@ -43,6 +75,11 @@ const pricingTypeOptions = computed(() => [
 const missionTypeOptions = computed(() => [
   { value: 'one_time', label: t('missions.create.fields.oneTime') },
   { value: 'recurrent', label: t('missions.create.fields.recurrent') },
+])
+
+const assignmentModeOptions = computed(() => [
+  { value: 'open', label: t('missions.create.assignmentOpen') },
+  { value: 'browse', label: t('missions.create.assignmentBrowse') },
 ])
 
 const errors = ref<Record<string, string>>({})
@@ -68,6 +105,12 @@ const filteredChecklist = computed(() =>
 )
 
 async function handleSubmit() {
+  // If the client chose "browse" mode, do not submit — navigate to discovery.
+  if (isClient.value && !hasPreAssignedAgent.value && assignmentMode.value === 'browse') {
+    router.push('/app/discover')
+    return
+  }
+
   if (!validate()) return
   submitting.value = true
   try {
@@ -120,14 +163,42 @@ async function handleSubmit() {
           :error="errors.client"
         />
 
-        <!-- Agent (Client only) -->
-        <UserSelect
-          v-if="isClient"
-          v-model="agentId"
-          role="agent"
-          :label="t('missions.create.fields.agent')"
-          :placeholder="t('missions.create.fields.agentPlaceholder')"
-        />
+        <!-- Agent (Client only) — read-only display when arriving via ?agentId= -->
+        <div v-if="isClient && hasPreAssignedAgent" class="ds-form-group">
+          <label class="ds-form-label">{{ t('missions.create.selectedAgent') }}</label>
+          <div class="ds-readonly-agent">
+            <span v-if="preAssignedAgentLoading" class="ds-readonly-agent__loading">
+              <i class="bi bi-arrow-repeat" />
+            </span>
+            <span v-else class="ds-readonly-agent__name">
+              <i class="bi bi-person-check-fill" />
+              {{ preAssignedAgentName }}
+            </span>
+            <BButton
+              variant="ghost"
+              size="sm"
+              to="/app/discover"
+              icon="bi-arrow-left-right"
+            >
+              {{ t('missions.create.changeAgent') }}
+            </BButton>
+          </div>
+        </div>
+
+        <!-- Agent (Client only) — assignment mode choice when no ?agentId= -->
+        <div v-if="isClient && !hasPreAssignedAgent" class="ds-form-group">
+          <label class="ds-form-label">{{ t('missions.create.assignmentMode') }}</label>
+          <BRadioGroup
+            v-model="assignmentMode"
+            :options="assignmentModeOptions"
+          />
+          <p v-if="assignmentMode === 'open'" class="ds-form-hint">
+            {{ t('missions.create.assignmentOpenHint') }}
+          </p>
+          <p v-else class="ds-form-hint">
+            {{ t('missions.create.assignmentBrowseHint') }}
+          </p>
+        </div>
 
         <!-- Description -->
         <div class="ds-form-group">
@@ -358,6 +429,39 @@ async function handleSubmit() {
   gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid var(--ds-border, #334155);
+}
+
+.ds-readonly-agent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--ds-border, #334155);
+  background: var(--ds-bg-elevated, #1e293b);
+}
+
+.ds-readonly-agent__name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ds-text, #f1f5f9);
+}
+
+.ds-readonly-agent__name i {
+  color: var(--ds-accent, #6366f1);
+}
+
+.ds-readonly-agent__loading i {
+  animation: ds-spin 0.8s linear infinite;
+  color: var(--ds-text-muted, #64748b);
+}
+
+@keyframes ds-spin {
+  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 768px) {

@@ -61,6 +61,10 @@ export function getNetworkUsers(role?: 'client' | 'agent') {
   return get(`/users/network${query}`)
 }
 
+export function getUserById(id: string | number) {
+  return get(`/users/${id}`)
+}
+
 export function discoverAgents(params?: {
   q?: string
   clientType?: 'B2B' | 'B2C' | 'Both'
