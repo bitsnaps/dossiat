@@ -28,6 +28,7 @@ describe('Auth Routes', { timeout: 30_000 }, () => {
           firstName: 'John',
           lastName: 'Doe',
           role: 'agent',
+          acceptTerms: true,
         }),
       })
       const body = await res.json()
@@ -50,6 +51,7 @@ describe('Auth Routes', { timeout: 30_000 }, () => {
           firstName: 'Jane',
           lastName: 'Doe',
           role: 'client',
+          acceptTerms: true,
         }),
       })
       const body = await res.json()
@@ -153,7 +155,7 @@ describe('Auth Routes', { timeout: 30_000 }, () => {
       const regRes = await app.request('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: refreshEmail, password: 'Password123!', firstName: 'Refresh', lastName: 'Test', role: 'client' }),
+        body: JSON.stringify({ email: refreshEmail, password: 'Password123!', firstName: 'Refresh', lastName: 'Test', role: 'client', acceptTerms: true }),
       })
       expect(regRes.status).toBe(201)
 
@@ -197,7 +199,7 @@ describe('Auth Routes', { timeout: 30_000 }, () => {
       const regRes = await app.request('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: logoutEmail, password: 'Password123!', firstName: 'Logout', lastName: 'Test', role: 'agent' }),
+        body: JSON.stringify({ email: logoutEmail, password: 'Password123!', firstName: 'Logout', lastName: 'Test', role: 'agent', acceptTerms: true }),
       })
       expect(regRes.status).toBe(201)
 
@@ -250,6 +252,7 @@ describe('Auth Routes', { timeout: 30_000 }, () => {
           firstName: 'Verify',
           lastName: 'User',
           role: 'client',
+          acceptTerms: true,
         }),
       })
       const regBody = await regRes.json()
