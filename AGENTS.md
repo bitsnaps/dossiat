@@ -48,6 +48,13 @@ Follow these guidelines when working on this project.
 
 - **[`docs/TODO.md`](docs/TODO.md)** — Exhaustive project task list with checkboxes grouped by category. Use this as the single source of truth for project progress. Before starting a new task, check the TODO file to see what's pending, pick a task, and check it off when done.
 - **[`ARCHITECTURE.md`](ARCHITECTURE.md)** — Full system architecture: directory structure, backend routes, database schema, payment system, frontend components, deployment, and testing strategy.
+- **[`docs/API.md`](docs/API.md)** — Comprehensive REST API reference: endpoints, request/response formats, authentication, and error codes.
+- **[`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)** — Developer setup guide: local development, environment variables, database setup, testing, and scripts.
+- **[`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)** — Production deployment guide for Netlify with PostgreSQL.
+- **[`docs/USER_GUIDE.md`](docs/USER_GUIDE.md)** — End-user help center content for Agents and Clients.
+- **[`docs/FEE_CALCULATION.md`](docs/FEE_CALCULATION.md)** — Platform fee calculation logic with worked examples.
+- **[`docs/UI.md`](docs/UI.md)** — UI design guide and components library.
+- **[`docs/PRD-v0.md`](docs/PRD-v0.md)** — Product Requirements Document (v0).
 
 
 ## Coding Conventions

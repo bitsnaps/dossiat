@@ -477,12 +477,12 @@
 
 ## 11. Documentation
 
-- [ ] Write comprehensive API documentation (endpoints, request/response formats, authentication)
-- [ ] Write developer setup guide (local development, environment variables, database setup)
+- [x] Write comprehensive API documentation (endpoints, request/response formats, authentication) — `docs/API.md`
+- [x] Write developer setup guide (local development, environment variables, database setup) — `docs/DEVELOPMENT.md`
 - [x] Write deployment guide (Netlify setup, environment configuration, domain setup) — `docs/DEPLOYMENT.md`
-- [ ] Update `AGENTS.md` with new routers, models, and directory structure as they are created
-- [ ] Write user guide / help center content for Agents and Clients
-- [ ] Document the platform fee calculation logic for transparency
+- [x] Update any outdated information in `AGENTS.md` if needed. — Documentation References section updated with all docs
+- [x] Write user guide / help center content for Agents and Clients — `docs/USER_GUIDE.md`
+- [x] Document the platform fee calculation logic for transparency — `docs/FEE_CALCULATION.md`
 
 ---
 
