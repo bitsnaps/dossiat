@@ -412,7 +412,7 @@ onMounted(async () => {
                 <li class="disabled"><i class="bi bi-dash-circle"></i> {{ t('pricing.feature7') }}</li>
                 <li class="disabled"><i class="bi bi-dash-circle"></i> {{ t('pricing.feature8') }}</li>
               </ul>
-              <a href="#" class="btn btn-outline-light-custom w-100">{{ t('pricing.ctaSmall') }}</a>
+              <RouterLink to="/register" class="btn btn-outline-light-custom w-100">{{ t('pricing.ctaSmall') }}</RouterLink>
             </div>
           </div>
           <div class="col-lg-4">
@@ -432,7 +432,7 @@ onMounted(async () => {
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.feature5PriorityChat') }}</li>
                 <li class="disabled"><i class="bi bi-dash-circle"></i> {{ t('pricing.feature8') }}</li>
               </ul>
-              <a href="#" class="btn btn-grad w-100">{{ t('pricing.ctaPro') }}</a>
+              <RouterLink to="/register" class="btn btn-grad w-100">{{ t('pricing.ctaPro') }}</RouterLink>
             </div>
           </div>
           <div class="col-lg-4">
@@ -451,11 +451,11 @@ onMounted(async () => {
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.featureEnterpriseSuccess') }}</li>
                 <li><i class="bi bi-check2-circle"></i> {{ t('pricing.featureEnterpriseSupport') }}</li>
               </ul>
-              <a href="#" class="btn btn-outline-light-custom w-100">{{ t('pricing.ctaEnterprise') }}</a>
+              <RouterLink to="/register" class="btn btn-outline-light-custom w-100">{{ t('pricing.ctaEnterprise') }}</RouterLink>
             </div>
           </div>
         </div>
-        <p class="text-center text-muted-2 mt-4 small">{{ t('pricing.currencyNote') }} <a href="#" style="color:var(--ds-accent)">{{ t('pricing.featureComparison') }}</a></p>
+        <p class="text-center text-muted-2 mt-4 small">{{ t('pricing.currencyNote') }}</p>
       </div>
     </section>
 
@@ -467,7 +467,7 @@ onMounted(async () => {
             <span class="section-label">{{ t('faq.sectionLabel') }}</span>
             <h2 class="section-title reveal">{{ t('faq.title') }}</h2>
             <p class="section-sub reveal">{{ t('faq.subtitle') }}</p>
-            <a href="#" class="btn btn-outline-light-custom mt-3"><i class="bi bi-envelope me-2"></i> {{ t('faq.contactUs') }}</a>
+            <RouterLink to="/register" class="btn btn-outline-light-custom mt-3"><i class="bi bi-envelope me-2"></i> {{ t('faq.contactUs') }}</RouterLink>
           </div>
           <div class="col-lg-8">
             <div class="accordion accordion-flush" id="faqAcc">
@@ -545,8 +545,8 @@ onMounted(async () => {
           <h2>{{ t('cta.title1') }} <span class="text-grad">{{ t('cta.titleGrad') }}</span></h2>
           <p class="section-sub mx-auto mb-4" style="font-size:1.1rem;">{{ t('cta.subtitle') }}</p>
           <div class="d-flex flex-wrap justify-content-center gap-3">
-            <a href="#" class="btn btn-grad"><i class="bi bi-rocket-takeoff me-2"></i> {{ t('cta.ctaAccess') }}</a>
-            <a href="#" class="btn btn-outline-light-custom"><i class="bi bi-calendar me-2"></i> {{ t('cta.ctaDemo') }}</a>
+            <RouterLink to="/register" class="btn btn-grad"><i class="bi bi-rocket-takeoff me-2"></i> {{ t('cta.ctaAccess') }}</RouterLink>
+            <RouterLink to="/login" class="btn btn-outline-light-custom"><i class="bi bi-calendar me-2"></i> {{ t('cta.ctaDemo') }}</RouterLink>
           </div>
         </div>
       </div>
@@ -559,42 +559,17 @@ onMounted(async () => {
           <div class="col-lg-4">
             <div class="footer-brand mb-3 d-flex align-items-center gap-2"><span class="dot"></span> Dossiat</div>
             <p class="text-muted-2 mb-3" style="max-width:340px;">{{ t('footer.tagline') }}</p>
-            <div class="d-flex gap-3">
-              <a href="#" class="fs-5"><i class="bi bi-twitter-x"></i></a>
-              <a href="#" class="fs-5"><i class="bi bi-linkedin"></i></a>
-              <a href="#" class="fs-5"><i class="bi bi-github"></i></a>
-              <a href="#" class="fs-5"><i class="bi bi-discord"></i></a>
-            </div>
           </div>
           <div class="col-6 col-md-3 col-lg-2">
             <h6>{{ t('footer.product') }}</h6>
             <a href="#features">{{ t('footer.features') }}</a>
             <a href="#how">{{ t('footer.howItWorks') }}</a>
             <a href="#pricing">{{ t('footer.pricing') }}</a>
-            <a href="#">{{ t('footer.changelog') }}</a>
-            <a href="#">{{ t('footer.roadmap') }}</a>
-          </div>
-          <div class="col-6 col-md-3 col-lg-2">
-            <h6>{{ t('footer.company') }}</h6>
-            <a href="#">{{ t('footer.about') }}</a>
-            <a href="#">{{ t('footer.blog') }}</a>
-            <a href="#">{{ t('footer.careers') }}</a>
-            <a href="#">{{ t('footer.pressKit') }}</a>
-            <a href="#">{{ t('footer.contact') }}</a>
-          </div>
-          <div class="col-6 col-md-3 col-lg-2">
-            <h6>{{ t('footer.resources') }}</h6>
-            <a href="#">{{ t('footer.helpCenter') }}</a>
-            <a href="#">{{ t('footer.agentGuide') }}</a>
-            <a href="#">{{ t('footer.apiDocs') }}</a>
-            <a href="#">{{ t('footer.status') }}</a>
           </div>
           <div class="col-6 col-md-3 col-lg-2">
             <h6>{{ t('footer.legal') }}</h6>
             <RouterLink to="/terms">{{ t('footer.terms') }}</RouterLink>
             <RouterLink to="/privacy">{{ t('footer.privacy') }}</RouterLink>
-            <RouterLink to="/privacy">{{ t('footer.cookies') }}</RouterLink>
-            <a href="#">{{ t('footer.dpa') }}</a>
           </div>
         </div>
         <div class="footer-bottom d-flex flex-wrap justify-content-between align-items-center">
