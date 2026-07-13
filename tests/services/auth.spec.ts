@@ -50,6 +50,7 @@ describe('Auth Service', () => {
         firstName: 'John',
         lastName: 'Doe',
         role: 'agent',
+        acceptTerms: true,
       })
 
       expect(mockPost).toHaveBeenCalledWith('/auth/register', {
@@ -58,6 +59,7 @@ describe('Auth Service', () => {
         firstName: 'John',
         lastName: 'Doe',
         role: 'agent',
+        acceptTerms: true,
       })
       expect(result).toEqual(response)
     })

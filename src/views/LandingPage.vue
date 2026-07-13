@@ -591,9 +591,9 @@ onMounted(async () => {
           </div>
           <div class="col-6 col-md-3 col-lg-2">
             <h6>{{ t('footer.legal') }}</h6>
-            <a href="#">{{ t('footer.terms') }}</a>
-            <a href="#">{{ t('footer.privacy') }}</a>
-            <a href="#">{{ t('footer.cookies') }}</a>
+            <RouterLink to="/terms">{{ t('footer.terms') }}</RouterLink>
+            <RouterLink to="/privacy">{{ t('footer.privacy') }}</RouterLink>
+            <RouterLink to="/privacy">{{ t('footer.cookies') }}</RouterLink>
             <a href="#">{{ t('footer.dpa') }}</a>
           </div>
         </div>

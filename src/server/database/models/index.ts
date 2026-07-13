@@ -13,11 +13,12 @@ interface UserModel {
   lastName: string
   role: 'agent' | 'client' | 'admin'
   emailVerified: boolean
+  tosAcceptedAt: Date | null
   createdAt?: Date
   updatedAt?: Date
 }
 
-interface UserCreationAttributes extends Optional<UserModel, 'id' | 'emailVerified' | 'createdAt' | 'updatedAt'> {}
+interface UserCreationAttributes extends Optional<UserModel, 'id' | 'emailVerified' | 'tosAcceptedAt' | 'createdAt' | 'updatedAt'> {}
 
 class User extends Model<UserModel, UserCreationAttributes> implements UserModel {
   declare id: number
@@ -27,6 +28,7 @@ class User extends Model<UserModel, UserCreationAttributes> implements UserModel
   declare lastName: string
   declare role: 'agent' | 'client' | 'admin'
   declare emailVerified: boolean
+  declare tosAcceptedAt: Date | null
   declare readonly createdAt: Date
   declare readonly updatedAt: Date
 }
@@ -40,6 +42,7 @@ User.init(
     lastName: { type: DataTypes.STRING, allowNull: false },
     role: { type: DataTypes.ENUM('agent', 'client', 'admin'), allowNull: false },
     emailVerified: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+    tosAcceptedAt: { type: DataTypes.DATE, allowNull: true },
   },
   { sequelize, tableName: 'users', modelName: 'User' }
 )

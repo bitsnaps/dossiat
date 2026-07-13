@@ -13,6 +13,7 @@ const lastName = ref('')
 const email = ref('')
 const password = ref('')
 const role = ref<'agent' | 'client'>('agent')
+const acceptTerms = ref(false)
 
 async function handleSubmit() {
   await authStore.register({
@@ -21,6 +22,7 @@ async function handleSubmit() {
     email: email.value,
     password: password.value,
     role: role.value,
+    acceptTerms: acceptTerms.value,
   })
   if (authStore.isAuthenticated) {
     router.push('/app/dashboard')
@@ -117,7 +119,19 @@ async function handleSubmit() {
         </div>
       </div>
 
-      <button type="submit" class="ds-btn ds-btn--accent" :disabled="authStore.loading">
+      <div class="ds-auth-terms">
+        <label class="ds-auth-checkbox">
+          <input v-model="acceptTerms" type="checkbox" name="acceptTerms" />
+          <span>
+            {{ t('auth.register.acceptTermsPrefix') }}
+            <RouterLink to="/terms" target="_blank">{{ t('auth.register.termsLink') }}</RouterLink>
+            {{ t('auth.register.and') }}
+            <RouterLink to="/privacy" target="_blank">{{ t('auth.register.privacyLink') }}</RouterLink>
+          </span>
+        </label>
+      </div>
+
+      <button type="submit" class="ds-btn ds-btn--accent" :disabled="authStore.loading || !acceptTerms">
         <span v-if="authStore.loading" class="ds-btn-spinner" />
         {{ t('auth.register.submit') }}
       </button>

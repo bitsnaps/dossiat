@@ -466,12 +466,12 @@
 
 ## 10. Legal & Compliance
 
-- [ ] Draft Terms of Service document — explicitly stating Dossiat is a software provider, not an employer, financial institution, or legal representative
-- [ ] Create Privacy Policy document
-- [ ] Add ToS acceptance checkbox to user registration flow
-- [ ] Add ToS/Privacy Policy links in footer and registration page
-- [ ] Implement data retention policies per Enterprise tier custom rules
-- [ ] Ensure GDPR compliance (data export, account deletion)
+- [x] Draft Terms of Service document — explicitly stating Dossiat is a software provider, not an employer, financial institution, or legal representative
+- [x] Create Privacy Policy document
+- [x] Add ToS acceptance checkbox to user registration flow
+- [x] Add ToS/Privacy Policy links in footer and registration page
+- [x] Implement data retention policies per Enterprise tier custom rules
+- [x] Ensure GDPR compliance (data export, account deletion)
 
 ---
 

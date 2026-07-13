@@ -11,6 +11,7 @@ interface RegisterParams {
   firstName: string
   lastName: string
   role: 'agent' | 'client'
+  acceptTerms: boolean
 }
 
 interface ResetPasswordParams {

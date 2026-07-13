@@ -1,4 +1,4 @@
-import { get, put, post } from './api'
+import { get, put, post, del } from './api'
 
 export function getMe() {
   return get('/users/me')
@@ -72,4 +72,14 @@ export function discoverAgents(params?: {
   offset?: number
 }) {
   return get('/users/agents/discover', { params })
+}
+
+// GDPR: Export all user data as JSON
+export function exportMyData() {
+  return get('/users/me/export')
+}
+
+// GDPR: Delete (anonymize) the current user's account
+export function deleteMyAccount() {
+  return del('/users/me')
 }

@@ -1,20 +1,27 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from '@/composables/useToast'
-import { updateMe, changePassword } from '@/services/users'
+import { useConfirmDialog } from '@/composables/useConfirmDialog'
+import { updateMe, changePassword, exportMyData, deleteMyAccount } from '@/services/users'
 import BCard from '@/components/base/BCard.vue'
 import BInput from '@/components/base/BInput.vue'
 import BButton from '@/components/base/BButton.vue'
 import Breadcrumb from '@/components/common/Breadcrumb.vue'
+import ConfirmDialog from '@/components/common/ConfirmDialog.vue'
 
 const { t } = useI18n()
+const router = useRouter()
 const authStore = useAuthStore()
 const toast = useToast()
+const confirmDialog = useConfirmDialog()
 
 const savingProfile = ref(false)
 const savingPassword = ref(false)
+const exportingData = ref(false)
+const deletingAccount = ref(false)
 
 // Personal info form
 const firstName = ref('')
@@ -79,6 +86,51 @@ async function handleChangePassword() {
     toast.error(err.response?.data?.error || 'Failed to change password')
   } finally {
     savingPassword.value = false
+  }
+}
+
+async function handleExportData() {
+  exportingData.value = true
+  try {
+    const response = await exportMyData() as any
+    const data = response.data ?? response
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `dossiat-data-export-${new Date().toISOString().split('T')[0]}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+    toast.success(t('settings.dataPrivacy.exportSuccess'))
+  } catch (err: any) {
+    toast.error(err.response?.data?.error || 'Failed to export data')
+  } finally {
+    exportingData.value = false
+  }
+}
+
+async function handleDeleteAccount() {
+  const confirmed = await confirmDialog.showConfirm({
+    title: t('settings.dataPrivacy.deleteTitle'),
+    message: t('settings.dataPrivacy.deleteConfirm'),
+    confirmLabel: t('settings.dataPrivacy.deleteConfirmAction'),
+    cancelLabel: t('common.confirm.cancel'),
+    variant: 'danger',
+  })
+  if (!confirmed) return
+
+  deletingAccount.value = true
+  try {
+    await deleteMyAccount()
+    toast.success(t('settings.dataPrivacy.deleteSuccess'))
+    await authStore.logout()
+    router.push('/')
+  } catch (err: any) {
+    toast.error(err.response?.data?.error || 'Failed to delete account')
+  } finally {
+    deletingAccount.value = false
   }
 }
 </script>
@@ -155,5 +207,50 @@ async function handleChangePassword() {
         </BButton>
       </template>
     </BCard>
+
+    <!-- Data & Privacy (GDPR) -->
+    <BCard variant="bordered" padding="lg" class="ds-settings__section">
+      <template #header>
+        <h2 class="ds-section-header__title">{{ t('settings.dataPrivacy.title') }}</h2>
+      </template>
+
+      <p class="ds-settings__hint">{{ t('settings.dataPrivacy.subtitle') }}</p>
+
+      <div class="ds-settings__data-actions">
+        <div class="ds-settings__data-action">
+          <div>
+            <h3 class="ds-settings__data-action-title">{{ t('settings.dataPrivacy.exportTitle') }}</h3>
+            <p class="ds-settings__data-action-desc">{{ t('settings.dataPrivacy.exportDesc') }}</p>
+          </div>
+          <BButton variant="ghost" :loading="exportingData" @click="handleExportData">
+            <i class="bi bi-download me-2" />
+            {{ t('settings.dataPrivacy.exportButton') }}
+          </BButton>
+        </div>
+
+        <div class="ds-settings__data-action ds-settings__data-action--danger">
+          <div>
+            <h3 class="ds-settings__data-action-title">{{ t('settings.dataPrivacy.deleteTitle') }}</h3>
+            <p class="ds-settings__data-action-desc">{{ t('settings.dataPrivacy.deleteDesc') }}</p>
+          </div>
+          <BButton variant="danger" :loading="deletingAccount" @click="handleDeleteAccount">
+            <i class="bi bi-trash me-2" />
+            {{ t('settings.dataPrivacy.deleteButton') }}
+          </BButton>
+        </div>
+      </div>
+    </BCard>
+
+    <ConfirmDialog
+      :model-value="confirmDialog.isVisible.value"
+      :title="confirmDialog.title.value"
+      :message="confirmDialog.message.value"
+      :confirm-label="confirmDialog.confirmLabel.value"
+      :cancel-label="confirmDialog.cancelLabel.value"
+      :variant="confirmDialog.variant.value"
+      @update:model-value="confirmDialog.isVisible.value = $event"
+      @confirm="confirmDialog.confirm()"
+      @cancel="confirmDialog.cancel()"
+    />
   </div>
 </template>

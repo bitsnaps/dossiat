@@ -111,6 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
     firstName: string
     lastName: string
     role: 'agent' | 'client'
+    acceptTerms: boolean
   }) {
     loading.value = true
     error.value = null

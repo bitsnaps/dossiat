@@ -48,6 +48,117 @@ users.get('/me', authenticate(), async (c) => {
   return successResponse(c, user)
 })
 
+// GET /api/users/me/export — GDPR data export (full JSON bundle of user data)
+users.get('/me/export', authenticate(), async (c) => {
+  const auth = c.get('auth')
+
+  const user = await User.findByPk(auth.userId, {
+    attributes: { exclude: ['passwordHash'] },
+    include: [
+      { model: AgentProfile, as: 'agentProfile' },
+      { model: ClientProfile, as: 'clientProfile' },
+    ],
+  })
+
+  if (!user) throw new AppError('User not found', 404)
+
+  const { Mission, Payment, Dispute, DisputeMessage, Notification, Message, Conversation } = await import('@/server/database/models')
+
+  const [agentMissions, clientMissions] = await Promise.all([
+    Mission.findAll({
+      where: { agentId: auth.userId },
+      include: [
+        { model: Payment, as: 'payments' },
+        { model: Dispute, as: 'disputes', include: [{ model: DisputeMessage, as: 'messages' }] },
+        { model: Conversation, as: 'conversation', include: [{ model: Message, as: 'messages' }] },
+      ],
+    }) as any,
+    Mission.findAll({
+      where: { clientId: auth.userId },
+      include: [
+        { model: Payment, as: 'payments' },
+        { model: Dispute, as: 'disputes', include: [{ model: DisputeMessage, as: 'messages' }] },
+        { model: Conversation, as: 'conversation', include: [{ model: Message, as: 'messages' }] },
+      ],
+    }) as any,
+  ])
+
+  const payments = await Payment.findAll({
+    where: { payerId: auth.userId },
+  }) as any
+
+  const disputesInitiated = await Dispute.findAll({
+    where: { initiatedBy: auth.userId },
+    include: [{ model: DisputeMessage, as: 'messages' }],
+  }) as any
+
+  const notifications = await Notification.findAll({
+    where: { userId: auth.userId },
+  }) as any
+
+  const userWithProfiles = user as any
+  const exportData = {
+    exportedAt: new Date().toISOString(),
+    user: {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      emailVerified: user.emailVerified,
+      tosAcceptedAt: user.tosAcceptedAt,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+    },
+    agentProfile: userWithProfiles.agentProfile || null,
+    clientProfile: userWithProfiles.clientProfile || null,
+    missions: {
+      asAgent: agentMissions,
+      asClient: clientMissions,
+    },
+    payments,
+    disputesInitiated,
+    notifications,
+  }
+
+  return successResponse(c, exportData, 'Data export generated')
+})
+
+// DELETE /api/users/me — GDPR account deletion (anonymizes PII, retains audit records)
+users.delete('/me', authenticate(), async (c) => {
+  const auth = c.get('auth')
+
+  const { Mission, RefreshToken } = await import('@/server/database/models')
+
+  // Block deletion if user has active missions (as agent or client)
+  const activeAsAgent = await Mission.count({
+    where: { agentId: auth.userId, status: ['pending_agreement', 'agreed', 'in_progress'] },
+  })
+  const activeAsClient = await Mission.count({
+    where: { clientId: auth.userId, status: ['pending_agreement', 'agreed', 'in_progress'] },
+  })
+
+  if ((activeAsAgent as number) + (activeAsClient as number) > 0) {
+    throw new AppError('Cannot delete account with active missions. Complete or cancel them first.', 409)
+  }
+
+  const user = await User.findByPk(auth.userId)
+  if (!user) throw new AppError('User not found', 404)
+
+  // Anonymize PII
+  await user.update({
+    firstName: 'Deleted',
+    lastName: 'User',
+    email: `deleted+${user.id}@dossiat.invalid`,
+    passwordHash: crypto.randomBytes(32).toString('hex'),
+  })
+
+  // Revoke all refresh tokens
+  await RefreshToken.destroy({ where: { userId: auth.userId } })
+
+  return successResponse(c, { deleted: true }, 'Account anonymized successfully')
+})
+
 // PUT /api/users/me
 users.put('/me',
   authenticate(),

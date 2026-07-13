@@ -22,6 +22,20 @@ const router = createRouter({
       component: () => import('@/views/Demo.vue'),
     },
 
+    /* ── Legal pages (public) ── */
+    {
+      path: '/terms',
+      name: 'terms',
+      component: () => import('@/views/legal/TermsView.vue'),
+      meta: { title: 'Terms of Service' },
+    },
+    {
+      path: '/privacy',
+      name: 'privacy',
+      component: () => import('@/views/legal/PrivacyView.vue'),
+      meta: { title: 'Privacy Policy' },
+    },
+
     /* ── Auth routes (guest-only) ── */
     {
       path: '/',

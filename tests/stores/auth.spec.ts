@@ -123,6 +123,7 @@ describe('Auth Store', () => {
         firstName: 'John',
         lastName: 'Doe',
         role: 'agent',
+        acceptTerms: true,
       })
 
       expect(store.user).toEqual(userData)
@@ -139,6 +140,7 @@ describe('Auth Store', () => {
         firstName: 'John',
         lastName: 'Doe',
         role: 'agent',
+        acceptTerms: true,
       })
 
       expect(store.user).toBeNull()

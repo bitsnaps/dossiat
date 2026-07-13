@@ -371,7 +371,7 @@
       "accepts": "Accepte",
       "b2b": "Clients entreprises",
       "b2c": "Clients particuliers",
-      "backToHome": "← Retour à l'accueil",
+      "backToHome": "Retour à l'accueil",
       "both": "Tous les types de clients",
       "notFound": "Agent introuvable.",
       "register": "S'inscrire",
@@ -430,6 +430,8 @@
       "title": "Bon retour"
     },
     "register": {
+      "acceptTermsPrefix": "J'ai lu et j'accepte les",
+      "and": "et",
       "email": "Adresse email",
       "emailPlaceholder": "vous{'@'}exemple.com",
       "firstName": "Prénom",
@@ -440,10 +442,12 @@
       "login": "Se connecter",
       "password": "Mot de passe",
       "passwordPlaceholder": "Min. 8 caractères",
+      "privacyLink": "Politique de confidentialité",
       "roleAgent": "Agent",
       "roleClient": "Client",
       "submit": "Créer le compte",
       "subtitle": "Rejoignez Dossiat en tant qu'Agent ou Client.",
+      "termsLink": "Conditions d'utilisation",
       "title": "Créez votre compte"
     },
     "resetPassword": {
@@ -480,7 +484,7 @@
       "title": "Paramètres client"
     },
     "view": {
-      "backToHome": "← Retour à l'accueil",
+      "backToHome": "Retour à l'accueil",
       "client": "Client",
       "company": "Informations de l'entreprise",
       "editProfile": "Modifier le profil",
@@ -799,6 +803,58 @@
       "viewAsClient": "Client"
     },
     "viewAsBanner": "Affichage en tant que {role} — Les changements affectent ce que vous voyez"
+  },
+  "legal": {
+    "backToHome": "Retour à l'accueil",
+    "lastUpdated": "Dernière mise à jour : {date}",
+    "privacy": {
+      "lastUpdatedDate": "13 juillet 2026",
+      "section10Body": "Pour toute question relative à la confidentialité ou pour exercer vos droits, veuillez nous contactez. Nous répondrons dans un délai de 30 jours.",
+      "section10Title": "10. Contact",
+      "section1Body": "Nous collectons les informations personnelles que vous fournissez à l'inscription (nom, email, rôle), les détails du profil (bio, spécialités, informations d'entreprise) et les données générées par l'utilisation de la plateforme (missions, messages, paiements, litiges, pièces jointes). Nous collectons également des données techniques telles que l'adresse IP et les informations sur l'appareil à des fins de sécurité et d'analyse.",
+      "section1Title": "1. Données que nous collectons",
+      "section2Body": "Vos données sont utilisées pour fournir les services de la plateforme Dossiat : exécuter des missions, faciliter la communication, traiter les frais de plateforme et fournir un support. Nous ne vendons pas vos données personnelles à des tiers.",
+      "section2Title": "2. Comment nous utilisons vos données",
+      "section3Body": "Nous traitons vos données personnelles sur la base de : (a) contrat — pour fournir les services que vous avez demandés ; (b) obligation légale — pour nous conformer aux lois applicables ; (c) intérêt légitime — pour sécuriser et améliorer la plateforme ; et (d) consentement — pour les communications marketing optionnelles, que vous pouvez retirer à tout moment.",
+      "section3Title": "3. Base légale (RGPD)",
+      "section4Body": "Nous partageons des données avec les passerelles de paiement (Stripe, PayPal) pour traiter les paiements en ligne, avec les fournisseurs d'hébergement pour faire fonctionner la plateforme, et avec les autorités lorsque la loi l'exige. Les Agents et les clients peuvent voir les données de profil et de mission de l'autre dans le cadre de l'exécution d'une mission ensemble.",
+      "section4Title": "4. Partage des données",
+      "section5Body": "Nous conservons vos données tant que votre compte est actif. Après la suppression du compte, nous anonymisons les informations personnellement identifiables tout en conservant les enregistrements historiques (missions terminées, paiements, factures) à des fins d'audit et de conformité légale. Les clients du plan Entreprise peuvent configurer des règles de rétention de données personnalisées via leur plan d'abonnement.",
+      "section5Title": "5. Conservation des données",
+      "section6Body": "Conformément au RGPD, vous avez le droit d'accéder, de rectifier, d'exporter et de supprimer vos données personnelles. Vous pouvez exporter toutes vos données depuis Paramètres → Données & Confidentialité, et vous pouvez demander la suppression de votre compte depuis la même page. Les demandes sont traitées dans un délai de 30 jours.",
+      "section6Title": "6. Vos droits (RGPD)",
+      "section7Body": "Dossiat utilise des cookies essentiels pour l'authentification et la gestion des sessions. Nous n'utilisons pas de cookies publicitaires tiers. Les cookies d'analyse, s'ils sont activés, sont facultatifs et peuvent être désactivés dans les paramètres de votre navigateur.",
+      "section7Title": "7. Cookies",
+      "section8Body": "Nous utilisons des mesures conformes aux standards de l'industrie pour protéger vos données, notamment le hachage des mots de passe (bcrypt), l'authentification basée sur JWT et TLS pour les données en transit. Cependant, aucune méthode de transmission sur Internet n'est sécurisée à 100 %, et nous ne pouvons garantir une sécurité absolue.",
+      "section8Title": "8. Sécurité",
+      "section9Body": "Vos données peuvent être transférées et traitées dans des pays autres que le vôtre. Nous nous assurons que des garanties appropriées sont en place, telles que les Clauses Contractuelles Types, pour tout transfert de ce type.",
+      "section9Title": "9. Transferts internationaux",
+      "title": "Politique de confidentialité"
+    },
+    "terms": {
+      "lastUpdatedDate": "13 juillet 2026",
+      "section10Body": "Nous pouvons mettre à jour ces Conditions d'utilisation de temps à autre. Les changements importants seront communiqués par email ou par notification in-app. L'utilisation continue de la plateforme après l'entrée en vigueur des changements constitue l'acceptation des conditions mises à jour.",
+      "section10Title": "10. Modifications de ces conditions",
+      "section1Body": "Dossiat est une plateforme SaaS qui fournit des outils de workflow, de traçabilité et de communication pour les Agents indépendants et leurs clients. Dossiat n'est pas un employeur, une institution financière ou un représentant légal. Toute la responsabilité de l'exécution, du paiement et du résultat des missions incombe exclusivement aux Agents et à leurs clients. Nous fournissons les rails — jamais la relation.",
+      "section1Title": "1. Dossiat est un fournisseur de logiciel, pas un employeur",
+      "section2Body": "Dossiat ne détient, ne reçoit et ne transfère jamais de fonds au nom des utilisateurs. Les paiements entre Agents et clients sont réglés hors plateforme (espèces, virement bancaire) ou directement via des passerelles tierces (Stripe, PayPal). Les frais de plateforme (1 % des honoraires de l'agent, minimum 1 $) sont facturés séparément via les Crédits Plateforme ou une facture mensuelle consolidée. Dossiat n'est pas une banque, un processeur de paiement ou un agent de séquestre.",
+      "section2Title": "2. Pas une institution financière",
+      "section3Body": "Dossiat ne fournit pas de conseils juridiques, d'arbitrage ou de représentation. La Salle de Réconciliation est un outil de communication structuré pour aider les parties à trouver une résolution amiable, hors tribunal. Nous ne jugeons, n'arbitrons et n'assumons aucune responsabilité pour les litiges. Toute responsabilité légale reste avec les parties à la mission.",
+      "section3Title": "3. Pas un représentant légal",
+      "section4Body": "Les Agents sont responsables de l'exactitude de leurs profils, de la qualité de leur travail et du respect de toutes les lois et réglementations applicables dans leur juridiction. Les clients sont responsables de la fourniture d'exigences de mission précises et d'un paiement opportun. Les deux parties sont responsables de l'examen et de l'acceptation de la liste de vérification de la mission avant le début du travail.",
+      "section4Title": "4. Responsabilités des utilisateurs",
+      "section5Body": "Dossiat facture des frais de plateforme de 1 % des honoraires de l'agent, avec un minimum de 1 $ par mission. Pour les paiements en ligne, les frais sont calculés sur le montant net après les frais de passerelle. Les frais sont déduits du solde de Crédits Plateforme de l'Agent ou facturés mensuellement. Les frais ne sont pas remboursables une fois une mission terminée.",
+      "section5Title": "5. Frais de plateforme",
+      "section6Body": "Les clients souscrivent à l'un des trois niveaux (Petite entreprise, Professionnel, Entreprise) facturés mensuellement ou annuellement. Les abonnements peuvent être annulés à tout moment et restent actifs jusqu'à la fin de la période de facturation en cours. Les remboursements sont émis à la discrétion de Dossiat pour les erreurs de facturation.",
+      "section6Title": "6. Abonnements",
+      "section7Body": "Les utilisateurs acceptent de ne pas utiliser Dossiat pour des activités illégales, de la fraude, du blanchiment d'argent ou tout autre but violant la loi applicable. Nous nous réservons le droit de suspendre ou de résilier les comptes qui violent ces conditions.",
+      "section7Title": "7. Utilisation acceptable",
+      "section8Body": "Dossiat conserve tous les droits sur la plateforme, sa marque et son logiciel. Les utilisateurs conservent tous les droits sur le contenu qu'ils téléchargent. En téléchargeant du contenu, les utilisateurs accordent à Dossiat une licence limitée pour l'afficher dans la plateforme aux fins d'exécution des missions.",
+      "section8Title": "8. Propriété intellectuelle",
+      "section9Body": "Dossiat est fourni « tel quel » sans garantie d'aucune sorte. Dans la mesure maximale permise par la loi, Dossiat ne sera pas responsable des dommages indirects, accessoires ou consécutifs résultant de l'utilisation de la plateforme, y compris mais sans s'y limiter, les résultats des missions, les échecs de paiement ou les litiges entre les parties.",
+      "section9Title": "9. Limitation de responsabilité",
+      "title": "Conditions d'utilisation"
+    }
   },
   "messages": {
     "composerPlaceholder": "Écrivez un message...",
@@ -1301,6 +1357,20 @@
       "subtitle": "Personnalisez l'apparence de l'application.",
       "theme": "Thème",
       "title": "Paramètres d'apparence"
+    },
+    "dataPrivacy": {
+      "deleteButton": "Supprimer le compte",
+      "deleteConfirm": "Êtes-vous sûr de vouloir supprimer votre compte ? Vos données personnelles seront anonymisées et ne pourront être récupérées. Les missions actives doivent être terminées ou annulées au préalable.",
+      "deleteConfirmAction": "Oui, supprimer mon compte",
+      "deleteDesc": "Anonymisez définitivement votre compte. Cela supprime vos informations personnelles tout en conservant les enregistrements historiques pour l'audit. Cette action est irréversible.",
+      "deleteSuccess": "Votre compte a été anonymisé.",
+      "deleteTitle": "Supprimer mon compte",
+      "exportButton": "Exporter les données",
+      "exportDesc": "Téléchargez un fichier JSON contenant toutes les données personnelles que nous détenons sur vous, y compris votre profil, vos missions, vos messages et vos paiements.",
+      "exportSuccess": "Export des données téléchargé avec succès.",
+      "exportTitle": "Exporter mes données",
+      "subtitle": "Gérez vos données personnelles conformément au RGPD.",
+      "title": "Données & Confidentialité"
     },
     "nav": {
       "account": "Compte",

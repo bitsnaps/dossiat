@@ -18,10 +18,11 @@ auth.post('/register',
       firstName: validators.required(),
       lastName: validators.required(),
       role: validators.isIn(['agent', 'client']),
+      acceptTerms: validators.required(),
     },
   }),
   async (c) => {
-    const { email, password, firstName, lastName, role } = await c.req.json()
+    const { email, password, firstName, lastName, role, acceptTerms } = await c.req.json()
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       throw new AppError('Invalid email format', 422)
@@ -29,6 +30,10 @@ auth.post('/register',
 
     if (password.length < 8) {
       throw new AppError('Password must be at least 8 characters', 422)
+    }
+
+    if (!acceptTerms) {
+      throw new AppError('You must accept the Terms of Service to register', 422)
     }
 
     const existing = await User.findOne({ where: { email: email.toLowerCase() } })
@@ -44,6 +49,7 @@ auth.post('/register',
       firstName,
       lastName,
       role,
+      tosAcceptedAt: new Date(),
     })
 
     if (role === 'agent') {
