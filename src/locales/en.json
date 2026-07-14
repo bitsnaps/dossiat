@@ -1075,10 +1075,12 @@
       "mission": {
         "open": "Open",
         "draft": "Draft",
+        "pending": "Pending",
         "pending_agreement": "Pending Agreement",
         "agreed": "Agreed",
         "in_progress": "In Progress",
         "completed": "Completed",
+        "confirmed": "Confirmed",
         "disputed": "Disputed",
         "cancelled": "Cancelled"
       },

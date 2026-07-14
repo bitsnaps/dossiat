@@ -20,7 +20,7 @@ beforeAll(async () => {
   const agentRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: agentEmail, password, firstName: 'Agent', lastName: 'DF', role: 'agent' }),
+    body: JSON.stringify({ email: agentEmail, password, firstName: 'Agent', lastName: 'DF', role: 'agent', acceptTerms: true }),
   })
   const agentBody = await agentRes.json()
   agentToken = agentBody.data.accessToken
@@ -28,7 +28,7 @@ beforeAll(async () => {
   const clientRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: clientEmail, password, firstName: 'Client', lastName: 'DF', role: 'client' }),
+    body: JSON.stringify({ email: clientEmail, password, firstName: 'Client', lastName: 'DF', role: 'client', acceptTerms: true }),
   })
   const clientBody = await clientRes.json()
   clientToken = clientBody.data.accessToken

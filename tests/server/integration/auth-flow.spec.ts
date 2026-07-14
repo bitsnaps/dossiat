@@ -26,7 +26,7 @@ describe('Auth Flow Integration', { timeout: 30_000 }, () => {
     const res = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: agentEmail, password, firstName: 'Agent', lastName: 'Test', role: 'agent' }),
+      body: JSON.stringify({ email: agentEmail, password, firstName: 'Agent', lastName: 'Test', role: 'agent', acceptTerms: true }),
     })
     const body = await res.json()
 
@@ -46,7 +46,7 @@ describe('Auth Flow Integration', { timeout: 30_000 }, () => {
     const res = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: clientEmail, password, firstName: 'Client', lastName: 'Test', role: 'client' }),
+      body: JSON.stringify({ email: clientEmail, password, firstName: 'Client', lastName: 'Test', role: 'client', acceptTerms: true }),
     })
     const body = await res.json()
 

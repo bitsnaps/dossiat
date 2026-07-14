@@ -25,6 +25,7 @@ beforeAll(async () => {
       firstName: 'Agent',
       lastName: 'Avatar',
       role: 'agent',
+      acceptTerms: true,
     }),
   })
   const agentBody = await agentRes.json()

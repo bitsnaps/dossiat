@@ -33,6 +33,7 @@ beforeAll(async () => {
       firstName: 'Network',
       lastName: 'Agent',
       role: 'agent',
+      acceptTerms: true,
     }),
   })
   const agentBody = await agentRes.json()
@@ -49,6 +50,7 @@ beforeAll(async () => {
       firstName: 'Network',
       lastName: 'Client',
       role: 'client',
+      acceptTerms: true,
     }),
   })
   const clientBody = await clientRes.json()
@@ -65,6 +67,7 @@ beforeAll(async () => {
       firstName: 'Other',
       lastName: 'Client',
       role: 'client',
+      acceptTerms: true,
     }),
   })
   const otherClientBody = await otherClientRes.json()
@@ -81,6 +84,7 @@ beforeAll(async () => {
       firstName: 'Other',
       lastName: 'Agent',
       role: 'agent',
+      acceptTerms: true,
     }),
   })
   const otherAgentBody = await otherAgentRes.json()

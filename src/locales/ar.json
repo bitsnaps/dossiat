@@ -531,10 +531,12 @@
         "agreed": "مقبول",
         "cancelled": "ملغى",
         "completed": "مكتمل",
+        "confirmed": "مؤكد",
         "disputed": "متنازع",
         "draft": "مسودة",
         "in_progress": "قيد التنفيذ",
         "open": "مفتوح",
+        "pending": "قيد الانتظار",
         "pending_agreement": "في انتظار الموافقة"
       },
       "payment": {

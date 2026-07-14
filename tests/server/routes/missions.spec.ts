@@ -23,7 +23,7 @@ beforeAll(async () => {
   const agentRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: `agent-missions-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Test', role: 'agent' }),
+    body: JSON.stringify({ email: `agent-missions-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Test', role: 'agent', acceptTerms: true }),
   })
   const agentBody = await agentRes.json()
   agentId = agentBody.data.id
@@ -33,7 +33,7 @@ beforeAll(async () => {
   const clientRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: `client-missions-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'Test', role: 'client' }),
+    body: JSON.stringify({ email: `client-missions-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'Test', role: 'client', acceptTerms: true }),
   })
   const clientBody = await clientRes.json()
   clientId = clientBody.data.id
@@ -216,7 +216,7 @@ describe('Mission Bulk Routes', () => {
     const entClientRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `ent-bulk-${Date.now()}@test.com`, password: 'Password123!', firstName: 'EntClient', lastName: 'Test', role: 'client' }),
+      body: JSON.stringify({ email: `ent-bulk-${Date.now()}@test.com`, password: 'Password123!', firstName: 'EntClient', lastName: 'Test', role: 'client', acceptTerms: true }),
     })
     const entClientBody = await entClientRes.json()
     enterpriseClientId = entClientBody.data.id
@@ -226,7 +226,7 @@ describe('Mission Bulk Routes', () => {
     const nonEntClientRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `nonent-bulk-${Date.now()}@test.com`, password: 'Password123!', firstName: 'NonEntClient', lastName: 'Test', role: 'client' }),
+      body: JSON.stringify({ email: `nonent-bulk-${Date.now()}@test.com`, password: 'Password123!', firstName: 'NonEntClient', lastName: 'Test', role: 'client', acceptTerms: true }),
     })
     const nonEntClientBody = await nonEntClientRes.json()
     nonEnterpriseClientId = nonEntClientBody.data.id

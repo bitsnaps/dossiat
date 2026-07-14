@@ -28,6 +28,7 @@ beforeAll(async () => {
       firstName: 'Diana',
       lastName: 'Prince',
       role: 'agent',
+      acceptTerms: true,
     }),
   })
   const agentBody = await agentRes.json()
@@ -58,6 +59,7 @@ beforeAll(async () => {
       firstName: 'Clark',
       lastName: 'Kent',
       role: 'client',
+      acceptTerms: true,
     }),
   })
   const clientBody = await clientRes.json()

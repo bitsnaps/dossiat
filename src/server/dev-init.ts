@@ -24,8 +24,15 @@ export async function initDevDatabase() {
     }
   }
 
-  // Create tables if they don't exist (safe for SQLite dev)
-  await sequelize.sync({ alter: true })
+  // Create tables if they don't exist.
+  // NOTE: We intentionally avoid `sync({ alter: true })` here. On SQLite, `alter: true`
+  // recreates tables by creating a backup, copying rows, then DROPping the original.
+  // When the `users` table is dropped, SQLite's foreign-key enforcement fails because
+  // many tables (agent_profiles, client_profiles, missions, payments, …) reference it,
+  // producing `SQLITE_CONSTRAINT: FOREIGN KEY constraint failed` on `DROP TABLE users`.
+  // Schema evolution is handled by the migration files in src/server/database/migrations,
+  // so a plain `sync()` (CREATE TABLE IF NOT EXISTS) is sufficient and safe for dev.
+  await sequelize.sync()
 
   // Seed demo users if database is empty
   const userCount = await User.count()

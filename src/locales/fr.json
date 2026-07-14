@@ -531,10 +531,12 @@
         "agreed": "Acceptée",
         "cancelled": "Annulée",
         "completed": "Terminée",
+        "confirmed": "Confirmée",
         "disputed": "En litige",
         "draft": "Brouillon",
         "in_progress": "En cours",
         "open": "Ouverte",
+        "pending": "En attente",
         "pending_agreement": "En attente d'accord"
       },
       "payment": {

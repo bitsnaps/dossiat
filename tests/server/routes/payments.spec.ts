@@ -26,7 +26,7 @@ beforeAll(async () => {
   const agentRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: `agent-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Pay', role: 'agent' }),
+    body: JSON.stringify({ email: `agent-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Pay', role: 'agent', acceptTerms: true }),
   })
   const agentBody = await agentRes.json()
   agentId = agentBody.data.id
@@ -35,7 +35,7 @@ beforeAll(async () => {
   const clientRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: `client-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'Pay', role: 'client' }),
+    body: JSON.stringify({ email: `client-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'Pay', role: 'client', acceptTerms: true }),
   })
   const clientBody = await clientRes.json()
   clientId = clientBody.data.id
@@ -158,7 +158,7 @@ describe('Cash Payment Credit Deduction', () => {
     const agentRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `agent-deduction-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Deduction', role: 'agent' }),
+      body: JSON.stringify({ email: `agent-deduction-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Deduction', role: 'agent', acceptTerms: true }),
     })
     const agentBody = await agentRes.json()
     agentIdDeduction = agentBody.data.id
@@ -167,7 +167,7 @@ describe('Cash Payment Credit Deduction', () => {
     const clientRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `client-deduction-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'Deduction', role: 'client' }),
+      body: JSON.stringify({ email: `client-deduction-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'Deduction', role: 'client', acceptTerms: true }),
     })
     const clientBody = await clientRes.json()
     clientTokenDeduction = clientBody.data.accessToken
@@ -239,7 +239,7 @@ describe('Cash Payment Credit Deduction', () => {
     const freshAgentRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `agent-nocredit-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'NoCredit', role: 'agent' }),
+      body: JSON.stringify({ email: `agent-nocredit-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'NoCredit', role: 'agent', acceptTerms: true }),
     })
     const freshAgentBody = await freshAgentRes.json()
     const freshAgentToken = freshAgentBody.data.accessToken
@@ -247,7 +247,7 @@ describe('Cash Payment Credit Deduction', () => {
     const freshClientRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `client-nocredit-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'NoCredit', role: 'client' }),
+      body: JSON.stringify({ email: `client-nocredit-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'NoCredit', role: 'client', acceptTerms: true }),
     })
     const freshClientBody = await freshClientRes.json()
     const freshClientToken = freshClientBody.data.accessToken
@@ -301,7 +301,7 @@ describe('Bank Transfer Payment', () => {
     const agentRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `agent-bt-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'BT', role: 'agent' }),
+      body: JSON.stringify({ email: `agent-bt-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'BT', role: 'agent', acceptTerms: true }),
     })
     const agentBody = await agentRes.json()
     agentTokenBT = agentBody.data.accessToken
@@ -309,7 +309,7 @@ describe('Bank Transfer Payment', () => {
     const clientRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `client-bt-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'BT', role: 'client' }),
+      body: JSON.stringify({ email: `client-bt-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'BT', role: 'client', acceptTerms: true }),
     })
     const clientBody = await clientRes.json()
     clientTokenBT = clientBody.data.accessToken
@@ -362,7 +362,7 @@ describe('Admin Payment Access', () => {
     const agentRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `agent-pay-access-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'PayAccess', role: 'agent' }),
+      body: JSON.stringify({ email: `agent-pay-access-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'PayAccess', role: 'agent', acceptTerms: true }),
     })
     const agentBody = await agentRes.json()
     agentTokenAdmin = agentBody.data.accessToken
@@ -371,7 +371,7 @@ describe('Admin Payment Access', () => {
     const clientRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `client-pay-access-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'PayAccess', role: 'client' }),
+      body: JSON.stringify({ email: `client-pay-access-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Client', lastName: 'PayAccess', role: 'client', acceptTerms: true }),
     })
     const clientBody = await clientRes.json()
     clientTokenAdmin = clientBody.data.accessToken
@@ -423,7 +423,7 @@ describe('Admin Payment Access', () => {
     const outsiderRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `outsider-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Outsider', lastName: 'Pay', role: 'client' }),
+      body: JSON.stringify({ email: `outsider-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Outsider', lastName: 'Pay', role: 'client', acceptTerms: true }),
     })
     const outsiderBody = await outsiderRes.json()
 
@@ -438,7 +438,7 @@ describe('Admin Payment Access', () => {
     const outsiderRes = await app.request('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: `outsider-rec-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Outsider', lastName: 'RecPay', role: 'client' }),
+      body: JSON.stringify({ email: `outsider-rec-pay-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Outsider', lastName: 'RecPay', role: 'client', acceptTerms: true }),
     })
     const outsiderBody = await outsiderRes.json()
 

@@ -15,7 +15,7 @@ beforeAll(async () => {
   const agentRes = await app.request('/api/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: `agent-paypal-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Paypal', role: 'agent' }),
+    body: JSON.stringify({ email: `agent-paypal-${Date.now()}@test.com`, password: 'Password123!', firstName: 'Agent', lastName: 'Paypal', role: 'agent', acceptTerms: true }),
   })
   const agentBody = await agentRes.json()
   agentToken = agentBody.data.accessToken
