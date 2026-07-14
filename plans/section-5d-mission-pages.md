@@ -188,7 +188,7 @@ sequenceDiagram
 - "Initiate Dispute" → navigates to dispute creation (future section 5i, for now link to `/app/disputes`)
 
 **Back Link:**
-- "← Back to Missions" link at top
+- "Back to Missions" link at top
 
 ### 3. MissionCreateView.vue
 
@@ -454,7 +454,7 @@ New keys to add under a `missions` namespace in all 3 locale files:
     },
     "detail": {
       "title": "Mission Detail",
-      "backToList": "← Back to Missions",
+      "backToList": "Back to Missions",
       "description": "Description",
       "noDescription": "No description provided.",
       "agent": "Agent",

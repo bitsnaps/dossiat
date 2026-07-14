@@ -315,7 +315,7 @@
       "emailPlaceholder": "you{'@'}example.com",
       "submit": "Send reset link",
       "success": "If an account exists with that email, you'll receive a password reset link shortly.",
-      "backToLogin": "← Back to sign in"
+      "backToLogin": "Back to sign in"
     },
     "resetPassword": {
       "title": "Set new password",
@@ -327,13 +327,13 @@
       "submit": "Reset password",
       "success": "Your password has been reset successfully.",
       "passwordMismatch": "Passwords do not match.",
-      "backToLogin": "← Back to sign in"
+      "backToLogin": "Back to sign in"
     },
     "verifyEmail": {
       "title": "Email verification",
       "verifying": "Verifying your email address…",
       "success": "Your email has been verified successfully! You can now sign in.",
-      "backToLogin": "← Back to sign in"
+      "backToLogin": "Back to sign in"
     }
   },
   "layout": {
@@ -558,7 +558,7 @@
     },
     "detail": {
       "title": "Mission Detail",
-      "backToList": "← Back to Missions",
+      "backToList": "Back to Missions",
       "description": "Description",
       "noDescription": "No description provided.",
       "agent": "Agent",
@@ -1001,7 +1001,7 @@
       },
       "noInvoices": "No invoices found.",
       "noInvoicesHint": "Invoices will appear here once your subscription billing begins.",
-      "backToManage": "← Back to Manage Subscription"
+      "backToManage": "Back to Manage Subscription"
     }
   },
   "disputes": {
@@ -1037,7 +1037,7 @@
       "actions": {
         "resolve": "Resolve Dispute",
         "escalate": "Escalate to Admin",
-        "back": "← Back to Disputes"
+        "back": "Back to Disputes"
       },
       "resolveModal": {
         "title": "Resolve Dispute",
@@ -1063,7 +1063,7 @@
       "submit": "Submit Dispute",
       "submitting": "Submitting...",
       "submitted": "Dispute initiated successfully.",
-      "back": "← Back",
+      "back": " Back",
       "validation": {
         "missionRequired": "Please select a mission.",
         "reasonRequired": "Please describe the reason for this dispute."
@@ -1269,7 +1269,7 @@
       "deleted": "User deleted successfully.",
       "deleteError": "Failed to delete user.",
       "userDetail": "User Detail",
-      "back": "← Back to Users",
+      "back": "Back to Users",
       "manageRole": "Manage Role",
       "currentRole": "Current Role",
       "changeRole": "Change Role",
@@ -1307,7 +1307,7 @@
       "client": "Client",
       "view": "View",
       "detail": "Mission Detail",
-      "back": "← Back to Missions",
+      "back": "Back to Missions",
       "amount": "Amount",
       "participants": "Participants",
       "manageStatus": "Manage Status",
@@ -1379,7 +1379,7 @@
       "deleted": "Payment deleted successfully.",
       "deleteError": "Failed to delete payment.",
       "detail": "Payment Detail",
-      "back": "← Back to Payments",
+      "back": "Back to Payments",
       "manageStatus": "Manage Status",
       "currentStatus": "Current Status",
       "changeStatus": "Change Status",
@@ -1415,7 +1415,7 @@
       "initiator": "Initiator",
       "view": "View",
       "detail": "Dispute Detail",
-      "back": "← Back to Disputes",
+      "back": "Back to Disputes",
       "initiatedBy": "Initiated by",
       "messages": "Messages",
       "resolveDispute": "Resolve Dispute",

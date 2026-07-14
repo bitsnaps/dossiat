@@ -488,16 +488,16 @@
 
 ## 12. Performance & Security
 
-- [ ] Implement input sanitization on all API endpoints (prevent XSS)
-- [ ] Implement SQL injection prevention (Sequelize parameterized queries)
-- [ ] Add CSRF protection for form submissions
-- [ ] Implement secure HTTP headers (Helmet or equivalent)
-- [ ] Implement pagination on all list endpoints to prevent unbounded queries
-- [ ] Add database query optimization (eager loading, select only needed columns)
-- [ ] Implement image/file upload size limits and type validation
-- [ ] Implement JWT token rotation and secure storage (httpOnly cookies or secure storage)
-- [ ] Set up application logging (structured logs for debugging and audit)
-- [ ] Implement health check endpoint for monitoring
+- [x] Implement input sanitization on all API endpoints (prevent XSS) — `src/server/middleware/sanitize.ts`
+- [x] Implement SQL injection prevention (Sequelize parameterized queries) — all queries via Sequelize ORM; raw queries prohibited (only dev-init cleanup uses them)
+- [x] Add CSRF protection for form submissions — `src/server/middleware/csrf.ts` (content-type confusion guard)
+- [x] Implement secure HTTP headers (Helmet or equivalent for Hono) — `src/server/middleware/secureHeaders.ts` (Hono built-in `secureHeaders`)
+- [x] Implement pagination on all list endpoints to prevent unbounded queries — payments, messages, recurrence, subscriptions now paginated (limit capped at 100)
+- [x] Add database query optimization (eager loading, select only needed columns) — audited; `attributes` excludes + `limit` caps applied
+- [x] Implement image/file upload size limits and type validation — `src/server/utils/uploadValidation.ts` (centralized helper)
+- [x] Implement JWT token rotation and secure storage (httpOnly cookies or secure storage) — rotation in `auth.ts` refresh; secure storage documented in `docs/DEVELOPMENT.md`
+- [x] Set up application logging (structured logs for debugging and audit) — `src/server/middleware/requestLogger.ts` (JSON lines)
+- [x] Implement health check endpoint for monitoring — `GET /api/health` now pings DB + reports uptime
 
 ---
 

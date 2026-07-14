@@ -12,12 +12,15 @@ const messages = new Hono()
 messages.get('/conversations', authenticate(), async (c) => {
   const auth = c.get('auth')
 
+  const page = Math.max(parseInt(c.req.query('page') || '1', 10) || 1, 1)
+  const limit = Math.min(Math.max(parseInt(c.req.query('limit') || '20', 10) || 20, 1), 100)
+
   const missions = await Mission.findAll({
     where: { [Op.or]: [{ agentId: auth.userId }, { clientId: auth.userId }] },
     attributes: ['id', 'title', 'agentId', 'clientId'],
   })
   const missionIds = missions.map((m) => m.id)
-  if (missionIds.length === 0) return successResponse(c, [])
+  if (missionIds.length === 0) return paginatedResponse(c, [], 0, page, limit)
 
   const conversations = await Conversation.findAll({
     where: { missionId: { [Op.in]: missionIds } },
@@ -90,7 +93,12 @@ messages.get('/conversations', authenticate(), async (c) => {
     return new Date(dateB).getTime() - new Date(dateA).getTime()
   })
 
-  return successResponse(c, result)
+  // Paginate the sorted result
+  const total = result.length
+  const offset = (page - 1) * limit
+  const paged = result.slice(offset, offset + limit)
+
+  return paginatedResponse(c, paged, total, page, limit)
 })
 
 messages.get('/missions/:id/messages', authenticate(), async (c) => {

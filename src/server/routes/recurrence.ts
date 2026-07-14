@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { Op } from 'sequelize'
 import { Mission, RecurrentMissionConfig, User } from '@/server/database/models'
-import { successResponse } from '@/server/utils/apiResponse'
+import { successResponse, paginatedResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
@@ -13,14 +13,18 @@ const recurrence = new Hono()
 recurrence.get('/recurrences', authenticate(), async (c) => {
   const auth = c.get('auth')
 
+  const page = Math.max(parseInt(c.req.query('page') || '1', 10) || 1, 1)
+  const limit = Math.min(Math.max(parseInt(c.req.query('limit') || '20', 10) || 20, 1), 100)
+  const offset = (page - 1) * limit
+
   const missions = await Mission.findAll({
     where: { [Op.or]: [{ agentId: auth.userId }, { clientId: auth.userId }] },
     attributes: ['id'],
   })
   const missionIds = missions.map((m) => m.id)
-  if (missionIds.length === 0) return successResponse(c, [])
+  if (missionIds.length === 0) return paginatedResponse(c, [], 0, page, limit)
 
-  const configs = await RecurrentMissionConfig.findAll({
+  const { count, rows } = await RecurrentMissionConfig.findAndCountAll({
     where: { missionId: { [Op.in]: missionIds }, isActive: true },
     include: [{
       model: Mission,
@@ -31,9 +35,11 @@ recurrence.get('/recurrences', authenticate(), async (c) => {
       ],
     }],
     order: [['nextRunAt', 'ASC']],
+    limit,
+    offset,
   })
 
-  return successResponse(c, configs)
+  return paginatedResponse(c, rows, count, page, limit)
 })
 
 recurrence.post('/missions/:id/recurrence',

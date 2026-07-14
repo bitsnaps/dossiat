@@ -127,7 +127,7 @@ Add a `disputes` section to all three locale files. Keys needed:
       "actions": {
         "resolve": "Resolve Dispute",
         "escalate": "Escalate to Admin",
-        "back": "← Back to Disputes"
+        "back": "Back to Disputes"
       },
       "resolveModal": {
         "title": "Resolve Dispute",

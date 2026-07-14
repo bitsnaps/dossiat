@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { Op } from 'sequelize'
 import { Payment, Mission, PlatformCredit, CreditTransaction, Invoice } from '@/server/database/models'
-import { successResponse } from '@/server/utils/apiResponse'
+import { successResponse, paginatedResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
@@ -10,6 +10,14 @@ import type { PaymentMethod } from '@/server/services/payment'
 import { createNotification } from '@/server/services/notification'
 
 const payments = new Hono()
+
+/** Parse capped pagination params from query string. */
+function pagination(c: { req: { query: (k: string) => string | undefined } }) {
+  const page = Math.max(parseInt(c.req.query('page') || '1', 10) || 1, 1)
+  const limit = Math.min(Math.max(parseInt(c.req.query('limit') || '20', 10) || 20, 1), 100)
+  const offset = (page - 1) * limit
+  return { page, limit, offset }
+}
 
 payments.get('/missions/:id/payments', authenticate(), async (c) => {
   const auth = c.get('auth')
@@ -21,8 +29,14 @@ payments.get('/missions/:id/payments', authenticate(), async (c) => {
     throw new AppError('Access denied', 403)
   }
 
-  const paymentList = await Payment.findAll({ where: { missionId }, order: [['createdAt', 'DESC']] })
-  return successResponse(c, paymentList)
+  const { page, limit, offset } = pagination(c)
+  const { count, rows } = await Payment.findAndCountAll({
+    where: { missionId },
+    order: [['createdAt', 'DESC']],
+    limit,
+    offset,
+  })
+  return paginatedResponse(c, rows, count, page, limit)
 })
 
 payments.post('/missions/:id/payments',
@@ -168,14 +182,17 @@ payments.post('/agents/me/credits/purchase',
 payments.get('/agents/me/credit-transactions', authenticate(), async (c) => {
   const auth = c.get('auth')
   const credit = await PlatformCredit.findOne({ where: { agentId: auth.userId } })
-  if (!credit) return successResponse(c, [])
+  if (!credit) return paginatedResponse(c, [], 0, 1, 20)
 
-  const transactions = await CreditTransaction.findAll({
+  const { page, limit, offset } = pagination(c)
+  const { count, rows } = await CreditTransaction.findAndCountAll({
     where: { creditId: credit.id },
     order: [['createdAt', 'DESC']],
+    limit,
+    offset,
   })
 
-  return successResponse(c, transactions)
+  return paginatedResponse(c, rows, count, page, limit)
 })
 
 payments.get('/agents/me/payments', authenticate(), async (c) => {
@@ -188,21 +205,27 @@ payments.get('/agents/me/payments', authenticate(), async (c) => {
           { payeeId: auth.userId },
         ],
       }
-  const paymentList = await Payment.findAll({
+  const { page, limit, offset } = pagination(c)
+  const { count, rows } = await Payment.findAndCountAll({
     where,
     include: [{ model: Mission, as: 'mission', attributes: ['id', 'title'] }],
     order: [['createdAt', 'DESC']],
+    limit,
+    offset,
   })
-  return successResponse(c, paymentList)
+  return paginatedResponse(c, rows, count, page, limit)
 })
 
 payments.get('/agents/me/invoices', authenticate(), async (c) => {
   const auth = c.get('auth')
-  const invoices = await Invoice.findAll({
+  const { page, limit, offset } = pagination(c)
+  const { count, rows } = await Invoice.findAndCountAll({
     where: { agentId: auth.userId },
     order: [['createdAt', 'DESC']],
+    limit,
+    offset,
   })
-  return successResponse(c, invoices)
+  return paginatedResponse(c, rows, count, page, limit)
 })
 
 export default payments

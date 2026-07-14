@@ -68,6 +68,23 @@ The full variable reference is in [`.env.example`](../.env.example). Key groups:
 | `JWT_REFRESH_EXPIRES_IN` | Default `7d` |
 | `ENCRYPTION_KEY` | 32-char key for sensitive data at rest |
 
+#### JWT Token Storage (Security Recommendation)
+
+Dossiat uses **stateless Bearer-token auth**. The refresh endpoint rotates the
+stored refresh token on every use (see [`auth.ts`](../src/server/routes/auth.ts)).
+
+For production, the recommended client-side storage strategy is:
+
+- **Access token** (15 min TTL): keep in **memory** (Pinia store / JS variable).
+  Do not persist to `localStorage` — it's readable by any injected script (XSS).
+- **Refresh token** (7 day TTL): store in an **httpOnly, Secure, SameSite=Strict
+  cookie**, or in a secure storage mechanism (e.g. `sessionStorage` with
+  short-lived rotation). `localStorage` is acceptable for dev but not prod.
+
+The frontend currently stores both tokens in `localStorage` for simplicity.
+Before production hardening, migrate the refresh token to an httpOnly cookie
+set by the server on login/refresh.
+
 ### Admin Bootstrap
 
 | Variable | Purpose |

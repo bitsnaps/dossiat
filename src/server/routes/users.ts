@@ -9,8 +9,8 @@ import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
 import { AppError } from '@/server/middleware/errorHandler'
+import { validateFileUpload, extensionForType, ALLOWED_IMAGE_TYPES } from '@/server/utils/uploadValidation'
 
-const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE = parseInt(process.env.MAX_AVATAR_SIZE || String(5 * 1024 * 1024)) // 5MB default
 const UPLOAD_DIR = process.env.UPLOAD_DIR || './uploads/avatars'
 
@@ -483,18 +483,12 @@ users.post('/me/avatar', authenticate(), async (c) => {
 
   const file = formData.get('avatar') as File | null
 
-  if (!file || !(file instanceof File)) {
-    throw new AppError('No file provided', 400)
-  }
-
-  // Validate MIME type
-  if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-    throw new AppError(`Invalid file type. Allowed: ${ALLOWED_MIME_TYPES.join(', ')}`, 400)
-  }
-
-  // Validate file size
-  if (file.size > MAX_FILE_SIZE) {
-    throw new AppError(`File too large. Maximum size: ${MAX_FILE_SIZE / (1024 * 1024)}MB`, 400)
+  const validation = validateFileUpload(file, {
+    allowedTypes: ALLOWED_IMAGE_TYPES,
+    maxSize: MAX_FILE_SIZE,
+  })
+  if (!validation.valid) {
+    throw new AppError(validation.error!, 400)
   }
 
   // Ensure upload directory exists
@@ -511,12 +505,13 @@ users.post('/me/avatar', authenticate(), async (c) => {
   }
 
   // Generate unique filename
-  const ext = file.type === 'image/jpeg' ? '.jpg' : file.type === 'image/png' ? '.png' : '.webp'
+  const validFile = file as File
+  const ext = extensionForType(validFile.type)
   const filename = `${auth.userId}-${Date.now()}${ext}`
   const filepath = path.join(UPLOAD_DIR, filename)
 
   // Write file to disk
-  const arrayBuffer = await file.arrayBuffer()
+  const arrayBuffer = await validFile.arrayBuffer()
   const buffer = Buffer.from(arrayBuffer)
   fs.writeFileSync(filepath, buffer)
 

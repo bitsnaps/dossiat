@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import Stripe from 'stripe'
 import { SubscriptionPlan, Subscription, SubscriptionInvoice, ClientProfile } from '@/server/database/models'
-import { successResponse } from '@/server/utils/apiResponse'
+import { successResponse, paginatedResponse } from '@/server/utils/apiResponse'
 import { authenticate } from '@/server/middleware/auth'
 import { roleGuard } from '@/server/middleware/roleGuard'
 import { validateRequest, validators } from '@/server/middleware/validateRequest'
@@ -83,12 +83,18 @@ subscriptions.get('/me/invoices', authenticate(), roleGuard('client'), async (c)
   })
   if (!subscription) throw new AppError('No active subscription', 404)
 
-  const invoices = await SubscriptionInvoice.findAll({
+  const page = Math.max(parseInt(c.req.query('page') || '1', 10) || 1, 1)
+  const limit = Math.min(Math.max(parseInt(c.req.query('limit') || '20', 10) || 20, 1), 100)
+  const offset = (page - 1) * limit
+
+  const { count, rows } = await SubscriptionInvoice.findAndCountAll({
     where: { subscriptionId: subscription.id },
     order: [['createdAt', 'DESC']],
+    limit,
+    offset,
   })
 
-  return successResponse(c, invoices)
+  return paginatedResponse(c, rows, count, page, limit)
 })
 
 // PUT /api/subscriptions/me

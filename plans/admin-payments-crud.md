@@ -148,7 +148,7 @@ Add missing keys under `admin.payments`:
   "admin.payments.deleted": "Payment deleted successfully.",
   "admin.payments.deleteError": "Failed to delete payment.",
   "admin.payments.detail": "Payment Detail",
-  "admin.payments.back": "← Back to Payments",
+  "admin.payments.back": "Back to Payments",
   "admin.payments.manageStatus": "Manage Status",
   "admin.payments.currentStatus": "Current Status",
   "admin.payments.changeStatus": "Change Status",

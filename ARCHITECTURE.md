@@ -68,7 +68,7 @@ tests/
 
 ### Entry Point
 
-[`src/server/index.ts`](src/server/index.ts) creates the Hono app, applies global middleware (CORS, logger, rate limiter, error handler), and mounts all route modules under the `/api` prefix.
+[`src/server/index.ts`](src/server/index.ts) creates the Hono app, applies global middleware in order: CORS → secure headers → structured request logger → rate limiter → CSRF protection → input sanitization → error handler. It also exposes an enhanced `GET /api/health` endpoint that pings the database and reports uptime. All route modules are mounted under the `/api` prefix.
 
 ### Route Modules
 
@@ -94,8 +94,12 @@ tests/
 | [`auth.ts`](src/server/middleware/auth.ts) | JWT access token verification via `jose` |
 | [`roleGuard.ts`](src/server/middleware/roleGuard.ts) | Role-based access control (`agent`, `client`, `admin`) |
 | [`validateRequest.ts`](src/server/middleware/validateRequest.ts) | Request body/query/params validation |
-| [`errorHandler.ts`](src/server/middleware/errorHandler.ts) | Global error handler with consistent error format |
+| [`errorHandler.ts`](src/server/middleware/errorHandler.ts) | Global error handler with structured JSON logging |
 | [`rateLimiter.ts`](src/server/middleware/rateLimiter.ts) | Rate limiting to prevent abuse |
+| [`secureHeaders.ts`](src/server/middleware/secureHeaders.ts) | Secure HTTP headers (Hono built-in `secureHeaders`) |
+| [`sanitize.ts`](src/server/middleware/sanitize.ts) | XSS input sanitization — strips HTML tags from JSON bodies |
+| [`csrf.ts`](src/server/middleware/csrf.ts) | CSRF defense — rejects form-encoded/text bodies on state-changing methods |
+| [`requestLogger.ts`](src/server/middleware/requestLogger.ts) | Structured JSON request logging (one line per request) |
 
 ### API Conventions
 
@@ -103,6 +107,16 @@ tests/
 - Authenticated routes use `authenticate()` middleware
 - Role-restricted routes chain `roleGuard('role')`
 - Request validation uses `validateRequest()` with declarative schema objects
+- All list endpoints are paginated (`page`/`limit` query params, `limit` capped at 100)
+- File uploads validated via [`uploadValidation.ts`](src/server/utils/uploadValidation.ts) (MIME type + size)
+
+### Security Rules
+
+- **No raw SQL queries** — all database access must go through Sequelize model methods (parameterized). The only raw queries are in [`dev-init.ts`](src/server/dev-init.ts) for dev-only table cleanup (no user input).
+- **Input sanitization** — JSON request bodies are sanitized globally to strip HTML tags (XSS prevention).
+- **CSRF** — state-changing methods reject `text/plain` and `application/x-www-form-urlencoded` content types (content-type confusion guard). Bearer-token auth is stateless, so classic CSRF is not exploitable.
+- **JWT rotation** — refresh tokens are rotated on every refresh (stored token replaced). See [`auth.ts`](src/server/routes/auth.ts).
+- **Health check** — `GET /api/health` returns DB connectivity + uptime for monitoring.
 
 ---
 

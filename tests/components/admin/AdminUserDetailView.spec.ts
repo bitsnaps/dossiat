@@ -39,7 +39,7 @@ vi.mock('vue-i18n', () => ({
     t: (key: string) => {
       const map: Record<string, string> = {
         'admin.users.userDetail': 'User Detail',
-        'admin.users.back': '← Back to Users',
+        'admin.users.back': 'Back to Users',
         'admin.users.verified': 'Verified',
         'admin.users.notVerified': 'Not Verified',
         'admin.users.editProfile': 'Edit Profile',

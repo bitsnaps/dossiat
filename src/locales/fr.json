@@ -18,7 +18,7 @@
     "disputes": {
       "actions": "Actions",
       "allStatuses": "Tous les statuts",
-      "back": "← Retour aux litiges",
+      "back": " Retour aux litiges",
       "cancel": "Annuler",
       "changeStatus": "Changer le statut",
       "create": "Créer",
@@ -79,7 +79,7 @@
       "amount": "Montant",
       "amountLabel": "Montant",
       "amountPlaceholder": "0,00",
-      "back": "← Retour aux missions",
+      "back": " Retour aux missions",
       "cancel": "Annuler",
       "changeStatus": "Changer le statut",
       "client": "Client",
@@ -133,7 +133,7 @@
       "allStatuses": "Tous les statuts",
       "amount": "Montant",
       "amountRequired": "Le montant est requis.",
-      "back": "← Retour aux paiements",
+      "back": " Retour aux paiements",
       "cancel": "Annuler",
       "changeStatus": "Changer le statut",
       "confirmedAt": "Confirmé le",
@@ -224,7 +224,7 @@
       "activateTitle": "Activer l'utilisateur",
       "activated": "Utilisateur activé avec succès.",
       "allRoles": "Tous les rôles",
-      "back": "← Retour aux utilisateurs",
+      "back": " Retour aux utilisateurs",
       "cancel": "Annuler",
       "changeRole": "Changer le rôle",
       "confirmPassword": "Confirmer le mot de passe",
@@ -409,7 +409,7 @@
   },
   "auth": {
     "forgotPassword": {
-      "backToLogin": "← Retour à la connexion",
+      "backToLogin": " Retour à la connexion",
       "email": "Adresse email",
       "emailPlaceholder": "vous{'@'}exemple.com",
       "submit": "Envoyer le lien",
@@ -451,7 +451,7 @@
       "title": "Créez votre compte"
     },
     "resetPassword": {
-      "backToLogin": "← Retour à la connexion",
+      "backToLogin": " Retour à la connexion",
       "confirmPassword": "Confirmer le mot de passe",
       "confirmPasswordPlaceholder": "Répétez votre mot de passe",
       "password": "Nouveau mot de passe",
@@ -463,7 +463,7 @@
       "title": "Définir un nouveau mot de passe"
     },
     "verifyEmail": {
-      "backToLogin": "← Retour à la connexion",
+      "backToLogin": " Retour à la connexion",
       "success": "Votre email a été vérifié avec succès ! Vous pouvez maintenant vous connecter.",
       "title": "Vérification de l'email",
       "verifying": "Vérification de votre adresse email…"
@@ -619,7 +619,7 @@
     },
     "detail": {
       "actions": {
-        "back": "← Retour aux litiges",
+        "back": " Retour aux litiges",
         "escalate": "Escalader à l'admin",
         "resolve": "Résoudre le litige"
       },
@@ -646,7 +646,7 @@
       "title": "Litige #{id}"
     },
     "initiate": {
-      "back": "← Retour",
+      "back": " Retour",
       "fields": {
         "mission": "Mission",
         "missionPlaceholder": "Sélectionner une mission",
@@ -999,7 +999,7 @@
       "agent": "Agent",
       "amount": "Montant",
       "attachments": "Pièces jointes",
-      "backToList": "← Retour aux missions",
+      "backToList": " Retour aux missions",
       "checklist": "Liste de vérification",
       "client": "Client",
       "completed": "Terminée le",
@@ -1397,7 +1397,7 @@
   },
   "subscriptions": {
     "billing": {
-      "backToManage": "← Retour à la gestion de l'abonnement",
+      "backToManage": " Retour à la gestion de l'abonnement",
       "columns": {
         "amount": "Montant",
         "date": "Date",
