@@ -45,7 +45,7 @@ module.exports = {
         rejectUnauthorized: false,
       },
     },
-    migrationStorage: 'json',
+    migrationStorage: 'sequelize',
     migrationStorageTableName: 'SequelizeMeta',
     modelsPath: path.resolve(__dirname, '..', 'models'),
     migrationsPath: path.resolve(__dirname, '..', 'migrations'),
